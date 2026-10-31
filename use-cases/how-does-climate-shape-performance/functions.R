@@ -124,6 +124,8 @@ climate_indices = function(temp, rain, planting, span) {
 #' @param covariates data.frame of partitioning variables, one row per ranking
 #' @param alpha significance level for splitting
 #' @param minsize minimum number of rankings per node
+#' @details PlackettLuce must be attached with library("PlackettLuce"),
+#'   because pltree() looks up its fitting functions on the search path
 fit_climate_tree = function(R, covariates, alpha = 0.01, minsize = 100) {
 
   G = PlackettLuce::group(R, seq_len(nrow(R)))
