@@ -38,8 +38,8 @@ X$market_distance = log(X$market_distance)
 # 2a. Default, model-based clustering with variable selection. Variables
 # unrelated to the clusters are declared irrelevant and do not shape them
 vs = cluster_varsel(X, k = 2:5)
-print(vs$bic, digits = 4)
-cat("Chosen k:", vs$k, "\n")
+print(vs$criteria, digits = 5)
+cat("Chosen k by", vs$criterion, ":", vs$k, "\n")
 cat("Relevant variables:", paste(vs$relevant, collapse = ", "), "\n")
 cat("Irrelevant variables:", paste(vs$irrelevant, collapse = ", "), "\n")
 
@@ -92,6 +92,10 @@ het = preference_heterogeneity(R, group, nperm = 200)
 
 print(het, digits = 3)
 
+# which pairs of clusters differ? Clusters that do not differ in preference
+# need no separate recommendation, even when their profiles differ
+print(pairwise_heterogeneity(R, group), digits = 3)
+
 # 4. Worth per cluster ----------------------------------------------------
 wg = worth_by_group(R, group, ref = "Check")
 
@@ -99,7 +103,7 @@ print(wg, digits = 2)
 
 
 # 5. Outputs --------------------------------------------------------------
-utils::write.csv(vs$bic, "output/cluster-criteria.csv", row.names = FALSE)
+utils::write.csv(vs$criteria, "output/cluster-criteria.csv", row.names = FALSE)
 utils::write.csv(comparison, "output/method-comparison.csv", row.names = FALSE)
 utils::write.csv(cluster_profile(dat[covars], group), "output/cluster-profile.csv", row.names = FALSE)
 utils::write.csv(het, "output/preference-heterogeneity.csv", row.names = FALSE)

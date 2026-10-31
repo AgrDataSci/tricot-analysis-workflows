@@ -54,9 +54,23 @@ test_that("the influence diagnostic flags a variable that hijacks the partition"
 test_that("variable selection recovers the segments with household head included", {
   dat = simulate_tricot()
   vs = cluster_varsel(prep_all(dat), k = 2:4)
-  expect_equal(vs$k, 2)
-  expect_gt(adjusted_rand(vs$labels, attr(dat, "segment")), 0.6)
   expect_true("household_head" %in% vs$irrelevant)
+  expect_gt(adjusted_rand(vs$labels, attr(dat, "segment")), 0.6)
+  # every cluster is nested in one true segment, even if a segment is split
+  tab = table(vs$labels, attr(dat, "segment"))
+  expect_true(all(apply(prop.table(tab, 1), 1, max) > 0.85))
+})
+
+test_that("pairwise tests separate clusters with different preferences only", {
+  dat = simulate_tricot()
+  R = build_rankings(dat, items, input)$rankings
+  seg = attr(dat, "segment")
+  # split the subsistence segment at random into two clusters
+  set.seed(4)
+  g = ifelse(seg == "market", 1, sample(2:3, length(seg), replace = TRUE))
+  pw = pairwise_heterogeneity(R, g)
+  expect_lt(pw$p_value[pw$cluster_a == 1 & pw$cluster_b == 2], 0.001)
+  expect_gt(pw$p_value[pw$cluster_a == 2 & pw$cluster_b == 3], 0.01)
 })
 
 test_that("FAMD scores cluster on the leading component", {

@@ -282,17 +282,24 @@ variable_influence = function(covariates, labels, cluster_fun,
 #' Model-based clustering of mixed data with variable selection
 #'
 #' Fits latent class models for numeric and categorical variables together
-#' (VarSelLCM::VarSelCluster) for each number of clusters, selects k by BIC,
-#' and declares each variable relevant or irrelevant to the clusters. An
-#' irrelevant variable does not shape the partition, so a binary factor that
-#' is unrelated to the segments cannot hijack it.
+#' (VarSelLCM::VarSelCluster) for each number of clusters and declares each
+#' variable relevant or irrelevant to the clusters. An irrelevant variable
+#' does not shape the partition, so a binary factor that is unrelated to the
+#' segments cannot hijack it.
+#'
+#' The number of clusters is chosen by ICL by default. ICL penalizes
+#' overlapping clusters, while BIC tends to split a segment into similar
+#' subgroups. Both criteria are returned.
 #'
 #' @param covariates data.frame of numeric and factor columns
 #' @param k integer vector, numbers of clusters to compare
+#' @param criterion "ICL" (default) or "BIC", for choosing k
 #' @param seed integer
-#' @return list with the partition, the chosen k, BIC per k and the relevant
-#'   and irrelevant variables
-cluster_varsel = function(covariates, k = 2:5, seed = 1) {
+#' @return list with the partition, the chosen k, the criteria per k and the
+#'   relevant and irrelevant variables
+cluster_varsel = function(covariates, k = 2:5, criterion = c("ICL", "BIC"), seed = 1) {
+
+  criterion = match.arg(criterion)
 
   set.seed(seed)
 
@@ -301,17 +308,48 @@ cluster_varsel = function(covariates, k = 2:5, seed = 1) {
                              crit.varsel = "BIC", nbcores = 1)
   })
 
-  bic = vapply(fits, function(f) f@criteria@BIC, numeric(1))
-  best = fits[[which.max(bic)]]
+  crit = data.frame(k = k,
+                    BIC = vapply(fits, function(f) f@criteria@BIC, numeric(1)),
+                    ICL = vapply(fits, function(f) f@criteria@ICL, numeric(1)))
+
+  best = fits[[which.max(crit[[criterion]])]]
 
   labels = as.integer(best@partitions@zMAP)
   relevant = best@model@names.relevant
 
   list(labels = labels,
-       k = k[which.max(bic)],
-       bic = data.frame(k = k, BIC = bic),
+       k = k[which.max(crit[[criterion]])],
+       criteria = crit,
+       criterion = criterion,
        relevant = relevant,
        irrelevant = setdiff(names(covariates), relevant))
+
+}
+
+
+#' Do pairs of clusters differ in preference?
+#'
+#' Likelihood-ratio test of one Plackett-Luce model against one per cluster,
+#' for every pair of clusters. Two clusters that do not differ in preference
+#' may still be worth keeping apart for other reasons, but they do not need
+#' different variety recommendations.
+#'
+#' @param R rankings
+#' @param group vector of cluster labels, one per ranking
+pairwise_heterogeneity = function(R, group) {
+
+  g = sort(unique(group))
+  pairs = utils::combn(g, 2)
+
+  do.call("rbind", lapply(seq_len(ncol(pairs)), function(j) {
+    keep = group %in% pairs[, j]
+    Rj = R[keep, ]
+    G = PlackettLuce::group(Rj, seq_len(nrow(Rj)))
+    lr = gosset::likelihood_ratio(G, split = group[keep])
+    data.frame(cluster_a = pairs[1, j], cluster_b = pairs[2, j],
+               deviance = lr$deviance, df = lr$DF_delta,
+               p_value = lr[["Pr(>Chisq)"]])
+  }))
 
 }
 
