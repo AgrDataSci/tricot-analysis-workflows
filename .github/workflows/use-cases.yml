@@ -32,12 +32,26 @@ jobs:
             github::AgrDataSci/gosset
 
       - name: Tests
-        run: Rscript tests/run-tests.R
+        shell: bash
+        run: |
+          set -o pipefail
+          Rscript tests/run-tests.R 2>&1 | tee tests.log || {
+            echo "::error title=tests::$(tail -c 3500 tests.log | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')"
+            exit 1
+          }
 
       - name: Analysis
-        run: Rscript analysis.R
+        if: always()
+        shell: bash
+        run: |
+          set -o pipefail
+          status=0
+          Rscript analysis.R 2>&1 | tee analysis.log || status=$?
+          echo "::notice title=analysis::$(grep -v '^ *\[' analysis.log | head -c 3500 | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')"
+          exit $status
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: outputs-${{ matrix.usecase }}
           path: use-cases/${{ matrix.usecase }}/outputs/
