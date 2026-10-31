@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use these workflows, please cite them as below."
-title: "analysis-workflows: analytical approaches for tricot and on-farm ranking data from Bioversity International and Wageningen University"
+title: "tricot-analysis-workflows: analytical approaches for tricot and on-farm ranking data from Bioversity International and Wageningen University"
 type: software
 authors:
   - family-names: "de Sousa"
@@ -29,7 +29,7 @@ authors:
     affiliation: "Bioversity International (CGIAR)"
     orcid: "https://orcid.org/0000-0001-7554-2558"
 license: MIT
-repository-code: "https://github.com/AgrDataSci/analysis-workflows"
+repository-code: "https://github.com/AgrDataSci/tricot-analysis-workflows"
 version: "0.1.0"
 date-released: "2026-10-31"
 keywords:

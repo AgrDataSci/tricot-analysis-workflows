@@ -6,10 +6,10 @@ Read SKILL.md before analysing data. It routes each question to a use case and d
 
 ## Core files
 
-- [SKILL.md](https://raw.githubusercontent.com/AgrDataSci/analysis-workflows/main/SKILL.md): question routing, procedure and boundaries
-- [AGENTS.md](https://raw.githubusercontent.com/AgrDataSci/analysis-workflows/main/AGENTS.md): rules for AI agents
-- [decisions/README.md](https://raw.githubusercontent.com/AgrDataSci/analysis-workflows/main/decisions/README.md): methodological decision records
-- [README.md](https://raw.githubusercontent.com/AgrDataSci/analysis-workflows/main/README.md): overview and use-case table
+- [SKILL.md](https://raw.githubusercontent.com/AgrDataSci/tricot-analysis-workflows/main/SKILL.md): question routing, procedure and boundaries
+- [AGENTS.md](https://raw.githubusercontent.com/AgrDataSci/tricot-analysis-workflows/main/AGENTS.md): rules for AI agents
+- [decisions/README.md](https://raw.githubusercontent.com/AgrDataSci/tricot-analysis-workflows/main/decisions/README.md): methodological decision records
+- [README.md](https://raw.githubusercontent.com/AgrDataSci/tricot-analysis-workflows/main/README.md): overview and use-case table
 
 ## Related
 

@@ -1,4 +1,4 @@
-# analysis-workflows
+# tricot-analysis-workflows
 
 The main analytical approaches used at Bioversity International and Wageningen University for tricot and on-farm ranking data, written so that researchers and AI agents can follow how we get from observations to scientific conclusions.
 

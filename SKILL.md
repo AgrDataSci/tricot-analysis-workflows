@@ -1,5 +1,5 @@
 ---
-name: analysis-workflows
+name: tricot-analysis-workflows
 description: Use when analysing tricot, ClimMob, on-farm ranking, participatory variety selection or consumer and product concept testing data, or when asked which varieties are preferred, which traits drive preference, whether user groups differ, how climate shapes performance, whether on-farm and on-station results agree, which measured lab or station traits explain preference, or which concept consumers prefer.
 ---
 
@@ -11,7 +11,7 @@ The evidence behind these methods lives in the companion skill [tricot-knowledge
 
 ## Use the live files
 
-These workflows change as they are reviewed. Once per conversation, before the first analysis, read the files you need from `https://raw.githubusercontent.com/AgrDataSci/analysis-workflows/main/`. If that address is blocked, try `https://github.com/AgrDataSci/analysis-workflows`. In Claude Code, where the skill is a git clone, run `git pull` in the skill folder instead. If you cannot reach the repository, say so in one short line and use the installed files.
+These workflows change as they are reviewed. Once per conversation, before the first analysis, read the files you need from `https://raw.githubusercontent.com/AgrDataSci/tricot-analysis-workflows/main/`. If that address is blocked, try `https://github.com/AgrDataSci/tricot-analysis-workflows`. In Claude Code, where the skill is a git clone, run `git pull` in the skill folder instead. If you cannot reach the repository, say so in one short line and use the installed files.
 
 ## Route the question
 
