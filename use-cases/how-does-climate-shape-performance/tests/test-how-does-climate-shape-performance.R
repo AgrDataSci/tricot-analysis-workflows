@@ -54,3 +54,15 @@ test_that("unsupported spatial extrapolation is flagged", {
   ex = extrapolation_check(ci, target)
   expect_equal(ex$extrapolation, c(FALSE, TRUE))
 })
+
+test_that("a constant or redundant index does not break the extrapolation check", {
+  train = ci
+  train$DTR = 11
+  train$maxDT2 = 2 * train$maxDT
+  target = data.frame(maxDT = c(stats::median(ci$maxDT), max(ci$maxDT) + 3),
+                      DTR = c(11, 11), SU = stats::median(ci$SU),
+                      Rtotal = stats::median(ci$Rtotal))
+  target$maxDT2 = 2 * target$maxDT
+  expect_warning(ex <- extrapolation_check(train, target), "no variation")
+  expect_equal(ex$extrapolation, c(FALSE, TRUE))
+})

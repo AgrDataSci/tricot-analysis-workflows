@@ -194,6 +194,9 @@ window_sensitivity = function(R, windows, temp, rain, planting, ...) {
 #' @param train data.frame of indices in the trial
 #' @param target data.frame of the same indices at target sites
 #' @param quantile numeric, chi-squared quantile for the distance check
+#' @details Indices that do not vary in the trial are left out of the
+#'   distance, with a warning, and redundant indices are handled with a
+#'   generalized inverse
 extrapolation_check = function(train, target, quantile = 0.99) {
 
   train = train[stats::complete.cases(train), , drop = FALSE]
@@ -204,8 +207,30 @@ extrapolation_check = function(train, target, quantile = 0.99) {
 
   out_range = apply(target, 1, function(x) any(x < lo | x > hi))
 
-  md = stats::mahalanobis(target, colMeans(train), stats::cov(train))
-  unusual = md > stats::qchisq(quantile, df = ncol(train))
+  # indices that do not vary in the trial cannot enter the distance. They
+  # still count in the range check, so a target site with a different value
+  # is flagged as outside the range
+  constant = hi - lo < sqrt(.Machine$double.eps)
+  if (any(constant)) {
+    warning("indices with no variation in the trial are left out of the ",
+            "Mahalanobis distance: ", paste(names(train)[constant], collapse = ", "),
+            call. = FALSE)
+  }
+
+  X = as.matrix(train[, !constant, drop = FALSE])
+  Y = as.matrix(target[, !constant, drop = FALSE])
+
+  # Mahalanobis distance with a generalized inverse, so redundant indices
+  # (for example one computed from others) do not make the covariance
+  # matrix singular. Degrees of freedom follow the rank of the covariance
+  e = eigen(stats::cov(X), symmetric = TRUE)
+  keep = e$values > max(e$values) * 1e-8
+  inv = e$vectors[, keep, drop = FALSE] %*%
+    diag(1 / e$values[keep], sum(keep)) %*%
+    t(e$vectors[, keep, drop = FALSE])
+  D = sweep(Y, 2, colMeans(X))
+  md = rowSums((D %*% inv) * D)
+  unusual = md > stats::qchisq(quantile, df = sum(keep))
 
   data.frame(target, outside_range = out_range,
              mahalanobis = md, unusual = unusual,

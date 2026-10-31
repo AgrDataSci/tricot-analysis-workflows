@@ -54,6 +54,7 @@ On the synthetic data (900 plots along an elevation gradient, two heat-tolerant 
 - A tree split shows that preference differs between conditions. It does not prove a causal climate effect.
 - Thresholds from a tree are estimates. Report them with the sensitivity analysis, not as fixed cut-offs.
 - Predictions for flagged sites are extrapolation and must not be used as recommendations.
+- Indices that do not vary across plots are left out of the Mahalanobis distance, with a warning, and redundant indices are handled with a generalized inverse. Some climatrends versions return DTR rounded to whole degrees, which makes it constant in this simulation. Check `packageVersion("climatrends")` when results differ from the README.
 - `pltree()` needs PlackettLuce attached with `library("PlackettLuce")`, because it looks up its fitting functions on the search path.
 
 ## Files
