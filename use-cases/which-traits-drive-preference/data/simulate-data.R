@@ -5,7 +5,8 @@
 #   - Grain colour has no direct effect, but it is correlated with yield at
 #     variety level, so its marginal correlation with overall preference is
 #     positive. A sound analysis should drop it after accounting for yield.
-#   - Drought tolerance has no effect and no correlation with the drivers.
+#   - Drought tolerance has no effect and, by construction, no correlation
+#     with yield or taste across varieties.
 #
 # Each participant tests three of the varieties and reports the best and the
 # worst for every trait, as letters A, B, C, in the ClimMob tricot format.
@@ -25,7 +26,10 @@ simulate_tricot = function(n = 800,
   yield = stats::rnorm(n_items)
   taste = stats::rnorm(n_items)
   colour = 0.8 * yield + 0.6 * stats::rnorm(n_items)
-  drought = stats::rnorm(n_items)
+  # drought is made exactly uncorrelated with yield and taste across
+  # varieties, so any association it shows comes from sampling noise only
+  drought = stats::residuals(stats::lm(stats::rnorm(n_items) ~ yield + taste))
+  drought = drought / stats::sd(drought)
 
   # balanced random allocation of three varieties per participant
   alloc = t(replicate(n, sample(items, 3)))
