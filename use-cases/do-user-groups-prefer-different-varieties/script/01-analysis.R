@@ -10,6 +10,7 @@
 library("PlackettLuce")
 library("gosset")
 library("cluster")
+library("VarSelLCM")
 
 source("script/helper/functions.R")
 source("script/helper/simulate-data.R")
