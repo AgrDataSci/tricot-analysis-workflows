@@ -1,6 +1,6 @@
 # Climate and environmental data
 
-Status: methodological rationale from Kauê de Sousa (2026-10-31), adapted from the AgrDataSci decision record. This is not independent validation of cited studies or software.
+Status: methodological rationale from Kauê de Sousa (2026-10-31), adapted from the 1000FARMS team decision record. This is not independent validation of cited studies or software.
 
 - Choose climate windows from documented days to phenological events (flowering, booting, harvest) or from growing degree days estimated with climatrends and suitable temperature data.
 - Record crop and variety phenology, its source, thermal thresholds, planting dates, climate source, spatial and temporal resolution, and uncertainty.

@@ -1,6 +1,6 @@
 # Instructions for AI agents
 
-This repository documents how the AgrDataSci team reasons with agricultural trial and survey data. Use it to understand and adapt our approaches, not to copy them blindly.
+This repository documents how the 1000FARMS team reasons with agricultural trial and survey data. Use it to understand and adapt our approaches, not to copy them blindly.
 
 ## How to work with this repository
 

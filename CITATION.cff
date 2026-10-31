@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use these workflows, please cite them as below."
-title: "analysis-workflows: analytical approaches of the AgrDataSci team"
+title: "analysis-workflows: analytical approaches of the 1000FARMS team"
 type: software
 authors:
   - family-names: "de Sousa"
@@ -28,6 +28,7 @@ version: "0.1.0"
 date-released: "2026-10-31"
 keywords:
   - tricot
+  - 1000FARMS
   - citizen science
   - Plackett-Luce
   - on-farm experimentation

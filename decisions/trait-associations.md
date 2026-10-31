@@ -1,6 +1,6 @@
 # Trait associations
 
-Status: methodological rationale from Kauê de Sousa (2026-10-31), adapted from the AgrDataSci decision record. This is not independent validation of cited studies or software.
+Status: methodological rationale from Kauê de Sousa (2026-10-31), adapted from the 1000FARMS team decision record. This is not independent validation of cited studies or software.
 
 - **Primary aim.** Understand how overall farmer preference relates to the other farmer-ranked traits. Do not assume yield is the dominant driver.
 - **Provisional trait categories.** Preference or psychological traits (overall preference, taste, marketability), genotype-by-environment traits (maturity, yield, flowering, drought tolerance) and management traits (yield, pests and diseases). The categories overlap and are not an exclusive ontology.
