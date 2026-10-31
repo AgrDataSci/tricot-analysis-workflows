@@ -1,0 +1,870 @@
+####################################################
+###### Script used to model the performance of crop varieties with climatic variables
+###### a forward selection with Plackett-Luce trees is performed to select the best generalizable model 
+###### for crop performance forecast
+#Kaue de Sousa <k.desousa*at*cgiar.org> & Jacob van Etten <j.vanetten*at*cgiar.org>
+#Bioversity International
+#First run 22Oct2017
+#Updated 13Nov2018
+####################################################
+
+library(here)
+library(tidyverse)
+library(Matrix)
+library(reshape2)
+library(magrittr)
+library(readr)
+library(caret)
+library(RCurl)
+library(psychotools)
+library(PlackettLuce)
+library(partykit)
+library(foreach)
+library(doParallel)
+library(abind)
+library(dismo)
+library(rgeos)
+library(gstat)
+library(raster)
+library(alphahull)
+
+# -----------------------------------------
+# -----------------------------------------
+# -----------------------------------------
+# -----------------------------------------
+# Read data and load additional functions ####
+
+#add ClimMob tools for data learning
+# tools <- RCurl::getURL("https://raw.githubusercontent.com/kauedesousa/ClimMobTools/pilot/ClimMobLearning.R", ssl.verifypeer = FALSE)
+# eval(parse(text = tools))
+
+#Define number of cores for parallelisation
+n_cpu <- 3
+#Define working directory
+wd <- "vanEtten_etal2018_replication_data"
+
+source(here(wd, "script/ClimMobLearning.R"))
+
+#Read data
+df <- read_csv("input/tricot_data.csv", na = c("NA",""))
+
+#Crop that will be analysed 
+crop <-  sort(unique(df$crop))
+
+
+#This analysis will evaluate the performance of Plackett-Luce models under following models:
+# PLT-null without explanatory variables
+# PLT-design  with explanatory variables related to experiental design (season, planting date, location, soil) 
+# PLT-climate  with climatic explanatory variables
+# PLT-clim+loc with explanatory variables from climate and location
+approach <- c("PLT-null","PLT-design","PLT-climate","PLT-clim+loc")
+
+
+#-----------------------------------------
+#-----------------------------------------
+#-----------------------------------------
+#-----------------------------------------
+# Run over crops ####
+
+set.seed(123)
+
+m=1
+
+for(m in seq_along(crop)){
+  
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  # Subset data and check rankings and explanatory variables ####
+  
+  cat("################################## \n Starting analysis:", toupper(crop[m]), " \n Time:", date(), "\n")
+
+  #Subset data for the m crop
+  mydata <- df[df$crop == crop[m] , ]
+
+  #Create folder for outputs
+  output <- "output/"
+  dir.create(here(wd, output), showWarnings = FALSE)
+
+  #An output folder for the crop
+  output <- paste0(output, unique(mydata$crop),"_",unique(mydata$country))
+  dir.create(here(wd, output), showWarnings = FALSE)
+
+  #Reclassify factors levels to fit in the subseted data
+  mydata[c("soil","season")] <- lapply(mydata[c("soil","season")], function(x) as.factor(as.character(x)))
+
+  #Check consistency of data and remove inconsistent rows
+  if(crop[m] == "commonbean"){
+    #remove NA's in rankings for overall_performance vs local
+    keep <- !is.na(mydata$var_a) & !is.na(mydata$var_b) & !is.na(mydata$var_c)
+    mydata <- mydata[keep,]
+  }
+
+  if(crop[m] == "wheat"){
+    #for wheat
+    #remove items (varieties) tested in only 1 season
+    #here we remove items, not the entire row, rows with more than 1 NA will be removed next
+    rm_item <- as.data.frame(table(mydata$variety_a, mydata$season))
+    rm_item[rm_item > 0] <- 1
+    rm_item <- aggregate(rm_item[,"Freq"], by=list(rm_item[,"Var1"]), sum)
+    rm_item <- as.vector(c(as.character(rm_item[rm_item$x<2, 1 ]), "HUW468"))
+    
+    for(i in 1:length(rm_item)){
+      mydata$variety_a <- ifelse(mydata$variety_a == rm_item[i], NA, mydata$variety_a)
+      mydata$variety_b <- ifelse(mydata$variety_b == rm_item[i], NA, mydata$variety_b)
+      mydata$variety_c <- ifelse(mydata$variety_c == rm_item[i], NA, mydata$variety_c)
+    }
+    
+    #remove rankings with more than 1 NA per observer
+    keep <- NULL
+    for(i in 1:nrow(mydata)){
+      if(sum(is.na(mydata[i,c("variety_a","variety_b","variety_c")])) > 1) keep[i] <- FALSE else keep[i] <- TRUE
+    }
+    
+    #remove wrong evaluations best == worst in overall_performance
+    keep <- ifelse(mydata$best==mydata$worst, FALSE, keep)
+    
+    mydata <- mydata[keep, ]
+  }
+
+  #Check correlation between overall performance and yield
+  #this information is only available for wheat (IND) and common beans (NIC)
+  if(crop[m] != "durumwheat"){
+    #rankings from overall performance
+    overall <- mydata[,c("variety_a","variety_b","variety_c","characteristic","best","worst")]
+    #rankings from yield
+    yield <- mydata[,c("variety_a","variety_b","variety_c","yield","best_yield","worst_yield")]
+    #make sure that both datasets has the same names
+    names(yield) <- names(overall)
+
+    #remove NA's in yield
+    ykeep <- !is.na(yield$best) & !is.na(yield$worst) &  yield$best != yield$worst
+    #keep those rows with no NA's
+    yield <- yield[ykeep,]
+    overall <- overall[ykeep,]
+
+    #get rankings for yield
+    yield <- grouped_rankings(as.PL(yield, local = F, additional.rank = F ), seq_len(nrow(yield)))
+    yield <- yield[1:length(yield),, as.grouped_rankings = FALSE]
+
+    #get rankings for overall performance
+    overall <- grouped_rankings(as.PL(overall, local = F, additional.rank = F ), seq_len(nrow(overall)))
+    overall <- overall[1:length(overall),, as.grouped_rankings = FALSE]
+
+    #Calculate Kendall's correlation
+    #export this output
+    capture.output(kendallTau_plt(yield, overall)[1] * -1 , file = here(wd, output, "Kendall_tau_yield_vs_overall.txt"))
+  }
+
+  #Take explanatory variables in a separate dataframe
+  covar <- cbind(mydata [, c("season","soil","lat","lon","xy","yx","planting_day","planting_date")],
+                 mydata [, c(30:(ncol(mydata)-4))])
+  covar <- covar[,!names(covar) %in% c("maxNT_VEG","planting_date")]
+  covar <- covar[,!grepl("ETo_", names(covar))]
+  covar <- covar[,!grepl("sd", names(covar))]
+  covar <- covar[,!grepl("WB_", names(covar))]
+
+  #Check variance in explanatory variables
+  varout <- caret::nearZeroVar(covar)
+  cat("\n Removing these variables with near zero variance: \n",sort(names(covar)[varout]),"\n")
+  #Remove variables with near zero variance
+  covar <- covar[,-varout]
+  
+  #Take rankings from mydata 
+  if(crop[m] != "durumwheat"){
+    mydata <- cbind(mydata[, c("variety_a","variety_b","variety_c",
+                               "characteristic","best","worst",
+                               "overall_vs_local","var_a","var_b","var_c")])
+  }
+
+  if(crop[m] == "durumwheat"){
+    mydata <- cbind(mydata[, c("package","variety_a","variety_b","variety_c","variety_d",
+                               "rank_variety_a","rank_variety_b","rank_variety_c","rank_variety_d")])
+  }
+
+  #Take the number of rows in this dataset
+  n <- nrow(mydata)
+
+  #Generate a Plackett-Luce grouped rankings
+  ## for common beans we add the comparison with the local var as partial rankings
+  ## in this approach the three variaties from tricot are compared together in the same rank
+  ## then each variety is compared with local as an individual rank (additional.rank)
+  if(crop[m] == "commonbean"){
+    R <- as.PL(mydata, local = TRUE, additional.rank = TRUE )
+    G <- grouped_rankings(R, rep(seq_len(n), 4))
+  }
+  
+  ## information about local variety is not available for wheat
+  ## then a simple grouped rankings is created
+  if(crop[m] == "wheat"){
+    R <- as.PL(mydata, local = FALSE)
+    G <- grouped_rankings(R, seq_len(n))
+  }
+
+  ## durum data is another format
+  ## reorganise the dataset to convert into grouped rankings
+  if(crop[m] == "durumwheat"){
+
+    #convert data in long format
+    R <- bind_cols(melt(mydata[,c(1,2:5)], id.vars = c("package")),
+                   melt(mydata[,c(1,6:9)], id.vars = c("package")))
+    
+    #keep item names and rankings
+    R %<>% 
+      dplyr::select(c(1,3,6)) %>%
+      set_colnames(c("package","var","rank")) %>%
+      arrange(., package)
+    
+    #check the number of observations per variety
+    #remove those tested in less than 20 farms 
+    rmitem <- R %>% 
+      group_by(var) %>%  
+      count(var) %>%
+      filter(n < 20) %>%
+      dplyr::select(var) %>%
+      as.matrix() %>%
+      as.vector()
+
+    #take variety names
+    items <- sort(unique(R[,"var"]))
+    
+    #match those to remove
+    rmitem <- match(rmitem, items)
+
+    #convert dataset from long format into a sparsed matrix
+    R <- sparseMatrix(i = rep(1:n, each = 4),
+                      j = match(R[,"var"], items),
+                      x = R[,"rank"],
+                      dimnames = list(as.integer(unique(R[,"package"])), items ))
+    #sparsed matrix into a ordinary matrix from R package base
+    R <- as.matrix(R)
+    #remove varieties selected previously
+    R <- R[,-rmitem]
+    #remove rows with less tham 2 items
+    R <- R[-which(rowSums(R > 0) < 2), ]
+
+    #row names here are the packages codes, get this to merge rankings and explanatory variables
+    keep <- row.names(R)
+ 
+    #add package codes to covar
+    covar <- cbind(package = mydata[,"package"],covar)
+    
+    #subset covar
+    covar <- covar[covar$package %in% keep , ]
+    #reorder by packages
+    covar %<>% arrange(., package)
+
+    #define new n
+    n <- nrow(R)
+
+    #rename rows the rankings
+    row.names(R) <- 1:n
+    row.names(covar) <- row.names(R)
+
+    pack <- mydata[,"package"]
+    
+    #convert to a grouped rankings
+    G <- grouped_rankings(as.rankings(R), seq_len(n))
+
+    #remove packages codes
+    covar <- covar[,-1]
+    
+  }
+
+  cat("This analysis will use",n,"observations.\n")
+  
+  #Merge grouped rankings with explanatory variables
+  mydata <- cbind(G, covar)
+  
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  # Set parameters for forward selection ####
+  
+  #Define folds based on the season where this crop was evaluated
+  folds <- as.integer(as.factor(as.character(mydata$season)))
+  #number of folds
+  k <- max(folds)
+
+  #Calculate the weights of each season based on the square root of n observations per season divided by total n
+  wseason <- as.vector(summary(mydata$season))
+  wseason <- sqrt(wseason/n)
+  wseason <- wseason/sum(wseason)
+
+  #Perform a forward variable selection on explanatory variables and select those who better contribute to improve predictions between seasons
+  ## also compare the performance of explanatory variables with a null model 
+  ## to be able to predict a PLtree object from a null model we create a NULL variable (variable with no variance) and added to the main dataset
+  mydata$P1 <- 1
+
+  #Select explanatory variables
+  expvar <- names(mydata)[8:ncol(mydata)]
+
+  #Define PLT parameters 
+  ## minimum size of each node 
+  minsize <- round((n*0.3), -1)
+  ## if bonferroni correction will be applied
+  bonferroni <- TRUE
+  ## the significance level for spliting the data into nodes
+  alpha <- 0.01
+  ## pseudo rankings 
+  npseudo <- 1.5
+  #mean method
+  mean.method = "foldsize"
+  
+  #Define initial parameters for forward selection
+  ## baseline deviance
+  par_n <-  0
+  ## vector to keep best explanatory variables
+  var_keep <- NULL
+  ## if TRUE the routine will keep running, this parameters is updated at the end of each "while" routine
+  best <- TRUE
+  ## number of runs
+  runs <- FALSE
+  ## vector with best parameters (loglik, vars and lambda) in each run
+  best_parameters <- NULL
+
+  #Remove unused objects and reduce size of globalenv() in parallel export
+  rm(covar, yield, ykeep, overall)
+
+
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  # Run forward selection ####
+
+  # Create cluster to do parallelisation
+  cluster <- parallel::makeCluster(n_cpu)
+  doParallel::registerDoParallel(cluster)
+
+  # keep running until the model reach its best performance
+  while(best){
+
+    cat("\n Starting Forward Selection. Run ", sum(runs)+1, "\n Time: ", date(), "\n")
+
+    fs <- length(expvar)
+
+    #get predictions from nodes and put in matrix (foreach)
+    models <- foreach(i = 1:fs,
+                      .combine = acomb,
+                      .packages = c("PlackettLuce","psychotree"),
+                      .export = ls(globalenv())) %dopar% (
+                        f1(formula = as.formula(paste0("G ~ ", paste(unique(c(var_keep, expvar[i])), collapse = " + "))),
+                           d = mydata,
+                           k = k, folds = folds, minsize = minsize, npseudo = npseudo, mean.method = mean.method,
+                           alpha = alpha, bonferroni = bonferroni)
+                      )
+
+    #calculate Akaike weights along explanatory variables per season
+    AW <- as.matrix(models[,2:(k+1)])
+    AW <- apply(AW, 2, function(x) round(as.numeric(x), digits = 10))
+    AW <- apply(AW, 2, function(X) AkaikeWeights(X)[[3]] )
+
+    #then take the weighted average per season Stouffer's method with weights
+    for(i in seq_len(k)) AW[,i] <- AW[,i] * wseason[i]
+
+    #take the Stouffer's weighted mean
+    meanAW <- rowSums(AW)
+
+    #take estimators
+    estimators <- models[,(k+2):ncol(models)]
+    dimnames(estimators)[[2]] <- c("AIC","McFadden","r2ML","r2CU","kendallTau")
+
+    #take the model call from each model
+    call <- models[,1]
+
+    #take maximum parameter from Akaike weights
+    par_max <- max(meanAW)
+
+    #take the position of par_max in expvar vector
+    index_par_max <- which.max(as.numeric(estimators[,4]))#which.max(meanAW)
+
+    #Is par_max best (higher) than par_n?
+    best <- par_max > par_n #if not, the forward selection will stop
+
+    #if best, save the outputs
+    if(best){
+
+      #take the name of best variable
+      best_var <- expvar[index_par_max]
+      cat("### Best covariate found:", best_var, "\n")
+
+      #sum runs
+      runs <- c(runs, best)
+
+      #take outputs from this run and export to a .csv file
+      out <- as_tibble(cbind(call, models[,c(2:(k+1))], meanAW = meanAW, estimators))
+      names(out)[2:(k+1)] <- paste0(rep("Deviance",k), 1:k)
+
+      #remove best_var from this run
+      expvar <- expvar[!grepl(best_var, expvar)]
+
+      #remove null var from the first run, no longer necessary
+      expvar <- expvar[!grepl("P1", expvar)]
+
+      #keep this model for the next run
+      var_keep <- c(var_keep, best_var)
+
+      #add best model to the next round
+      expvar <- c(expvar, paste(var_keep, collapse = ' + '))
+
+      #change the base for par_n (minimun accepted value)
+      par_n <- par_max
+
+      #keep the best parameters form this run
+      best_parameters <- rbind(best_parameters, cbind(par_max, model = toString(var_keep)))
+
+      write.csv(out, here(wd, output, "model_parameters.csv" )  )
+      cat(" ####### End run", sum(runs), "\n" )
+    }
+
+  }
+
+  #Stop cluster connection
+  stopCluster(cluster)
+
+  #take the best model
+  best_model <- var_keep
+
+  #Save parameters used in this analysis as a .txt file
+  write.table(rbind(n = n, minsize = minsize, bonferroni = bonferroni,
+                    alpha = alpha, npseudo = npseudo, mean.method = mean.method,
+                    model = paste(best_model, collapse = " + ")),
+              file = here(wd, output, "PLT_parameters.txt" ))
+
+  cat("End Forward Selection. \n Time: ", date(), "\n Best model will use:",  best_model ,"\n")
+
+
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  # Run blocked cross-validation for the different model approaches ####
+  
+  # Define list of explanatory variables to use in each approach
+  attrib <- list(zero = c("P1"),
+                 desi = c("lon","lat","xy","yx","soil","season","planting_day"),
+                 clim = c(best_model),
+                 clsp = c(best_model, c("lon","lat","xy","yx","soil") ))
+
+  # Run the best model against the PLT-null, PLT-clim+loc and PLT-design
+  cat("Starting blocked cross-validation", date() ,"\n")
+
+  blockedfolds <-  matrix(NA, nrow = length(approach), ncol = (8+(k*6)),
+                          dimnames = list(seq_along(approach),
+                                          c("Approach","Model","AIC","Deviance","McFadden","r2ML","r2CU","kendallTau",
+                                            paste0(rep("AIC",times = k), 1:k),
+                                            paste0(rep("Deviance",times = k), 1:k),
+                                            paste0(rep("McFadden",times = k), 1:k), 
+                                            paste0(rep("r2ML",times = k), 1:k),
+                                            paste0(rep("r2CU",times = k), 1:k),
+                                            paste0(rep("kendallTau",times = k), 1:k))))
+
+  blockedfolds[,1] <- approach
+
+  # Run blocked cross-validation over approaches
+  for(a in 1:length(approach)){
+
+    cat("#### blocked cross-validation in", approach[a], "\n")
+
+    formula_a <- as.formula(paste0("G ~ ", paste(attrib[[a]], collapse = " + ") ))
+    
+    model <- crossvalidation_PLT(formula_a,
+                                 d = mydata, k = k, folds = folds, minsize = minsize,
+                                 alpha = alpha, bonferroni = bonferroni, npseudo = npseudo,
+                                 verbose = FALSE, mean.method = mean.method)
+    
+    estimators <- c(model$AIC, model$Deviance, model$McFadden, model$r2ML, model$r2CU, model$kendallTau, as.vector(model$estimators[,-4]))
+    
+    blockedfolds[a,3:ncol(blockedfolds)] <- estimators
+    
+    blockedfolds[a,2] <- paste0("G ~ ", paste(attrib[[a]], collapse = " + ") )
+
+  }
+
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  # Run average season using historical data ####
+
+  cat("Starting average season with blocked cross-validation", date() ,"\n")
+
+  #load climatology data
+  load(here(wd, paste0("input/", unique(df$country[df$crop==crop[m]]),"/", crop[m],"_climatology.RData")))
+  #define number of predictions to be generated n.years * n.estimated planting dates
+  npreds <- length(climatology) * length(climatology[[1]])
+
+  #list into array
+  nr <- nrow(climatology[[1]][[1]])
+  nc <- ncol(climatology[[1]][[1]])
+
+  climatology %<>%
+   unlist(.) %>%
+   array(., dim = c(nr, nc, npreds),
+         dimnames = list(1:nr, names(climatology[[1]][[1]]), 1:npreds ))
+
+  #durumwheat have a particular order, filter data to fit this order
+  if(crop[m]=="durumwheat"){
+
+    tf <- as.data.frame(cbind(pack, climatology[[1]][[1]]))
+
+    keep <- tf %<>%
+      filter(., pack %in% keep ) %>%
+      rownames_to_column() %>%
+      arrange(., pack) %>%
+      dplyr::select(1) %>%
+      as.matrix() %>%
+      as.vector()
+
+    rm(tf)
+    }
+
+
+  #matrix to keep results
+  avgseason <-  matrix(NA, nrow = npreds, ncol = (8+(k*6)),
+                       dimnames = list(seq_len(npreds),
+                                       c("Approach","Model","AIC","Deviance","McFadden","r2ML","r2CU","kendallTau",
+                                         paste0(rep("AIC",times = k), 1:k),
+                                         paste0(rep("Deviance",times = k), 1:k),
+                                         paste0(rep("McFadden",times = k), 1:k), 
+                                         paste0(rep("r2ML",times = k), 1:k),
+                                         paste0(rep("r2CU",times = k), 1:k),
+                                         paste0(rep("kendallTau",times = k), 1:k))))
+
+
+  pb <- txtProgressBar(min = 1, max = npreds, style = 3)
+
+  for(a in seq_len(npreds)){
+
+    #temporary dataframe with G and explanatory variables
+    a_df <- cbind(G, as.data.frame(climatology[keep, , a]))
+
+    model <- crossvalidation_PLT(as.formula(paste0("G ~ ", paste(attrib$clim, collapse = " + ") )),
+                                 d = a_df, k = k, folds = folds, minsize = minsize,
+                                 alpha = alpha, bonferroni = bonferroni, npseudo = npseudo,
+                                 verbose = FALSE, mean.method = mean.method)
+    
+    estimators <- c(model$AIC, model$Deviance, model$McFadden, model$r2ML, model$r2CU, model$kendallTau, as.vector(model$estimators[,-4]))
+    
+    avgseason[a,3:ncol(avgseason)] <- estimators
+    
+    setTxtProgressBar(pb, a)
+
+  }
+
+  close(pb)
+
+  cat("End of average season \n")
+
+  #export data
+  write.csv(avgseason, here(wd, output, "average_season.csv"), row.names = FALSE)
+
+  avgseason <- t(as.matrix(colMeans(avgseason), byrow = TRUE))
+  
+  avgseason[1:2] <-c("avgseason", "G ~ averageseason")
+
+  blockedfolds <- as.matrix(rbind(blockedfolds, avgseason))
+  
+  #write matrix as a .csv file
+  write.csv(blockedfolds, here(wd, output, "performance_PLT_blocked_crossvalidation.csv"), row.names = FALSE)
+  
+
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  # Run k-fold cross-validation for the different model approaches ####
+  
+  cat("Starting k-fold cross-validation",date(),"\n")
+  #Define number of folds
+  k <- 10
+  #Define samples
+  folds <- sample(rep(1:k, times = ceiling(n/k), length.out=n), replace=FALSE)
+
+  #matrix to keep the outputs
+  kfolds <-   matrix(NA, nrow = length(approach), ncol = (8+(k*6)),
+                     dimnames = list(seq_along(approach),
+                                     c("Approach","Model","AIC","Deviance","McFadden","r2ML","r2CU","kendallTau",
+                                       paste0(rep("AIC",times = k), 1:k),
+                                       paste0(rep("Deviance",times = k), 1:k),
+                                       paste0(rep("McFadden",times = k), 1:k), 
+                                       paste0(rep("r2ML",times = k), 1:k),
+                                       paste0(rep("r2CU",times = k), 1:k),
+                                       paste0(rep("kendallTau",times = k), 1:k))))
+  
+  kfolds[,1] <- approach
+
+  #run k-fold over approaches
+  for(a in 1:length(approach)){
+    cat("#### k-fold in", approach[a], "\n")
+
+    formula_a <- as.formula(paste0("G ~ ", paste(attrib[[a]], collapse = " + ") ))
+
+    model <- crossvalidation_PLT(formula_a,
+                                 d = mydata, k = k, folds = folds, minsize = minsize,
+                                 alpha = alpha, bonferroni = bonferroni, npseudo = npseudo,
+                                 verbose = FALSE)
+    
+    estimators <- c(model$AIC, model$Deviance, model$McFadden, model$r2ML, model$r2CU, model$kendallTau, as.vector(model$estimators[,-4]))
+    
+    kfolds[a,3:ncol(kfolds)] <- estimators
+    
+    kfolds[a,2] <- paste0("G ~ ", paste(attrib[[a]], collapse = " + ") )
+  }
+
+  #write matrix as a csv file
+  write.csv(kfolds, here(wd, output, "performance_PLT_10fold_crossvalidation.csv"), row.names = FALSE)
+  
+  
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  # Fit the climate model and generate Plackett-Luce charts ####
+
+  #Fit pltree with best climate model
+  cat("Fit pltree with best climate model \n")
+  tree <- pltree(as.formula(paste0(c("G ~ "), paste(attrib$clim, collapse = " + "))),
+                 data = mydata, alpha = alpha, minsize = minsize)
+
+  #export summary of fitted pltree
+  capture.output(tree, summary(tree), file = here(wd, output, "pltree_clim.txt") )
+
+  #extract the terminal nodes
+  nodes <- partykit::nodeids(tree, terminal = TRUE)
+
+  lims <- NULL
+  
+  #identify limits in error bars
+  for (j in seq_along(nodes)){
+
+    nj <- tree[[ nodes[j] ]]$node$info$object
+
+    lims <- nj %<>%
+      itempar(., vcov = TRUE, alias = TRUE) %>%
+      qvcalc::qvcalc.itempar(.) %>%
+      extract2(2) %>%
+      rbind(., lims )
+    
+  }
+
+  xmax <- round(max(lims[,"estimate"] + lims[,"quasiSE"]) + 0.01, digits = 2)
+  xmin <- round(min(lims[,"estimate"] - lims[,"quasiSE"]) - 0.01, digits = 2)
+
+  probs <- NULL
+  
+  #Generate plots with error bars using qvcal
+  for (j in seq_along(nodes)){
+
+    #Get node information
+    nj <- tree[[ nodes[j] ]]$node$info$object
+    #Get item names
+    items <- as.factor(c(names(tree[[nodes[j]]]$node$info$coefficients)))
+    
+    if(crop[m]=="wheat"){items <- as.factor(c("BAJ","CSW 16","CSW 18","DBW 17","DPW 621-50",
+                                    "HD 2733","HD 2824","HD 2894","HD 2932","HD 2967",	
+                                    "HD 2985",	"HI 1563 (Pusa Prachi)","HP1633","HW2045",	
+                                    "K 0307 (Shatabadi)", "K 9107 (Deva)","PBW 343",	
+                                    "PBW 502","PBW 550","RAJ 4120","WR 544 (Pusa Gold)"))}
+    
+    #Get number of observers in this node
+    nobs <- as.integer(tree[[nodes[j]]]$node$info$nobs)
+
+    #Calculate coefficients using qvcalc
+    qvcoeff <- nj %>%
+      itempar(., vcov = TRUE, alias = TRUE) %>%
+      qvcalc::qvcalc.itempar(.) %>%
+      extract2(2) %>%
+      as.matrix() %>%
+      as_tibble() %>%
+      mutate(items = items,
+             bmin = estimate-(quasiSE),
+             bmax = estimate+(quasiSE))
+
+    #Plot coefficients
+    plot<-ggplot(qvcoeff, aes(x=estimate, y=items)) +
+      geom_point(pch=21, size=3,fill="black",colour="black") +
+      geom_errorbarh(aes(xmin=bmin,
+                         xmax=bmax),
+                     colour="black",height = 0.17) +
+      geom_vline(xintercept = 1/length(items), colour="#E5E7E9", size = 0.5) +
+      theme_bw() +
+      scale_x_continuous(limits=c(0, xmax), breaks = seq(0,xmax,by=0.02) ) +
+      labs(x = NULL, y = NULL, title = paste0("Node ", nodes[j], " (n= ", nobs, ")")) +
+      theme(plot.title = element_text(size=17),
+            axis.text = element_text(size=12, colour="black"),
+            legend.text= element_text(size=12, colour="black"),
+            axis.text.x = element_text(size=17, angle = 0, hjust=0.5,vjust=1, face="plain"),
+            axis.text.y = element_text(size=17, angle = 0, hjust=1, vjust=0.5, face="plain"),
+            plot.background = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            axis.ticks.length=unit(.25, "cm"))
+
+    #Export plot
+    #define width and height
+    if(crop[m]=="durumwheat") h <- 55
+    if(crop[m]=="wheat") h <- 30
+    if(crop[m]=="commonbean") h <- 20
+
+    w <- 20
+
+    ggsave(here(wd, output, paste0("pltree_qvcalc_node_", nodes[j] , ".png")), plot = plot, dpi = 600,
+            width = w, height = h, units = "cm")
+    
+    qvcoeff$node <- nodes[j]
+    
+    probs <- rbind(probs, qvcoeff[,c(1:5,8)])
+    
+  }
+
+  #Export probabilities of winning per node
+  write_csv(probs, here(wd, output, "win_probabilies.csv"))
+
+  #Make a histogram with frequencies for the selected variable
+  breaks <- unclass(node_party(tree))$split$breaks
+  
+  list_histo <- hist(mydata[,best_model], breaks=n, freq=TRUE)
+  
+  h <- ggplot(mydata, aes(mydata[,best_model], fill = season)) +
+    geom_histogram(bins = 50) +
+    geom_vline(xintercept = breaks, col = "red") + 
+    labs(x = "Minimun night temperature (?C)", y = "Count") +
+    scale_fill_brewer(palette = "GnBu", direction = -1, name = "") +
+    scale_x_continuous(expand = expand_scale(mult = c(0, .05))) +
+    scale_y_continuous(expand = expand_scale(mult = c(0, .01)), limits=c(0, 100)) +
+    theme_classic() +
+    theme(axis.text = element_text(size=20, colour="black"),
+          axis.text.x = element_text(size=20, angle = 0, hjust=0.5,vjust=1, face="plain"),
+          axis.text.y = element_text(size=20, angle = 0, hjust=1, vjust=0.5, face="plain"),
+          axis.title=element_text(size=20,face="bold"),
+          axis.line = element_line(),
+          legend.position=c(.1, .8),
+          legend.text=element_text(size=20),
+          legend.background = element_rect(colour = NA),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.background = element_blank())
+    
+  ggsave(here(wd, output, "histogram.png"), plot = h, dpi = 600,
+         width = 25, height = 20, units = "cm")
+  
+  #Use historical data to get predictions using fitted PLT-clim model
+  avgpred <- array(NA, dim = c(n, length(items), npreds), dimnames = list(1:n, as.character(items), 1:npreds) )
+
+  for(i in seq_len(npreds)) {
+
+    clim_i <- as_tibble(climatology[ keep , , i])
+
+    avgpred[ , , i] <- predict(tree, newdata = clim_i)
+
+  }
+  
+  avgpred <- apply(avgpred, c(1,2), mean)
+
+  write.csv(avgpred, here(wd, output, "win_probabilities_average_season.csv"), row.names = FALSE)
+ 
+  
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  # Calculate worst regret ####
+  #Regret is difference with the best variety in each node
+  WR <- worstRegret(tree, avgpred)
+  
+  write.csv(WR, here(wd, output, "worst_regret.csv"))
+ 
+  
+  # Calculate reliability ####
+  if(crop[m]=="commonbean"){
+    reference <- c("INTA Matagalpa", "INTA Rojo")
+    alternative <- c("INTA Fuerte Sequia","INTA Centro Sur")
+  }
+  if(crop[m]=="durumwheat"){
+    reference <- c("Hitosa","Ude","Assassa")
+    alternative <- c("208279", "8034")
+  }
+  if(crop[m]=="wheat"){
+    reference <- c("HD2967")
+    alternative <- c("HD2733","K9107")
+  }
+  
+  
+  r <- reliability(tree, reference, alternative, xy = mydata[,c("lon","lat")])
+    
+  spplot(r)
+  
+  writeRaster(r, filename=here(wd, output, paste0("reliability_",gsub(c(",|[ ]"),"-", toString(reference)),"_vs_",
+                                                  gsub(c(",|[ ]"),"-", toString(alternative)),".tif") ) , format="GTiff", overwrite=TRUE)
+    
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  #-----------------------------------------
+  # Check if elevation play a role in the performance of varieties in Ethiopia ####
+  if(crop[m]=="durumwheat"){
+    nodes <- partykit::nodeids(tree, terminal = TRUE)
+
+    #get the estimates from nodes
+    node <- list()
+
+    for(i in seq_along(nodes)){
+      node[[i]] <- tree[[ nodes[i] ]]$node$info$object %>%
+        itempar(., vcov = TRUE, alias = TRUE) %>%
+        qvcalc::qvcalc.itempar(.) %>%
+        extract2(2) %>%
+        as.matrix() %>%
+        as_tibble() %>%
+        mutate(items = items)
+    }
+
+    node <- bind_cols(items = node[[1]]$items, n1 = node[[1]]$estimate, n2 = node[[2]]$estimate )
+
+    #read the passport data
+    pass <- read_csv(here(wd, "input/ETH/passportdata_eth.csv"))
+
+    pass %<>%
+      mutate(items = accession) %>%
+      inner_join(. , node, by = "items" ) %>%
+      filter(. , !is.na(x) & !is.na(y)) %>%
+      dplyr::select(. , items, x , y , n1, n2, adm1, year_charac)
+
+    #get the elevation from origin of items
+    #read the elevation data
+    #source http://gisweb.ciat.cgiar.org/TRMM/SRTM_Resampled_250m/
+    library(raster)
+
+    r <- stack(here(wd, "input/rasters/SRTM_NE_250m_TIF/SRTM_NE_250m.tif"))
+
+    e <- extract(r, pass[c("x","y")], buffer = 1000)
+
+    names(e) <- paste0(pass$items,".")
+
+    e <- unlist(e, use.names = T)
+
+    e <- as.data.frame(cbind(items = str_split(names(e), pattern = "[.]", simplify = T)[,1], elev = e))
+
+    rownames(e) <- 1:nrow(e)
+
+    #add to the main data
+    pass %<>%
+      inner_join(., e , by = "items", all.y= TRUE ) %>%
+      mutate(. , dif = n1 - n2,
+             group = ifelse(n1 >= mean(n1) & n2 <= mean(n2), 1,
+                            ifelse(n1 <= mean(n1) & n2 >= mean(n2), 2, NA)),
+             elev = as.numeric(as.character(elev)))
+
+    ttest <- with(pass,
+                  t.test(elev ~ group))
+
+  }
+
+
+  cat("################################## \n End analysis:", toupper(crop[m]) , " \n Time:", date() , "\n ################################## \n")
+  
+
+}

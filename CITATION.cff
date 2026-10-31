@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use these workflows, please cite them as below."
+title: "analysis-workflows: analytical approaches of the AgrDataSci team"
+type: software
+authors:
+  - family-names: "de Sousa"
+    given-names: "Kauê"
+    affiliation: "Bioversity International (CGIAR); University of Inland Norway"
+license: MIT
+repository-code: "https://github.com/AgrDataSci/analysis-workflows"
+version: "0.1.0"
+date-released: "2026-10-31"
+keywords:
+  - tricot
+  - citizen science
+  - Plackett-Luce
+  - on-farm experimentation
+  - reproducibility
+  - AI-ready documentation
