@@ -1,6 +1,6 @@
 ---
 name: analysis-workflows
-description: Use when analysing tricot, ClimMob, on-farm ranking, participatory variety selection or consumer and product concept testing data, or when asked which varieties are preferred, which traits drive preference, whether user groups differ, how climate shapes performance, whether on-farm and on-station results agree, or which concept consumers prefer.
+description: Use when analysing tricot, ClimMob, on-farm ranking, participatory variety selection or consumer and product concept testing data, or when asked which varieties are preferred, which traits drive preference, whether user groups differ, how climate shapes performance, whether on-farm and on-station results agree, which measured lab or station traits explain preference, or which concept consumers prefer.
 ---
 
 # Analytical approaches from Bioversity International and Wageningen University
@@ -24,6 +24,7 @@ Start from the user's question, not from a method name.
 | Do different groups of users prefer different varieties? | `use-cases/do-user-groups-prefer-different-varieties/` | `decisions/socioeconomic-heterogeneity.md` |
 | How do climate and environment shape performance? | `use-cases/how-does-climate-shape-performance/` | `decisions/climate-environment.md` |
 | Do on-farm and on-station results agree? | `use-cases/do-on-farm-and-on-station-results-agree/` | `decisions/genetic-gain.md` |
+| Which measured traits (lab or station) explain preference? | `use-cases/which-measured-traits-explain-preference/` | `decisions/trait-associations.md`, `decisions/genetic-gain.md` |
 | Which product concept do consumers prefer? | `use-cases/which-product-concept-do-consumers-prefer/` | `decisions/consumer-concept-testing.md` |
 
 When the question spans several rows, start with the ranking use case and add the others. When no row fits, say so, use the closest decision record as guidance, and label the approach as your own methodological inference.

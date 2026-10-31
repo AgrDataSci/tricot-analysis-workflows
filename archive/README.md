@@ -23,6 +23,7 @@ Status of all code in this folder is **historical**. It is not maintained, and s
 | potato-kang-et-al | trait correlations, Plackett-Luce trees with forward selection, on-station comparison |
 | rhomis | household indicators, gender, food security |
 | rtbfoods-consumer-testing | consumer testing |
+| rtbfoods-eba-nigeria | eba consumer testing in Nigeria, lab trait BLUPs, pladmm and pltree with trait covariates |
 | teff-elife | farmer data, environmental data |
 | tricot-rhomis | linking tricot and RHoMIS data |
 | wageningen-genetic-gain-cassava | heritability, genetic gain, on-farm vs on-station |

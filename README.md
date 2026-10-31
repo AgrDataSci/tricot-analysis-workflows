@@ -21,6 +21,7 @@ Start from your scientific question, not from a method name.
 | Do different groups of users prefer different varieties? | [do-user-groups-prefer-different-varieties](use-cases/do-user-groups-prefer-different-varieties/) | [socioeconomic heterogeneity](decisions/socioeconomic-heterogeneity.md) |
 | How do climate and environment shape performance? | [how-does-climate-shape-performance](use-cases/how-does-climate-shape-performance/) | [climate and environment](decisions/climate-environment.md) |
 | Do on-farm and on-station results agree? Is preference heritable? | [do-on-farm-and-on-station-results-agree](use-cases/do-on-farm-and-on-station-results-agree/) | [genetic gain](decisions/genetic-gain.md) |
+| Which measured traits (lab or station) explain preference? | [which-measured-traits-explain-preference](use-cases/which-measured-traits-explain-preference/) | [trait associations](decisions/trait-associations.md), [genetic gain](decisions/genetic-gain.md) |
 | Which product concept do consumers prefer? | [which-product-concept-do-consumers-prefer](use-cases/which-product-concept-do-consumers-prefer/) | [consumer and concept testing](decisions/consumer-concept-testing.md) |
 
 ## Structure
