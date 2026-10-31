@@ -45,7 +45,13 @@ These workflows document how our team has approached particular questions. They 
 
 ## Authors
 
-Kauê de Sousa, David Brown, Martina Occelli, Geon Kang, Joost van Heerwaarden, Hugo Dorado-Betancourt and Jacob van Etten.
+- Kauê de Sousa, Bioversity International and University of Inland Norway
+- David Brown, Cornell University
+- Martina Occelli, ETH Zurich
+- Geon Kang, Scuola Superiore Sant'Anna, Pisa
+- Joost van Heerwaarden, Wageningen University
+- Hugo Dorado-Betancourt, Wageningen University
+- Jacob van Etten, Bioversity International
 
 ## Citation and license
 
