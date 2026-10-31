@@ -38,7 +38,10 @@
 #   - A significant test means the preference structure differs, not that the
 #     difference matters for a decision. Look at the worth per cluster.
 #   - Clusters depend on the covariates chosen and their scaling. Report the
-#     covariates used.
+#     covariates used. With Gower distance a binary factor gets the same
+#     weight as a whole continuous covariate and often defines the partition
+#     on its own. Leave such factors out of the distance, or weight them
+#     (daisy weights argument), and use them to profile the clusters.
 #   - Statistical stability is necessary but not sufficient. Clusters must be
 #     interpretable and usable by the people who will act on them.
 

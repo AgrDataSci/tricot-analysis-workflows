@@ -29,9 +29,12 @@ dat = dat[rk$valid, ]
 R = rk$rankings
 
 # 2. Clusters from covariates only ----------------------------------------
-# skewed covariates are log-transformed so Gower distance is not dominated
-# by a few large farms
-X = dat[covars]
+# Choose the clustering covariates deliberately. Skewed covariates are
+# log-transformed so a few large farms do not dominate. Binary factors are
+# left out of the distance, because Gower distance gives a binary factor full
+# weight and the partition then reproduces it (see the tests). Household
+# head is used afterwards to describe the clusters
+X = dat[c("farm_size", "share_sold", "market_distance")]
 X$farm_size = log(X$farm_size)
 X$market_distance = log(X$market_distance)
 

@@ -7,7 +7,7 @@ input = c("overall_pos", "overall_neg")
 covars = c("farm_size", "share_sold", "market_distance", "household_head")
 
 prep = function(d) {
-  X = d[covars]
+  X = d[c("farm_size", "share_sold", "market_distance")]
   X$farm_size = log(X$farm_size)
   X$market_distance = log(X$market_distance)
   X
@@ -31,6 +31,15 @@ test_that("the two simulated segments are recovered and preferences differ", {
   het = preference_heterogeneity(R, group, nperm = 50)
   expect_lt(het$p_chisq, 0.001)
   expect_lt(het$p_permutation, 0.05)
+})
+
+test_that("a binary factor dominates Gower distance and hijacks the partition", {
+  dat = simulate_tricot()
+  X = prep(dat)
+  X$household_head = dat$household_head
+  cs = cluster_search(X, k = 2, nboot = 5)
+  expect_gt(adjusted_rand(cs$labels[["2"]], dat$household_head), 0.9)
+  expect_lt(adjusted_rand(cs$labels[["2"]], attr(dat, "segment")), 0.1)
 })
 
 test_that("no heterogeneity is detected when segments share preferences", {
