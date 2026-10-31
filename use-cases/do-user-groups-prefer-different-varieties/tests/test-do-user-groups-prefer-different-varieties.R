@@ -33,13 +33,37 @@ test_that("the two simulated segments are recovered and preferences differ", {
   expect_lt(het$p_permutation, 0.05)
 })
 
-test_that("a binary factor dominates Gower distance and hijacks the partition", {
+prep_all = function(d) {
+  X = prep(d)
+  X$household_head = d$household_head
+  X
+}
+
+test_that("the influence diagnostic flags a variable that hijacks the partition", {
   dat = simulate_tricot()
-  X = prep(dat)
-  X$household_head = dat$household_head
-  cs = cluster_search(X, k = 2, nboot = 5)
-  expect_gt(adjusted_rand(cs$labels[["2"]], dat$household_head), 0.9)
-  expect_lt(adjusted_rand(cs$labels[["2"]], attr(dat, "segment")), 0.1)
+  X = prep_all(dat)
+  pam2 = function(x) cluster::pam(cluster::daisy(x, metric = "gower"), k = 2,
+                                  diss = TRUE, cluster.only = TRUE)
+  g = pam2(X)
+  # Gower distance gives the binary factor full weight and PAM splits on it
+  expect_gt(adjusted_rand(g, dat$household_head), 0.9)
+  expect_warning(infl <- variable_influence(X, g, pam2), "driven by")
+  expect_true(infl$drives_partition[infl$variable == "household_head"])
+})
+
+test_that("variable selection recovers the segments with household head included", {
+  dat = simulate_tricot()
+  vs = cluster_varsel(prep_all(dat), k = 2:4)
+  expect_equal(vs$k, 2)
+  expect_gt(adjusted_rand(vs$labels, attr(dat, "segment")), 0.6)
+  expect_true("household_head" %in% vs$irrelevant)
+})
+
+test_that("FAMD scores cluster on the leading component", {
+  dat = simulate_tricot()
+  sc = famd_scores(prep_all(dat), ncp = 1)
+  g = cluster_search(sc, k = 2, nboot = 5, metric = "euclidean")$labels[["2"]]
+  expect_gt(adjusted_rand(g, attr(dat, "segment")), 0.6)
 })
 
 test_that("no heterogeneity is detected when segments share preferences", {

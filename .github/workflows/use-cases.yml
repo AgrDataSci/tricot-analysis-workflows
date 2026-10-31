@@ -48,6 +48,8 @@ jobs:
             any::nlme
             any::lme4
             any::cluster
+            any::VarSelLCM
+            any::FactoMineR
             github::AgrDataSci/gosset
             github::AgrDataSci/climatrends
 

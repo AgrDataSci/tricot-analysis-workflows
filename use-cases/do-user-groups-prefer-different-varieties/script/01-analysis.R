@@ -29,25 +29,54 @@ dat = dat[rk$valid, ]
 R = rk$rankings
 
 # 2. Clusters from covariates only ----------------------------------------
-# Choose the clustering covariates deliberately. Skewed covariates are
-# log-transformed so a few large farms do not dominate. Binary factors are
-# left out of the distance, because Gower distance gives a binary factor full
-# weight and the partition then reproduces it (see the tests). Household
-# head is used afterwards to describe the clusters
-X = dat[c("farm_size", "share_sold", "market_distance")]
+# All covariates enter, including the binary household head. Skewed
+# covariates are log-transformed so a few large farms do not dominate
+X = dat[covars]
 X$farm_size = log(X$farm_size)
 X$market_distance = log(X$market_distance)
 
+# 2a. Default, model-based clustering with variable selection. Variables
+# unrelated to the clusters are declared irrelevant and do not shape them
+vs = cluster_varsel(X, k = 2:5)
+print(vs$bic, digits = 4)
+cat("Chosen k:", vs$k, "\n")
+cat("Relevant variables:", paste(vs$relevant, collapse = ", "), "\n")
+cat("Irrelevant variables:", paste(vs$irrelevant, collapse = ", "), "\n")
+
+group = vs$labels
+cat("Smallest cluster share:", round(min(table(group)) / length(group), 2), "\n")
+
+# 2b. Gower distance and PAM, with the stability search, for comparison
 cs = cluster_search(X, k = 2:5, nboot = 30)
-
 print(cs$criteria, digits = 2)
-cat("Chosen k:", cs$k, "\n")
+gower = cs$labels[[as.character(if (is.na(cs$k)) 2 else cs$k)]]
 
-if (is.na(cs$k)) {
-  stop("no defensible cluster solution, report this rather than force one")
-}
+# 2c. FAMD components (eigenvalue above 1) and PAM, for comparison
+sc = famd_scores(X)
+cat("FAMD eigenvalues:", round(attr(sc, "eigenvalues"), 2), "\n")
+cs_f = cluster_search(sc, k = 2:5, nboot = 30, metric = "euclidean")
+famd = cs_f$labels[[as.character(if (is.na(cs_f$k)) 2 else cs_f$k)]]
 
-group = cs$labels[[as.character(cs$k)]]
+# 2d. Which variables drive each partition? A partition that reproduces a
+# single variable, or collapses when it is left out, is flagged
+infl_gower = suppressWarnings(variable_influence(X, gower, function(x) {
+  cluster::pam(cluster::daisy(x, metric = "gower"), k = length(unique(gower)),
+               diss = TRUE, cluster.only = TRUE)
+}))
+print(infl_gower, digits = 2)
+
+# agreement of each method with the simulated segments and with household
+# head, only possible with synthetic data
+comparison = data.frame(
+  method = c("VarSelLCM (default)", "Gower + PAM", "FAMD + PAM"),
+  k = c(vs$k, length(unique(gower)), length(unique(famd))),
+  ari_segments = c(adjusted_rand(vs$labels, segment),
+                   adjusted_rand(gower, segment),
+                   adjusted_rand(famd, segment)),
+  ari_household_head = c(adjusted_rand(vs$labels, dat$household_head),
+                         adjusted_rand(gower, dat$household_head),
+                         adjusted_rand(famd, dat$household_head)))
+print(comparison, digits = 2)
 
 print(cluster_profile(dat[covars], group), digits = 2)
 
@@ -68,12 +97,10 @@ wg = worth_by_group(R, group, ref = "Check")
 
 print(wg, digits = 2)
 
-# agreement with the simulated segments, only possible with synthetic data
-cat("Adjusted Rand index with the true segments:",
-    round(adjusted_rand(group, segment), 2), "\n")
 
 # 5. Outputs --------------------------------------------------------------
-utils::write.csv(cs$criteria, "output/cluster-criteria.csv", row.names = FALSE)
+utils::write.csv(vs$bic, "output/cluster-criteria.csv", row.names = FALSE)
+utils::write.csv(comparison, "output/method-comparison.csv", row.names = FALSE)
 utils::write.csv(cluster_profile(dat[covars], group), "output/cluster-profile.csv", row.names = FALSE)
 utils::write.csv(het, "output/preference-heterogeneity.csv", row.names = FALSE)
 utils::write.csv(wg, "output/worth-by-cluster.csv", row.names = FALSE)

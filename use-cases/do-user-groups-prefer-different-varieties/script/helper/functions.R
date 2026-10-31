@@ -89,6 +89,8 @@ adjusted_rand = function(a, b) {
 #' @param nboot integer, bootstrap resamples for stability
 #' @param min_share smallest acceptable cluster share
 #' @param min_stability smallest acceptable mean adjusted Rand index
+#' @param metric distance for cluster::daisy, "gower" for mixed data or
+#'   "euclidean" for component scores (see famd_scores)
 #' @param seed integer
 #' @return list with a table of criteria per k, the chosen k (or NA) and the
 #'   cluster labels for every k
@@ -97,9 +99,10 @@ cluster_search = function(covariates,
                           nboot = 30,
                           min_share = 0.10,
                           min_stability = 0.75,
+                          metric = "gower",
                           seed = 1) {
 
-  d = cluster::daisy(covariates, metric = "gower")
+  d = cluster::daisy(covariates, metric = metric)
   n = nrow(covariates)
 
   set.seed(seed)
@@ -117,7 +120,7 @@ cluster_search = function(covariates,
     # original labels of the same participants
     ari = vapply(seq_len(nboot), function(b) {
       i = sample.int(n, n, replace = TRUE)
-      db = cluster::daisy(covariates[i, , drop = FALSE], metric = "gower")
+      db = cluster::daisy(covariates[i, , drop = FALSE], metric = metric)
       lb = cluster::pam(db, k = kk, diss = TRUE, cluster.only = TRUE)
       adjusted_rand(lab[i], lb)
     }, numeric(1))
@@ -219,5 +222,120 @@ cluster_profile = function(covariates, group) {
   out = do.call("rbind", prof)
   names(out)[-1] = paste0("cluster_", names(out)[-1])
   out
+
+}
+
+
+#' Which variables drive the partition?
+#'
+#' Refits the clustering leaving out one variable at a time and compares each
+#' partition with the full one (adjusted Rand index), and compares the full
+#' partition with each categorical variable directly. A variable is flagged
+#' when leaving it out changes the solution completely, or when the clusters
+#' reproduce it almost exactly. This catches a single variable hijacking the
+#' partition, whatever clustering method is used.
+#'
+#' @param covariates data.frame used for clustering
+#' @param labels the full partition
+#' @param cluster_fun function(covariates) returning a partition with the
+#'   same number of clusters
+#' @param max_factor_ari flag a categorical variable reproduced above this
+#' @param min_loo_ari flag a variable whose removal drops agreement below this
+variable_influence = function(covariates, labels, cluster_fun,
+                              max_factor_ari = 0.8, min_loo_ari = 0.5) {
+
+  vars = names(covariates)
+
+  loo = vapply(vars, function(v) {
+    if (length(vars) < 2) return(NA_real_)
+    adjusted_rand(labels, cluster_fun(covariates[setdiff(vars, v)]))
+  }, numeric(1))
+
+  reproduced = vapply(vars, function(v) {
+    x = covariates[[v]]
+    if (is.numeric(x)) return(NA_real_)
+    adjusted_rand(labels, x)
+  }, numeric(1))
+
+  out = data.frame(variable = vars,
+                   ari_without = loo,
+                   ari_with_variable = reproduced,
+                   row.names = NULL)
+
+  out$drives_partition = (!is.na(out$ari_with_variable) &
+                            out$ari_with_variable > max_factor_ari) |
+    (!is.na(out$ari_without) & out$ari_without < min_loo_ari)
+
+  if (any(out$drives_partition)) {
+    warning("the partition is driven by: ",
+            paste(out$variable[out$drives_partition], collapse = ", "),
+            ". Check whether this is the structure you want, or use a ",
+            "method that weighs variables by relevance (cluster_varsel)",
+            call. = FALSE)
+  }
+
+  out
+
+}
+
+
+#' Model-based clustering of mixed data with variable selection
+#'
+#' Fits latent class models for numeric and categorical variables together
+#' (VarSelLCM::VarSelCluster) for each number of clusters, selects k by BIC,
+#' and declares each variable relevant or irrelevant to the clusters. An
+#' irrelevant variable does not shape the partition, so a binary factor that
+#' is unrelated to the segments cannot hijack it.
+#'
+#' @param covariates data.frame of numeric and factor columns
+#' @param k integer vector, numbers of clusters to compare
+#' @param seed integer
+#' @return list with the partition, the chosen k, BIC per k and the relevant
+#'   and irrelevant variables
+cluster_varsel = function(covariates, k = 2:5, seed = 1) {
+
+  set.seed(seed)
+
+  fits = lapply(k, function(g) {
+    VarSelLCM::VarSelCluster(covariates, gvals = g, vbleSelec = TRUE,
+                             crit.varsel = "BIC", nbcores = 1)
+  })
+
+  bic = vapply(fits, function(f) f@criteria@BIC, numeric(1))
+  best = fits[[which.max(bic)]]
+
+  labels = as.integer(best@partitions@zMAP)
+  relevant = best@model@names.relevant
+
+  list(labels = labels,
+       k = k[which.max(bic)],
+       bic = data.frame(k = k, BIC = bic),
+       relevant = relevant,
+       irrelevant = setdiff(names(covariates), relevant))
+
+}
+
+
+#' Clustering on components of a factor analysis of mixed data
+#'
+#' FAMD (FactoMineR) puts numeric and categorical variables on a common
+#' scale. Clustering then runs on the leading components with Euclidean
+#' distance. The number of components retained matters. Components carrying
+#' a single binary variable can still dominate when they are kept, so check
+#' the result with variable_influence().
+#'
+#' @param covariates data.frame of numeric and factor columns
+#' @param ncp integer or NULL. NULL keeps components with eigenvalue above 1
+#' @return data.frame of component scores, with the eigenvalues as attribute
+famd_scores = function(covariates, ncp = NULL) {
+
+  f = FactoMineR::FAMD(covariates, ncp = ncol(covariates) * 3, graph = FALSE)
+  eig = f$eig[, 1]
+
+  if (is.null(ncp)) ncp = max(1, sum(eig > 1))
+
+  scores = as.data.frame(f$ind$coord[, seq_len(ncp), drop = FALSE])
+  attr(scores, "eigenvalues") = eig
+  scores
 
 }
