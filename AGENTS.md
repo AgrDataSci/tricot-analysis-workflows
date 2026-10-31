@@ -4,7 +4,7 @@ This repository documents how the AgrDataSci team reasons with agricultural tria
 
 ## How to work with this repository
 
-1. Identify the user's scientific question first. Use the question table in `README.md` to find the relevant use case and decision record.
+1. Identify the user's scientific question first. Use the routing table in `SKILL.md` (or `README.md`) to find the relevant use case and decision record.
 2. Read the decision record in `decisions/` before using any code. It states the default method, the alternatives, and the limits of interpretation.
 3. Prefer code in `use-cases/` over code in `archive/`. Check the status label of each use case and report it to the user.
 4. Treat `archive/` as historical evidence of past reasoning. It may contain mistakes, deprecated packages (rgdal, rgeos, maptools, ReporteRs) and hard-coded paths. Generalize from current practice in `decisions/`, not from archived code.

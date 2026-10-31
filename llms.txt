@@ -1,0 +1,16 @@
+# Analytical approaches of the AgrDataSci team
+
+> Tested R workflows for analysing tricot, on-farm ranking and consumer concept data, each with the reasoning behind the method, its alternatives and its limits.
+
+Read SKILL.md before analysing data. It routes each question to a use case and decision record.
+
+## Core files
+
+- [SKILL.md](https://raw.githubusercontent.com/AgrDataSci/analysis-workflows/main/SKILL.md): question routing, procedure and boundaries
+- [AGENTS.md](https://raw.githubusercontent.com/AgrDataSci/analysis-workflows/main/AGENTS.md): rules for AI agents
+- [decisions/README.md](https://raw.githubusercontent.com/AgrDataSci/analysis-workflows/main/decisions/README.md): methodological decision records
+- [README.md](https://raw.githubusercontent.com/AgrDataSci/analysis-workflows/main/README.md): overview and use-case table
+
+## Related
+
+- [tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base): the evidence base on tricot and product testing

@@ -21,6 +21,7 @@ Start from your scientific question, not from a method name.
 
 - `decisions/` holds the methodological decision records. Each states the default approach, the alternatives, and what the results cannot support.
 - `use-cases/` holds generic, question-first workflows with synthetic data and tests. New use cases start from `use-cases/_template/`.
+- `SKILL.md` lets AI assistants use these workflows without cloning the repository. It routes each question to a use case and decision record. `llms.txt` lists the core files.
 - `archive/` holds the original project scripts from about ten years of work. They are kept for provenance and are not maintained.
 
 ## Status labels
