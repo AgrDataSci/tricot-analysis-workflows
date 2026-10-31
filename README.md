@@ -1,6 +1,6 @@
 # analysis-workflows
 
-The main analytical approaches of the 1000FARMS team, written so that researchers and AI agents can follow how we get from observations to scientific conclusions.
+The main analytical approaches used at Bioversity International and Wageningen University for tricot and on-farm ranking data, written so that researchers and AI agents can follow how we get from observations to scientific conclusions.
 
 This repository is the analysis layer of [ai-ready-documentation](https://github.com/AgrDataSci/ai-ready-documentation). The other layers answer what we know ([tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base)), what we observed ([tricot-data](https://github.com/AgrDataSci/tricot-data)) and how standard ClimMob reports are produced ([ClimMob-analysis](https://github.com/AgrDataSci/ClimMob-analysis)). This one explains how we reason with the data and why.
 
@@ -8,7 +8,7 @@ This repository is the analysis layer of [ai-ready-documentation](https://github
 
 1000FARMS is the Africa-wide on-farm trial network behind most of the data these workflows were built on. It runs decentralized on-farm testing with the tricot approach and ClimMob, with CGIAR centres and national agricultural research and extension systems (NARES), and it continues the development of ClimMob ([Quirós et al. 2024](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/quiros-2024-compag.md)). With the CGIAR Dryland Crops Program, it works to mainstream tricot into the CGIAR-NARES breeding network, from sampling and standard operating procedures to analysis, variety advancement and estimating genetic gain on farm ([1000FARMS 2025 report](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/1000farms-2025-report.md)). The team also refers to tricot trial data from before the project as 1000FARMS data, since it comes from the same network.
 
-These workflows record how the 1000FARMS team analyses that data, so partners and AI assistants can reuse the reasoning, not just the code. The trial data are published in [tricot-data](https://github.com/AgrDataSci/tricot-data) and the evidence base in [tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base).
+These workflows record how researchers at Bioversity International and Wageningen University analyse that data, so partners and AI assistants can reuse the reasoning, not just the code. The trial data are published in [tricot-data](https://github.com/AgrDataSci/tricot-data) and the evidence base in [tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base).
 
 ## How to use this repository
 

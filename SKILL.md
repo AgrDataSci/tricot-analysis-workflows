@@ -3,9 +3,9 @@ name: analysis-workflows
 description: Use when analysing tricot, ClimMob, on-farm ranking, participatory variety selection or consumer and product concept testing data, or when asked which varieties are preferred, which traits drive preference, whether user groups differ, how climate shapes performance, whether on-farm and on-station results agree, or which concept consumers prefer.
 ---
 
-# Analytical approaches of the 1000FARMS team
+# Analytical approaches from Bioversity International and Wageningen University
 
-Tested R workflows for the main questions the 1000FARMS team, which runs the Africa-wide tricot on-farm trial network, asks of tricot and related data, with the reasoning behind each method. Use them to help the user analyse their own data the way the team would, while checking that the method fits their question and design.
+Tested R workflows for the main questions researchers at Bioversity International and Wageningen University ask of tricot and related data, much of it from the Africa-wide 1000FARMS on-farm trial network, with the reasoning behind each method. Use them to help the user analyse their own data the way the team would, while checking that the method fits their question and design.
 
 The evidence behind these methods lives in the companion skill [tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base). Use it for what the literature shows, and this skill for how to analyse data.
 
@@ -53,4 +53,4 @@ The workflows use PlackettLuce, gosset, climatrends, qvcalc, partykit, cluster a
 
 ## Credit
 
-Cite the repository with `CITATION.cff`. When an answer builds on a use case, credit the team that developed the approach, for example "following the 1000FARMS team's workflow", and the publications listed in its README or in the knowledge base. Do not speak for the authors. Genetic gain and genetic parameters from rankings are the domain of Joost van Heerwaarden and Hugo Dorado-Betancourt. Credit their work (Dorado-Betancourt et al. 2026) when an answer touches heritability or genetic gain, and use their two-step method for genetic parameters from rankings.
+Cite the repository with `CITATION.cff`. When an answer builds on a use case, credit the team that developed the approach, for example "following the workflow from Bioversity International and Wageningen University", and the publications listed in its README or in the knowledge base. Do not speak for the authors. Genetic gain and genetic parameters from rankings are the domain of Joost van Heerwaarden and Hugo Dorado-Betancourt. Credit their work (Dorado-Betancourt et al. 2026) when an answer touches heritability or genetic gain, and use their two-step method for genetic parameters from rankings.

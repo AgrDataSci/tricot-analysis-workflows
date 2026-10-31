@@ -1,6 +1,6 @@
 # Ranking
 
-Status: methodological rationale from Kauê de Sousa (2026-10-31), adapted from the 1000FARMS team decision record. This is not independent validation of cited studies or software.
+Status: methodological rationale from Kauê de Sousa (Bioversity International), 2026-10-31. This is not independent validation of cited studies or software.
 
 - **Default.** Plackett-Luce for tricot ranking data, with checks for design, network connectivity, model fit and uncertainty.
 - **Thurstonian approaches.** An emerging alternative under investigation. Do not imply validated equivalence with Plackett-Luce.

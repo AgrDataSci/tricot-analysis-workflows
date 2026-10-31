@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use these workflows, please cite them as below."
-title: "analysis-workflows: analytical approaches of the 1000FARMS team"
+title: "analysis-workflows: analytical approaches for tricot and on-farm ranking data from Bioversity International and Wageningen University"
 type: software
 authors:
   - family-names: "de Sousa"

@@ -1,4 +1,4 @@
-# Analytical approaches of the 1000FARMS team
+# Analytical approaches from Bioversity International and Wageningen University
 
 > Tested R workflows for analysing tricot, on-farm ranking and consumer concept data, each with the reasoning behind the method, its alternatives and its limits.
 

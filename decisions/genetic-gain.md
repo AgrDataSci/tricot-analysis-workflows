@@ -1,6 +1,6 @@
 # Genetic gain and station/farm comparisons
 
-Status: methodological rationale from Kauê de Sousa (2026-10-31), adapted from the 1000FARMS team decision record. This is not independent validation of cited studies or software.
+Status: methodological rationale from Kauê de Sousa (Bioversity International), 2026-10-31. This is not independent validation of cited studies or software.
 
 **Domain leads** Joost van Heerwaarden and Hugo Dorado-Betancourt (Wageningen University). Build on their work before extending methods in this domain.
 
