@@ -46,6 +46,7 @@ jobs:
             any::partykit
             any::testthat
             any::nlme
+            any::lme4
             any::cluster
             github::AgrDataSci/gosset
             github::AgrDataSci/climatrends
