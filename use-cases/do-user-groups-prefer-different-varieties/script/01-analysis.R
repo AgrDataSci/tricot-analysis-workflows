@@ -51,6 +51,13 @@ group = cs$labels[[as.character(cs$k)]]
 
 print(cluster_profile(dat[covars], group), digits = 2)
 
+# The profile, the worth per cluster and the cluster criteria (written to
+# output/ below) can be given to an AI assistant to draft user personas, or
+# TPE descriptions for environmental clusters. Follow the rules in the README
+# section "From clusters to personas or TPE descriptions". Every statement
+# must trace to these numbers, and images must be AI-generated and labelled,
+# never real farmers' photos
+
 # 3. Does preference differ between clusters? -----------------------------
 het = preference_heterogeneity(R, group, nperm = 200)
 

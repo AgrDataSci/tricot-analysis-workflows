@@ -47,6 +47,7 @@ Follow `AGENTS.md`. In short:
 - Do not extrapolate beyond the conditions, attribute levels or genotypes that were tested.
 - Do not report split-half reliability of rankings as heritability.
 - Separate results, interpretation and your own inference.
+- When drafting user personas or TPE descriptions from clusters, follow the README section "From clusters to personas or TPE descriptions" in `use-cases/do-user-groups-prefer-different-varieties/`. Ground every claim in the output numbers, label fictional names as such, and suggest AI-generated, labelled images instead of real farmers' photos.
 
 ## Packages
 
