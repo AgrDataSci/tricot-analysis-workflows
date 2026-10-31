@@ -132,7 +132,10 @@ fit_climate_tree = function(R, covariates, alpha = 0.01, minsize = 100) {
 
   f = stats::as.formula(paste("G ~", paste(names(covariates), collapse = " + ")))
 
-  PlackettLuce::pltree(f, data = d, alpha = alpha, minsize = minsize)
+  # pltree() re-evaluates its control arguments by name, so pass the values
+  # themselves through do.call() rather than variables of this function
+  do.call(PlackettLuce::pltree,
+          list(formula = f, data = d, alpha = alpha, minsize = minsize))
 
 }
 

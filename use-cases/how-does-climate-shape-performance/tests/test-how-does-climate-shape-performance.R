@@ -12,8 +12,8 @@ ci = climate_indices(sim$temp, sim$rain, dat$planting, window)
 
 test_that("the phenology window matches the simulated flowering date", {
   expect_lt(max(abs(window - sim$truth$flowering)), 2)
-  # warmer plots flower earlier
-  expect_lt(stats::cor(window, dat$elevation), 0)
+  # cooler plots at higher elevation take longer to reach flowering
+  expect_gt(stats::cor(window, dat$elevation), 0)
 })
 
 test_that("phenology must be provided, not guessed", {
