@@ -1,8 +1,8 @@
 # Run the tests of this use case from the use-case folder
 #   Rscript tests/run-tests.R
 
-source("functions.R")
-source("data/simulate-data.R")
+source("script/helper/functions.R")
+source("script/helper/simulate-data.R")
 
 res = testthat::test_file("tests/test-do-user-groups-prefer-different-varieties.R",
                           reporter = "summary", stop_on_failure = TRUE)

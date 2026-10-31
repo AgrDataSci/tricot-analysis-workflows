@@ -4,15 +4,15 @@
 # Derived from: archive/rtbfoods-consumer-testing, archive/maize-concept-testing,
 #   archive/mip-concept-testing, archive/teff-elife
 #
-# Run from this folder with  Rscript analysis.R
+# Run from the use-case folder (open the .Rproj) with  Rscript script/01-analysis.R
 
 library("PlackettLuce")
 library("gosset")
 
-source("functions.R")
-source("data/simulate-data.R")
+source("script/helper/functions.R")
+source("script/helper/simulate-data.R")
 
-dir.create("outputs", showWarnings = FALSE)
+dir.create("output", showWarnings = FALSE)
 
 # 1. Read data ------------------------------------------------------------
 sim = simulate_concept_test()
@@ -58,8 +58,8 @@ pc = predict_concepts(mod, features, new, reference = "Concept D")
 print(pc, digits = 2)
 
 # 7. Outputs --------------------------------------------------------------
-utils::write.csv(ae, "outputs/attribute-effects.csv", row.names = FALSE)
-utils::write.csv(bg$effects, "outputs/attribute-effects-by-group.csv", row.names = FALSE)
-utils::write.csv(pc, "outputs/predicted-concepts.csv", row.names = FALSE)
+utils::write.csv(ae, "output/attribute-effects.csv", row.names = FALSE)
+utils::write.csv(bg$effects, "output/attribute-effects-by-group.csv", row.names = FALSE)
+utils::write.csv(pc, "output/predicted-concepts.csv", row.names = FALSE)
 
 sessionInfo()

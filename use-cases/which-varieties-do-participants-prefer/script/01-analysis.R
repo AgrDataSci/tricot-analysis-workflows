@@ -4,15 +4,15 @@
 # Derived from: archive/groundnut-tanzania, archive/nextgen-cassava and the
 #   ranking module of ClimMob-analysis
 #
-# Run from this folder with  Rscript analysis.R
+# Run from the use-case folder (open the .Rproj) with  Rscript script/01-analysis.R
 
 library("PlackettLuce")
 library("gosset")
 
-source("functions.R")
-source("data/simulate-data.R")
+source("script/helper/functions.R")
+source("script/helper/simulate-data.R")
 
-dir.create("outputs", showWarnings = FALSE)
+dir.create("output", showWarnings = FALSE)
 
 # 1. Read data ------------------------------------------------------------
 dat = simulate_tricot()
@@ -53,9 +53,9 @@ print(res[, c("item", "log_worth", "lower", "upper", "p_beat_check",
               "p_first", "p_top_k")], digits = 2, row.names = FALSE)
 
 # 6. Outputs --------------------------------------------------------------
-utils::write.csv(res, "outputs/variety-preference.csv", row.names = FALSE)
+utils::write.csv(res, "output/variety-preference.csv", row.names = FALSE)
 
-grDevices::png("outputs/log-worth.png", width = 1400, height = 1000, res = 200)
+grDevices::png("output/log-worth.png", width = 1400, height = 1000, res = 200)
 op = graphics::par(mar = c(4, 7, 1, 1))
 k = nrow(wt)
 graphics::plot(rev(wt$log_worth), seq_len(k), pch = 19, yaxt = "n",

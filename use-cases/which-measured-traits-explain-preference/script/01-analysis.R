@@ -4,16 +4,16 @@
 # Derived from: archive/rtbfoods-eba-nigeria (02_estimate_blups.R, 03_pladmm.R),
 #   archive/teff-elife/01_farmers_oa.R
 #
-# Run from this folder with  Rscript analysis.R
+# Run from the use-case folder (open the .Rproj) with  Rscript script/01-analysis.R
 
 library("PlackettLuce")
 library("gosset")
 library("lme4")
 
-source("functions.R")
-source("data/simulate-data.R")
+source("script/helper/functions.R")
+source("script/helper/simulate-data.R")
 
-dir.create("outputs", showWarnings = FALSE)
+dir.create("output", showWarnings = FALSE)
 
 # 1. Read data ------------------------------------------------------------
 sim = simulate_trait_study()
@@ -83,9 +83,9 @@ sens = covariate_sensitivity(R, te, traits, ndraw = 50)
 print(sens, digits = 2)
 
 # 7. Outputs --------------------------------------------------------------
-utils::write.csv(te$estimates, "outputs/trait-estimates.csv", row.names = FALSE)
-utils::write.csv(te$repeatability, "outputs/trait-repeatability.csv", row.names = FALSE)
-utils::write.csv(eff, "outputs/trait-effects.csv", row.names = FALSE)
-utils::write.csv(sens, "outputs/trait-effects-sensitivity.csv", row.names = FALSE)
+utils::write.csv(te$estimates, "output/trait-estimates.csv", row.names = FALSE)
+utils::write.csv(te$repeatability, "output/trait-repeatability.csv", row.names = FALSE)
+utils::write.csv(eff, "output/trait-effects.csv", row.names = FALSE)
+utils::write.csv(sens, "output/trait-effects-sensitivity.csv", row.names = FALSE)
 
 sessionInfo()

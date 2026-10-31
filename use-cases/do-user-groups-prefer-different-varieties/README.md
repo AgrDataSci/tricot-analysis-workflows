@@ -56,7 +56,7 @@ A significant test means the preference structure differs. Whether the differenc
 
 ## Files
 
-- `functions.R` holds the documented functions.
-- `analysis.R` is the workflow, run with `Rscript analysis.R` from this folder.
-- `data/simulate-data.R` simulates two segments with different covariates and preferences.
+- `script/helper/functions.R` holds the documented functions.
+- `script/01-analysis.R` is the workflow. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
+- `script/helper/simulate-data.R` simulates two segments with different covariates and preferences.
 - `tests/` holds the tests, run with `Rscript tests/run-tests.R`.

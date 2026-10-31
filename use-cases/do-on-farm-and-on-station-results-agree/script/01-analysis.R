@@ -4,16 +4,16 @@
 # Derived from: archive/wageningen-genetic-gain-cassava,
 #   archive/wageningen-genetic-gain-groundnut, archive/potato-kang-et-al
 #
-# Run from this folder with  Rscript analysis.R
+# Run from the use-case folder (open the .Rproj) with  Rscript script/01-analysis.R
 
 library("PlackettLuce")
 library("gosset")
 library("lme4")
 
-source("functions.R")
-source("data/simulate-data.R")
+source("script/helper/functions.R")
+source("script/helper/simulate-data.R")
 
-dir.create("outputs", showWarnings = FALSE)
+dir.create("output", showWarnings = FALSE)
 
 # 1. Read data ------------------------------------------------------------
 sim = simulate_trials()
@@ -41,12 +41,12 @@ print(ag$summary, digits = 2)
 print(ag$table, digits = 2, row.names = FALSE)
 
 # 5. Outputs --------------------------------------------------------------
-utils::write.csv(st$components, "outputs/station-variance-components.csv", row.names = FALSE)
-utils::write.csv(ag$table, "outputs/station-vs-farm.csv", row.names = FALSE)
+utils::write.csv(st$components, "output/station-variance-components.csv", row.names = FALSE)
+utils::write.csv(ag$table, "output/station-vs-farm.csv", row.names = FALSE)
 utils::write.csv(cbind(ag$summary, H2_station = st$H2, rel),
-                 "outputs/agreement-summary.csv", row.names = FALSE)
+                 "output/agreement-summary.csv", row.names = FALSE)
 
-grDevices::png("outputs/station-vs-farm.png", width = 1200, height = 1200, res = 200)
+grDevices::png("output/station-vs-farm.png", width = 1200, height = 1200, res = 200)
 graphics::plot(ag$table$blup, ag$table$log_worth, pch = 19,
                xlab = "Station yield BLUP", ylab = "On-farm log-worth")
 graphics::text(ag$table$blup, ag$table$log_worth, ag$table$genotype,

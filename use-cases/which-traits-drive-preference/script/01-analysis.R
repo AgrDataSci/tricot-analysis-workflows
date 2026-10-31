@@ -3,16 +3,16 @@
 # Decision record: decisions/trait-associations.md
 # Derived from: archive/groundnut-tanzania/02-kendall-partial-correlation-backward-selection.R
 #
-# Run from this folder with  Rscript analysis.R
+# Run from the use-case folder (open the .Rproj) with  Rscript script/01-analysis.R
 # Replace the synthetic data with your own tricot data in the same format.
 
 library("PlackettLuce")
 library("gosset")
 
-source("functions.R")
-source("data/simulate-data.R")
+source("script/helper/functions.R")
+source("script/helper/simulate-data.R")
 
-dir.create("outputs", showWarnings = FALSE)
+dir.create("output", showWarnings = FALSE)
 
 # 1. Read data ------------------------------------------------------------
 # synthetic data with a known answer, yield and taste drive preference,
@@ -71,12 +71,12 @@ by_group = do.call("rbind", lapply(names(groups), function(g) {
 print(by_group, digits = 2)
 
 # 6. Outputs --------------------------------------------------------------
-utils::write.csv(assoc, "outputs/trait-association.csv", row.names = FALSE)
-utils::write.csv(sel$selected, "outputs/backward-selection.csv", row.names = FALSE)
-utils::write.csv(by_group, "outputs/trait-association-by-group.csv", row.names = FALSE)
+utils::write.csv(assoc, "output/trait-association.csv", row.names = FALSE)
+utils::write.csv(sel$selected, "output/backward-selection.csv", row.names = FALSE)
+utils::write.csv(by_group, "output/trait-association-by-group.csv", row.names = FALSE)
 
 # marginal versus partial association, with bootstrap intervals
-grDevices::png("outputs/marginal-vs-partial.png", width = 1600, height = 900, res = 200)
+grDevices::png("output/marginal-vs-partial.png", width = 1600, height = 900, res = 200)
 op = graphics::par(mfrow = c(1, 2), mar = c(4, 6, 2, 1))
 k = nrow(assoc)
 lims = range(0, assoc[, -1], na.rm = TRUE)

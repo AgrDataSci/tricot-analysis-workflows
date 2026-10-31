@@ -58,7 +58,7 @@ On the synthetic data (900 plots along an elevation gradient, two heat-tolerant 
 
 ## Files
 
-- `functions.R` holds the documented functions.
-- `analysis.R` is the workflow, run with `Rscript analysis.R` from this folder.
-- `data/simulate-data.R` simulates the climate, phenology and rankings.
+- `script/helper/functions.R` holds the documented functions.
+- `script/01-analysis.R` is the workflow. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
+- `script/helper/simulate-data.R` simulates the climate, phenology and rankings.
 - `tests/` holds the tests, run with `Rscript tests/run-tests.R`.

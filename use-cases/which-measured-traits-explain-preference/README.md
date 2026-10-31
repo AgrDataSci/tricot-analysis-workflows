@@ -70,7 +70,7 @@ On the raw scale the soluble coefficient is 0.07 with BLUEs but 0.27 with BLUPs,
 
 ## Files
 
-- `functions.R` holds the documented functions.
-- `analysis.R` is the workflow, run with `Rscript analysis.R` from this folder.
-- `data/simulate-data.R` simulates lab and consumer data for the same genotypes.
+- `script/helper/functions.R` holds the documented functions.
+- `script/01-analysis.R` is the workflow. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
+- `script/helper/simulate-data.R` simulates lab and consumer data for the same genotypes.
 - `tests/` holds the tests, run with `Rscript tests/run-tests.R`.

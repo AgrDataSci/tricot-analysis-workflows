@@ -69,8 +69,8 @@ A selected trait is associated with overall preference conditional on the traits
 
 ## Files
 
-- `functions.R` holds the documented functions.
-- `analysis.R` is the workflow, run with `Rscript analysis.R` from this folder.
-- `data/simulate-data.R` simulates tricot data with a known answer.
+- `script/helper/functions.R` holds the documented functions.
+- `script/01-analysis.R` is the workflow. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
+- `script/helper/simulate-data.R` simulates tricot data with a known answer.
 - `tests/` holds the tests, run with `Rscript tests/run-tests.R`.
 - `references.bib` lists the references.

@@ -14,6 +14,10 @@
 library("PlackettLuce")
 library("gosset")
 
+source("script/helper/functions.R")
+
+dir.create("output", showWarnings = FALSE)
+
 # 1. Read data ------------------------------------------------------------
 dat = read.csv("data/example.csv")
 

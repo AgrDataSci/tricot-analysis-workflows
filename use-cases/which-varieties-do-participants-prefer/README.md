@@ -62,7 +62,7 @@ Worth is relative to the varieties in the trial. It is not yield, and it does no
 
 ## Files
 
-- `functions.R` holds the documented functions.
-- `analysis.R` is the workflow, run with `Rscript analysis.R` from this folder.
-- `data/simulate-data.R` simulates tricot data from a Plackett-Luce model with known worth.
+- `script/helper/functions.R` holds the documented functions.
+- `script/01-analysis.R` is the workflow. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
+- `script/helper/simulate-data.R` simulates tricot data from a Plackett-Luce model with known worth.
 - `tests/` holds the tests, run with `Rscript tests/run-tests.R`.

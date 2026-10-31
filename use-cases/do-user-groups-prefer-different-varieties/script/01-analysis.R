@@ -5,16 +5,16 @@
 #   archive/mip-concept-testing/02-clusters-identification.R,
 #   archive/osiris-1000farms/03-clusters-identification.R
 #
-# Run from this folder with  Rscript analysis.R
+# Run from the use-case folder (open the .Rproj) with  Rscript script/01-analysis.R
 
 library("PlackettLuce")
 library("gosset")
 library("cluster")
 
-source("functions.R")
-source("data/simulate-data.R")
+source("script/helper/functions.R")
+source("script/helper/simulate-data.R")
 
-dir.create("outputs", showWarnings = FALSE)
+dir.create("output", showWarnings = FALSE)
 
 # 1. Read data ------------------------------------------------------------
 dat = simulate_tricot()
@@ -66,9 +66,9 @@ cat("Adjusted Rand index with the true segments:",
     round(adjusted_rand(group, segment), 2), "\n")
 
 # 5. Outputs --------------------------------------------------------------
-utils::write.csv(cs$criteria, "outputs/cluster-criteria.csv", row.names = FALSE)
-utils::write.csv(cluster_profile(dat[covars], group), "outputs/cluster-profile.csv", row.names = FALSE)
-utils::write.csv(het, "outputs/preference-heterogeneity.csv", row.names = FALSE)
-utils::write.csv(wg, "outputs/worth-by-cluster.csv", row.names = FALSE)
+utils::write.csv(cs$criteria, "output/cluster-criteria.csv", row.names = FALSE)
+utils::write.csv(cluster_profile(dat[covars], group), "output/cluster-profile.csv", row.names = FALSE)
+utils::write.csv(het, "output/preference-heterogeneity.csv", row.names = FALSE)
+utils::write.csv(wg, "output/worth-by-cluster.csv", row.names = FALSE)
 
 sessionInfo()

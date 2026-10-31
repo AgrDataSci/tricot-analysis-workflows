@@ -5,7 +5,7 @@
 #   archive/osiris-1000farms/02-get-climate-data.R,
 #   archive/worldveg-choose-growth-thrive/03-get-climate-covar.R
 #
-# Run from this folder with  Rscript analysis.R
+# Run from the use-case folder (open the .Rproj) with  Rscript script/01-analysis.R
 #
 # With real data, daily climate comes from a documented source (for example
 # CHIRPS for rainfall and NASA POWER or AgERA5 for temperature, via the chirps
@@ -16,10 +16,10 @@ library("PlackettLuce")
 library("gosset")
 library("climatrends")
 
-source("functions.R")
-source("data/simulate-data.R")
+source("script/helper/functions.R")
+source("script/helper/simulate-data.R")
 
-dir.create("outputs", showWarnings = FALSE)
+dir.create("output", showWarnings = FALSE)
 
 # 1. Read data ------------------------------------------------------------
 sim = simulate_climate_trial()
@@ -82,13 +82,13 @@ print(ex, digits = 3)
 
 # 6. Outputs --------------------------------------------------------------
 utils::write.csv(cbind(dat[c("id", "planting")], window = window, ci),
-                 "outputs/climate-indices.csv", row.names = FALSE)
+                 "output/climate-indices.csv", row.names = FALSE)
 utils::write.csv(data.frame(item = rownames(worth), worth),
-                 "outputs/worth-by-node.csv", row.names = FALSE)
-utils::write.csv(ws, "outputs/window-sensitivity.csv", row.names = FALSE)
-utils::write.csv(ex, "outputs/extrapolation-check.csv", row.names = FALSE)
+                 "output/worth-by-node.csv", row.names = FALSE)
+utils::write.csv(ws, "output/window-sensitivity.csv", row.names = FALSE)
+utils::write.csv(ex, "output/extrapolation-check.csv", row.names = FALSE)
 
-grDevices::png("outputs/climate-tree.png", width = 2000, height = 1200, res = 150)
+grDevices::png("output/climate-tree.png", width = 2000, height = 1200, res = 150)
 plot(tree)
 grDevices::dev.off()
 

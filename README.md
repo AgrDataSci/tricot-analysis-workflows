@@ -27,9 +27,20 @@ Start from your scientific question, not from a method name.
 ## Structure
 
 - `decisions/` holds the methodological decision records. Each states the default approach, the alternatives, and what the results cannot support.
-- `use-cases/` holds generic, question-first workflows with synthetic data and tests. New use cases start from `use-cases/_template/`.
+- `use-cases/` holds generic, question-first workflows with synthetic data and tests. Each use case is its own RStudio project and follows the layout of [template-repo-data-analysis](https://github.com/AgrDataSci/template-repo-data-analysis) (`data/`, `script/`, `output/`), plus `tests/`. New use cases start from `use-cases/_template/`.
 - `SKILL.md` lets AI assistants use these workflows without cloning the repository. It routes each question to a use case and decision record. `llms.txt` lists the core files.
 - `archive/` holds the original project scripts from about ten years of work. They are kept for provenance and are not maintained.
+
+## Running a use case
+
+Open the use case's `.Rproj` file in RStudio, or set the working directory to its folder. Then
+
+```r
+source("script/01-analysis.R")   # the workflow
+source("tests/run-tests.R")      # the tests
+```
+
+From a terminal, run `Rscript script/01-analysis.R` and `Rscript tests/run-tests.R` from the use-case folder. GitHub Actions runs both for every use case at each push.
 
 ## Status labels
 

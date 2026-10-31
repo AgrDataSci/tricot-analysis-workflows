@@ -66,7 +66,10 @@ jobs:
         run: |
           set -o pipefail
           status=0
-          Rscript analysis.R 2>&1 | tee analysis.log || status=$?
+          script=script/01-analysis.R
+          # older layout, kept for use cases not yet moved to script/
+          [ -f "$script" ] || script=analysis.R
+          Rscript "$script" 2>&1 | tee analysis.log || status=$?
           echo "::notice title=analysis ${{ matrix.usecase }}::$(grep -v '^ *\[' analysis.log | sed '/^R version/,$d' | tail -c 3500 | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')"
           exit $status
 
@@ -74,4 +77,4 @@ jobs:
         if: always()
         with:
           name: outputs-${{ matrix.usecase }}
-          path: use-cases/${{ matrix.usecase }}/outputs/
+          path: use-cases/${{ matrix.usecase }}/output/
