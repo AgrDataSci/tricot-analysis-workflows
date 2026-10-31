@@ -1,6 +1,7 @@
 # Functions for the use case "Do on-farm and on-station results agree?"
 # Status: tested-on-synthetic-data (see tests/)
 # Decision record: decisions/genetic-gain.md
+# Domain leads: Joost van Heerwaarden and Hugo Dorado-Betancourt
 #
 # Scientific intent
 #   Check whether genotypes that perform well in on-station trials are the
@@ -35,9 +36,10 @@
 #     for unbalanced station data.
 #   - Genetic correlation between station traits and on-farm preference with
 #     a multivariate mixed model, when the design supports it.
-#   - Treating overall preference as a heritable trait. This is a research
-#     proposition. It needs a design that separates genetic, environmental,
-#     rater and measurement effects, and is not estimated here.
+#   - Genetic parameters from the rankings themselves, with the two-step
+#     approach of Dorado-Betancourt et al. (2026, Theor Appl Genet), developed
+#     by Hugo Dorado-Betancourt and Joost van Heerwaarden, the domain leads.
+#     Code at https://github.com/hdorado/tricot-ranking-analysis
 #
 # Limits
 #   - With few genotypes the correlation interval is wide. Report it.
