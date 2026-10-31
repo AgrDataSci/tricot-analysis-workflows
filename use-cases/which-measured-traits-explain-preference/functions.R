@@ -16,9 +16,12 @@
 #      design available. Region (or location) enters as a fixed effect when
 #      genotypes were measured in more than one region. Report the BLUE
 #      (adjusted genotype mean), the BLUP and the repeatability of the trait.
-#   3. Use BLUEs as covariates by default. BLUPs shrink each trait by a
-#      different amount, depending on its repeatability, which rescales its
-#      coefficient in pladmm.
+#   3. Use BLUEs as covariates by default. BLUPs shrink each trait towards
+#      zero by an amount that depends on its repeatability. On the raw scale
+#      this inflates the coefficient of poorly measured traits. After
+#      standardization, and with equal samples per genotype, BLUPs and BLUEs
+#      give the same model. With unequal samples, shrinkage differs between
+#      genotypes and the two disagree even after standardization.
 #   4. Screen covariates for collinearity, including traits derived from
 #      others by formula, and keep enough residual degrees of freedom.
 #   5. Standardize the covariates, so coefficients are per standard deviation.

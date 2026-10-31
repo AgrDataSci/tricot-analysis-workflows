@@ -61,13 +61,22 @@ print(eff, digits = 2)
 
 print(trait_model_adequacy(R, mod), digits = 3)
 
-# the same model with BLUPs, to show how shrinkage rescales coefficients
+# BLUPs against BLUEs. After standardization in a balanced design they give
+# the same model. On the raw scale, as when BLUPs enter pladmm without
+# standardization, shrinkage inflates the coefficient of poorly measured
+# traits such as soluble content
 mod_blup = fit_trait_model(R, covariate_table(te, "blup")[c("genotype", traits)], traits)
-eff_blup = trait_effects(mod_blup)
 
-print(merge(eff[c("trait", "estimate")],
-            stats::setNames(eff_blup[c("trait", "estimate")], c("trait", "estimate_blup")),
-            by = "trait"), digits = 2)
+raw = function(type) {
+  stats::coef(fit_trait_model(R, covariate_table(te, type, standardize = FALSE)[c("genotype", traits)], traits))[traits]
+}
+
+print(data.frame(trait = traits,
+                 standardized_blue = stats::coef(mod)[traits],
+                 standardized_blup = stats::coef(mod_blup)[traits],
+                 raw_blue = raw("blue"),
+                 raw_blup = raw("blup"),
+                 row.names = NULL), digits = 3)
 
 # 6. Stability under measurement error ------------------------------------
 sens = covariate_sensitivity(R, te, traits, ndraw = 50)

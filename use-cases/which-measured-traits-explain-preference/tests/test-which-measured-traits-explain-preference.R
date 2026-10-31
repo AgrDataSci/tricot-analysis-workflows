@@ -23,7 +23,8 @@ test_that("estimates are matched to genotypes by name", {
 
 test_that("BLUEs recover the simulated genotype values", {
   w = covariate_table(te, "blue")
-  truth = sim$truth$genotype[match(w$genotype, sim$truth$genotype), ]
+  truth = sim$truth$genotype[match(w$genotype, sim$truth$genotype$genotype), ]
+  expect_false(anyNA(w))
   for (v in c("hardness", "cohesiveness", "colour_l")) {
     expect_gt(stats::cor(w[[v]], truth[[v]]), 0.95)
   }
@@ -35,6 +36,20 @@ test_that("low repeatability is reported and BLUPs shrink that trait most", {
   e = te$estimates
   ratio = function(v) stats::sd(e$blup[e$trait == v]) / stats::sd(e$blue[e$trait == v])
   expect_lt(ratio("soluble"), ratio("hardness"))
+})
+
+test_that("standardized BLUPs equal BLUEs in a balanced design, raw ones do not", {
+  cov_blue = covariate_table(te, "blue")[c("genotype", traits)]
+  cov_blup = covariate_table(te, "blup")[c("genotype", traits)]
+  m1 = fit_trait_model(R, cov_blue, traits)
+  m2 = fit_trait_model(R, cov_blup, traits)
+  expect_equal(stats::coef(m1), stats::coef(m2), tolerance = 1e-2)
+  raw_blue = covariate_table(te, "blue", standardize = FALSE)[c("genotype", traits)]
+  raw_blup = covariate_table(te, "blup", standardize = FALSE)[c("genotype", traits)]
+  b1 = stats::coef(fit_trait_model(R, raw_blue, traits))["soluble"]
+  b2 = stats::coef(fit_trait_model(R, raw_blup, traits))["soluble"]
+  # shrinkage of the low-repeatability trait inflates its raw coefficient
+  expect_gt(abs(b2), abs(b1) * 1.5)
 })
 
 test_that("region confounded with genotype is reported", {
