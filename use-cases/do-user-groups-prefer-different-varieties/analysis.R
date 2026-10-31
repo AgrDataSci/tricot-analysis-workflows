@@ -1,0 +1,71 @@
+# Do different groups of users prefer different varieties?
+# Status: tested-on-synthetic-data
+# Decision record: decisions/socioeconomic-heterogeneity.md, decisions/ranking.md
+# Derived from: archive/groundnut-tanzania/05-data-analysis-clusters.R,
+#   archive/mip-concept-testing/02-clusters-identification.R,
+#   archive/osiris-1000farms/03-clusters-identification.R
+#
+# Run from this folder with  Rscript analysis.R
+
+library("PlackettLuce")
+library("gosset")
+library("cluster")
+
+source("functions.R")
+source("data/simulate-data.R")
+
+dir.create("outputs", showWarnings = FALSE)
+
+# 1. Read data ------------------------------------------------------------
+dat = simulate_tricot()
+
+items = c("item_A", "item_B", "item_C")
+input = c("overall_pos", "overall_neg")
+covars = c("farm_size", "share_sold", "market_distance", "household_head")
+
+rk = build_rankings(dat, items, input)
+segment = attr(dat, "segment")[rk$valid]
+dat = dat[rk$valid, ]
+R = rk$rankings
+
+# 2. Clusters from covariates only ----------------------------------------
+# skewed covariates are log-transformed so Gower distance is not dominated
+# by a few large farms
+X = dat[covars]
+X$farm_size = log(X$farm_size)
+X$market_distance = log(X$market_distance)
+
+cs = cluster_search(X, k = 2:5, nboot = 30)
+
+print(cs$criteria, digits = 2)
+cat("Chosen k:", cs$k, "\n")
+
+if (is.na(cs$k)) {
+  stop("no defensible cluster solution, report this rather than force one")
+}
+
+group = cs$labels[[as.character(cs$k)]]
+
+print(cluster_profile(dat[covars], group), digits = 2)
+
+# 3. Does preference differ between clusters? -----------------------------
+het = preference_heterogeneity(R, group, nperm = 200)
+
+print(het, digits = 3)
+
+# 4. Worth per cluster ----------------------------------------------------
+wg = worth_by_group(R, group, ref = "Check")
+
+print(wg, digits = 2)
+
+# agreement with the simulated segments, only possible with synthetic data
+cat("Adjusted Rand index with the true segments:",
+    round(adjusted_rand(group, segment), 2), "\n")
+
+# 5. Outputs --------------------------------------------------------------
+utils::write.csv(cs$criteria, "outputs/cluster-criteria.csv", row.names = FALSE)
+utils::write.csv(cluster_profile(dat[covars], group), "outputs/cluster-profile.csv", row.names = FALSE)
+utils::write.csv(het, "outputs/preference-heterogeneity.csv", row.names = FALSE)
+utils::write.csv(wg, "outputs/worth-by-cluster.csv", row.names = FALSE)
+
+sessionInfo()
