@@ -22,29 +22,43 @@ Tricot rankings as in the ranking use case, plus covariates measured independent
 
 - Covariates are measured before, or independently of, the rankings.
 - Each participant belongs to one group.
-- The clustering covariates are chosen deliberately and transformed where needed. Skewed variables are log-transformed.
+- The clustering covariates are chosen for the decision at hand, the users you want to target. Skewed variables are log-transformed.
 
 ## Approach
 
-1. Compute Gower distance on the clustering covariates and partition around medoids (`cluster::daisy`, `cluster::pam`).
-2. Search k = 2 to 5. For each k, record stability (mean adjusted Rand index over 30 bootstrap reclusterings), separation (average silhouette width) and the share of the smallest cluster.
-3. A solution is defensible when stability is at least 0.75 and the smallest cluster holds at least 10% of participants. Choose the most stable, then the best separated, then the smallest k. If none is defensible, the workflow stops and says so.
-4. Test whether preferences differ between clusters with `gosset::likelihood_ratio()` and with a permutation test that shuffles cluster labels and refits (200 permutations). The permutation test does not rely on the chi-squared approximation.
-5. Report worth per cluster and the cluster profiles, including covariates left out of the distance.
+1. Cluster participants on all chosen covariates, numeric and categorical together, with model-based clustering and variable selection (`VarSelLCM::VarSelCluster`). Each variable is declared relevant or irrelevant to the clusters, so a variable unrelated to the segments does not shape them.
+2. Compare k = 2 to 5 and choose k by ICL, which penalizes overlapping clusters. BIC is reported as well. It tends to split a segment into similar subgroups.
+3. Check the smallest cluster share (at least 10% by default) and which variables drive the partition (`variable_influence()`, see below).
+4. Test whether preferences differ between clusters with `gosset::likelihood_ratio()` and with a permutation test that shuffles cluster labels and refits (200 permutations). Then test every pair of clusters (`pairwise_heterogeneity()`). Clusters that do not differ in preference need no separate recommendation, even when their profiles differ.
+5. Report worth per cluster and the cluster profiles, including the variables declared irrelevant.
 
-## A pitfall the tests document
+## Choosing a clustering method for mixed data
 
-With Gower distance a binary factor gets the same weight as a whole continuous covariate. In the simulation, adding household head to the distance made PAM split participants into women and men (adjusted Rand index above 0.9 with household head) and lose the real segments completely. Keep such factors out of the distance, or down-weight them with the `weights` argument of `daisy`, and use them to describe the clusters.
+Socioeconomic data mix numeric variables (farm size, distance to market) with categorical ones (gender of the household head, group membership). How a method weighs them decides what the clusters mean. The workflow fits three methods on the same data and compares them. In the simulation, household head is unrelated to the segments and enters every method.
+
+| Method | k | Agreement with true segments (ARI) | Agreement with household head (ARI) |
+|---|---|---|---|
+| VarSelLCM, k by ICL (default) | 2 | 0.92 | 0.00 |
+| Gower distance + PAM | 2 | 0.00 | 1.00 |
+| FAMD components + PAM | 4 | 0.45 | 0.52 |
+
+- **VarSelLCM** recovers the segments and declares household head irrelevant.
+- **Gower distance with PAM** gives a binary variable the same weight as a whole continuous one, so it splits participants into women and men and misses the segments. Its stability is a perfect 1.00. A hijacked partition can be perfectly stable, so stability alone cannot detect the problem.
+- **FAMD followed by PAM** balances variable types, but keeping components with eigenvalue above 1 retains the household-head dimension (eigenvalue 1.00), which pulls the partition. Retaining only the leading component recovers the segments (tested), so the number of components matters.
+
+Whatever method you use, run `variable_influence()`. It refits leaving out one variable at a time and compares the clusters with each categorical variable. It flags household head in the Gower solution (agreement 1.00 with the clusters, 0.00 after removing it). Theory still comes first. A method can show that a variable is irrelevant to the structure, not whether it matters for the decision.
 
 ## Alternatives
 
 - Plackett-Luce trees (`PlackettLuce::pltree`) split on covariates using the rankings. They find groups that differ in preference but give hierarchical binary partitions that may not be actionable personas.
+- Gower distance with PAM and the stability search (`cluster_search()`), for numeric covariates only or with categorical variables down-weighted.
+- FAMD components with PAM (`famd_scores()`, `cluster_search(metric = "euclidean")`), retaining few components.
 - Latent class ranking models estimate groups and preferences jointly.
 - Covariate models of worth, when one covariate is the question.
 
 ## Interpretation
 
-On the synthetic data (800 participants, two segments with opposite preferences) k = 2 is the only defensible solution (stability 1.00, silhouette 0.57, smallest cluster 41%). k = 3 to 5 are unstable (stability 0.58 to 0.70). The two clusters match the true segments (adjusted Rand index 0.93). Cluster 1 has larger farms, sells 73% of the harvest and lives closer to market. Cluster 2 has smaller farms, sells 25% and lives farther away. Household head is balanced in both. Preferences clearly differ (deviance 498 on 7 df, permutation p = 0.005), and the worth per cluster shows the varieties ranked in nearly opposite order.
+On the synthetic data (800 participants, two segments with opposite preferences, household head unrelated), ICL selects k = 2. BIC would select k = 3, splitting the subsistence segment in two. The two clusters match the true segments (adjusted Rand index 0.92), and household head is declared irrelevant. Cluster 1 (59%) has smaller farms, sells 25% of the harvest and lives farther from market. Cluster 2 (41%) has larger farms, sells 73% and lives closer. Household head is balanced in both. Preferences clearly differ (deviance 486 on 7 df, permutation p = 0.005), and the worth per cluster ranks the varieties in nearly opposite order.
 
 A significant test means the preference structure differs. Whether the difference justifies separate recommendations depends on the worth per cluster and on whether the groups can be reached in practice.
 

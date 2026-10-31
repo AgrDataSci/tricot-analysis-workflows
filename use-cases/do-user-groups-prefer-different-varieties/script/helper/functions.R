@@ -9,18 +9,19 @@
 #   using the rankings, so the preference test is not circular.
 #
 # Approach
-#   1. Cluster participants on their covariates with Gower distance and
-#      partitioning around medoids (cluster::daisy, cluster::pam), which
-#      handles mixed numeric and categorical data.
-#   2. Search k = 2 to 5 and judge each solution on stability (bootstrap
-#      adjusted Rand index), separation (average silhouette width) and
-#      representation (size of the smallest cluster).
-#   3. Choose the most stable defensible k, or report that none is defensible.
-#   4. Test whether one Plackett-Luce model for everyone fits worse than one
+#   1. Cluster participants on numeric and categorical covariates together
+#      with model-based clustering and variable selection (cluster_varsel,
+#      VarSelLCM), choosing k by ICL. Variables unrelated to the clusters are
+#      declared irrelevant and do not shape them.
+#   2. Check which variables drive the partition (variable_influence), and
+#      the size of the smallest cluster.
+#   3. Test whether one Plackett-Luce model for everyone fits worse than one
 #      model per cluster, with the likelihood-ratio test
 #      (gosset::likelihood_ratio) and a permutation test that does not rely
-#      on the chi-squared approximation.
-#   5. Report worth per cluster and the cluster profiles.
+#      on the chi-squared approximation, then test every pair of clusters.
+#   4. Report worth per cluster and the cluster profiles.
+#   Gower distance with PAM (cluster_search) and FAMD components
+#   (famd_scores) are kept for comparison and for numeric-only data.
 #
 # Assumptions
 #   - Covariates are measured before or independently of the rankings.
@@ -39,9 +40,8 @@
 #     difference matters for a decision. Look at the worth per cluster.
 #   - Clusters depend on the covariates chosen and their scaling. Report the
 #     covariates used. With Gower distance a binary factor gets the same
-#     weight as a whole continuous covariate and often defines the partition
-#     on its own. Leave such factors out of the distance, or weight them
-#     (daisy weights argument), and use them to profile the clusters.
+#     weight as a whole continuous covariate and can define the partition on
+#     its own, with perfect stability. Check with variable_influence().
 #   - Statistical stability is necessary but not sufficient. Clusters must be
 #     interpretable and usable by the people who will act on them.
 
