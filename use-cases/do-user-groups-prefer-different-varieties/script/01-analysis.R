@@ -11,6 +11,7 @@ library("PlackettLuce")
 library("gosset")
 library("cluster")
 library("VarSelLCM")
+library("FactoMineR")
 
 source("script/helper/functions.R")
 source("script/helper/simulate-data.R")
