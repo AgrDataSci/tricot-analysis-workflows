@@ -36,6 +36,10 @@ Every use case carries one label.
 
 These workflows document how our team has approached particular questions. They are methodological guidance, not mandatory procedures, and they do not prove that a method is optimal for every question. Users and AI agents should check the assumptions, consider the alternatives, and adapt the analysis to their own question and data. AI agents should also read [AGENTS.md](AGENTS.md).
 
+## Authors
+
+Kauê de Sousa, David Brown, Martina Occelli, Geon Kang, Joost van Heerwaarden, Hugo Dorado-Betancourt and Jacob van Etten.
+
 ## Citation and license
 
 Cite this repository using [CITATION.cff](CITATION.cff). Code and documentation are released under the [MIT License](LICENSE).
