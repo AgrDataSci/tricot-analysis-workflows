@@ -11,7 +11,7 @@ Start from your scientific question, not from a method name.
 | Your question | Use case | Decision record |
 |---|---|---|
 | Which varieties do participants prefer, and how sure are we? | coming soon | [ranking](decisions/ranking.md) |
-| Which traits drive overall preference? | coming soon | [trait associations](decisions/trait-associations.md) |
+| Which traits drive overall preference? | [which-traits-drive-preference](use-cases/which-traits-drive-preference/) | [trait associations](decisions/trait-associations.md) |
 | Do different groups of users prefer different varieties? | coming soon | [socioeconomic heterogeneity](decisions/socioeconomic-heterogeneity.md) |
 | How do climate and environment shape performance? | coming soon | [climate and environment](decisions/climate-environment.md) |
 | Do on-farm and on-station results agree? Is preference heritable? | coming soon | [genetic gain](decisions/genetic-gain.md) |
