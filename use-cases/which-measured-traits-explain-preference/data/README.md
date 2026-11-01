@@ -1,0 +1,5 @@
+# Data
+
+`script/helper/simulate-data.R` generates lab measurements and consumer rankings for 14 genotypes. Each genotype has 3 lab samples in each of two regions, and region shifts every trait. The measured traits are hardness, cohesiveness, springiness, colour (L*) and soluble content. Soluble content is measured with much more noise, so its repeatability is low. Gumminess and chewiness are computed from the other traits, as in texture profile analysis. Consumer log-worth is 0.8 cohesiveness − 0.6 hardness + 0.4 colour on standardized genotype values. Springiness and soluble content have no effect. 900 consumers each rank three genotypes for taste. Lab rows are shuffled, as lab sheets often are. With `region_crossed = FALSE` each genotype is measured in one region only.
+
+To use your own data, place it in this folder, document it here (variables, units, source and licence), and replace the simulation call in `script/01-analysis.R` with a call that reads it.

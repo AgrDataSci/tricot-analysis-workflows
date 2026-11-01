@@ -1,6 +1,6 @@
 # Socioeconomic heterogeneity
 
-Status: methodological rationale from Kauê de Sousa (2026-10-31), adapted from the AgrDataSci decision record. This is not independent validation of cited studies or software.
+Status: methodological rationale from Kauê de Sousa (Bioversity International), 2026-10-31. This is not independent validation of cited studies or software.
 
 - There is no universal preferred method. Choose among subgroup analyses, trees, clustering, covariate models and other defensible methods according to the study goal.
 - Goals include explaining heterogeneity, defining breeding target users and making differentiated recommendations. Do not conflate them.

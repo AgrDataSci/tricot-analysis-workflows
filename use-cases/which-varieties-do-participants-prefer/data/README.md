@@ -1,0 +1,5 @@
+# Data
+
+`script/helper/simulate-data.R` generates 600 participants ranking three of 10 varieties each. Choices follow the Plackett-Luce model exactly (log-worth plus Gumbel noise). The check is a middle-of-the-range variety. The true log-worth relative to the check is stored in `attr(dat, "truth")`.
+
+To use your own data, place it in this folder, document it here (variables, units, source and licence), and replace the simulation call in `script/01-analysis.R` with a call that reads it.

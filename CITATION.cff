@@ -1,17 +1,40 @@
 cff-version: 1.2.0
 message: "If you use these workflows, please cite them as below."
-title: "analysis-workflows: analytical approaches of the AgrDataSci team"
+title: "tricot-analysis-workflows: analytical approaches for tricot and on-farm ranking data from Bioversity International and Wageningen University"
 type: software
 authors:
   - family-names: "de Sousa"
     given-names: "Kauê"
     affiliation: "Bioversity International (CGIAR); University of Inland Norway"
+    orcid: "https://orcid.org/0000-0002-7571-7845"
+  - family-names: "Brown"
+    given-names: "David"
+    affiliation: "Cornell University"
+    orcid: "https://orcid.org/0000-0003-2859-1618"
+  - family-names: "Occelli"
+    given-names: "Martina"
+    affiliation: "ETH Zurich"
+  - family-names: "Kang"
+    given-names: "Geon"
+    affiliation: "Scuola Superiore Sant'Anna, Pisa"
+  - family-names: "van Heerwaarden"
+    given-names: "Joost"
+    affiliation: "Wageningen University"
+    orcid: "https://orcid.org/0000-0002-4959-3914"
+  - family-names: "Dorado-Betancourt"
+    given-names: "Hugo"
+    affiliation: "Wageningen University"
+  - family-names: "van Etten"
+    given-names: "Jacob"
+    affiliation: "Bioversity International (CGIAR)"
+    orcid: "https://orcid.org/0000-0001-7554-2558"
 license: MIT
-repository-code: "https://github.com/AgrDataSci/analysis-workflows"
+repository-code: "https://github.com/AgrDataSci/tricot-analysis-workflows"
 version: "0.1.0"
 date-released: "2026-10-31"
 keywords:
   - tricot
+  - 1000FARMS
   - citizen science
   - Plackett-Luce
   - on-farm experimentation

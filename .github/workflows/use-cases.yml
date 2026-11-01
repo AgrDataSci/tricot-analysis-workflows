@@ -1,0 +1,82 @@
+name: use-cases
+
+on:
+  push:
+    paths: ["use-cases/**", ".github/workflows/use-cases.yml"]
+  pull_request:
+    paths: ["use-cases/**", ".github/workflows/use-cases.yml"]
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      usecases: ${{ steps.list.outputs.usecases }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        shell: bash
+        run: |
+          list=$(find use-cases -mindepth 1 -maxdepth 1 -type d ! -name '_*' -printf '"%f",' | sed 's/,$//')
+          echo "usecases=[$list]" >> "$GITHUB_OUTPUT"
+
+  run:
+    needs: discover
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        usecase: ${{ fromJSON(needs.discover.outputs.usecases) }}
+    defaults:
+      run:
+        working-directory: use-cases/${{ matrix.usecase }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # one shared set of dependencies for all use cases
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::PlackettLuce
+            any::qvcalc
+            any::partykit
+            any::testthat
+            any::nlme
+            any::lme4
+            any::cluster
+            any::VarSelLCM
+            any::FactoMineR
+            github::AgrDataSci/gosset
+            github::AgrDataSci/climatrends
+
+      - name: Tests
+        shell: bash
+        run: |
+          set -o pipefail
+          Rscript tests/run-tests.R 2>&1 | tee tests.log || {
+            echo "::error title=tests ${{ matrix.usecase }}::$(tail -c 3500 tests.log | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')"
+            exit 1
+          }
+
+      - name: Analysis
+        if: always()
+        shell: bash
+        run: |
+          set -o pipefail
+          status=0
+          script=script/01-analysis.R
+          # older layout, kept for use cases not yet moved to script/
+          [ -f "$script" ] || script=analysis.R
+          Rscript "$script" 2>&1 | tee analysis.log || status=$?
+          echo "::notice title=analysis ${{ matrix.usecase }}::$(grep -v '^ *\[' analysis.log | sed '/^R version/,$d' | tail -c 3500 | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')"
+          exit $status
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: outputs-${{ matrix.usecase }}
+          path: use-cases/${{ matrix.usecase }}/output/

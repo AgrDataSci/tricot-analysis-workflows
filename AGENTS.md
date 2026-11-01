@@ -1,13 +1,13 @@
 # Instructions for AI agents
 
-This repository documents how the AgrDataSci team reasons with agricultural trial and survey data. Use it to understand and adapt our approaches, not to copy them blindly.
+This repository documents how researchers at Bioversity International and Wageningen University reason with agricultural trial and survey data. Use it to understand and adapt our approaches, not to copy them blindly.
 
 ## How to work with this repository
 
-1. Identify the user's scientific question first. Use the question table in `README.md` to find the relevant use case and decision record.
-2. Read the decision record in `decisions/` before using any code. It states the default method, the alternatives, and the limits of interpretation.
-3. Prefer code in `use-cases/` over code in `archive/`. Check the status label of each use case and report it to the user.
-4. Treat `archive/` as historical evidence of past reasoning. It may contain mistakes, deprecated packages (rgdal, rgeos, maptools, ReporteRs) and hard-coded paths. Generalize from current practice in `decisions/`, not from archived code.
+1. Identify the user's scientific question first. Use the routing table in `SKILL.md` (or `README.md`) to find the relevant use case and decision record.
+2. Read the decision record in `decisions/` before proposing any method or using any code. It states the default method, the alternatives, and the limits of interpretation. Do not propose a workflow of your own before reading it.
+3. Work from `use-cases/`. They are the curated, tested implementations of each approach. Check the status label of each use case and report it to the user.
+4. Do not open, audit, run, adapt or recommend code from `archive/` unless the user explicitly asks for it. The archive is a historical record for people, kept for provenance. It may contain mistakes, deprecated packages (rgdal, rgeos, maptools, ReporteRs) and hard-coded paths. Never suggest reviewing archived scripts as a next step.
 
 ## Rules
 
@@ -18,6 +18,8 @@ This repository documents how the AgrDataSci team reasons with agricultural tria
 - Rankings alone do not establish adoption, market potential or causal effects of climate. State this when relevant.
 - When metadata are missing (observer, instrument, scale, timing, units, phenology, planting dates), ask the user rather than assume.
 - When no defensible answer exists, say so.
+- Never show illustrative or hypothetical numbers (example cluster profiles, effect sizes, worth estimates) as if they described the user's data. Describe what the analysis would produce, not invented values.
+- Before planning an analysis of a specific crop, check whether its data exist in [tricot-data](https://github.com/AgrDataSci/tricot-data) (`data/aa-available-datasets.csv`) and what the [tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base) already reports for that crop. Use those datasets, not examples from other crops.
 
 ## Conventions for new code
 

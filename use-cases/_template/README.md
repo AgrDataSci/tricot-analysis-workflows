@@ -36,6 +36,28 @@ What the results support, and what they do not.
 
 Known weaknesses and open questions.
 
+## Folder structure
+
+The layout follows [template-repo-data-analysis](https://github.com/AgrDataSci/template-repo-data-analysis), with a `tests/` folder added.
+
+```text
+<use-case>/
+├── <use-case>.Rproj          # open in RStudio, sets the working directory here
+├── README.md                 # this file
+├── data/                     # input data, or a README describing it
+├── script/
+│   ├── 01-analysis.R         # the workflow
+│   └── helper/
+│       ├── functions.R       # documented functions
+│       └── simulate-data.R   # synthetic data with a known answer
+├── tests/
+│   └── run-tests.R           # Rscript tests/run-tests.R
+├── output/                   # results, not tracked by git
+└── references.bib
+```
+
+All paths are relative to the use-case folder. Rename `_template.Rproj` when you copy this folder.
+
 ## References
 
 See `references.bib`.
