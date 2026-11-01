@@ -7,16 +7,10 @@ author:
     correspondingauthor: true
   - name: Brayden Youngberg
     affiliation: c
-  - name: David Brown
-    affiliation: d
-  - name: Martina Occelli
-    affiliation: e
-  - name: Geon Kang
-    affiliation: f
   - name: Joost van Heerwaarden
-    affiliation: g
+    affiliation: d
   - name: Hugo Dorado-Betancourt
-    affiliation: g
+    affiliation: d
   - name: Jacob van Etten
     affiliation: c
 address:
@@ -32,18 +26,6 @@ address:
     organization: Bioversity International
     country: France
   - code: d
-    organization: Cornell University
-    city: Ithaca
-    country: United States
-  - code: e
-    organization: ETH Zurich
-    city: Zurich
-    country: Switzerland
-  - code: f
-    organization: Scuola Superiore Sant'Anna
-    city: Pisa
-    country: Italy
-  - code: g
     organization: Wageningen University and Research
     city: Wageningen
     country: The Netherlands
@@ -71,7 +53,7 @@ output:
 
 # Suggested citation
 
-> de Sousa, K.; Youngberg, B.; Brown, D.; Occelli, M.; Kang, G.; van Heerwaarden, J.; Dorado-Betancourt, H.; van Etten, J. (2026) AI-ready analytical workflows for product testing with users in agriculture. Version 0.1.0. <https://github.com/AgrDataSci/tricot-analysis-workflows>.
+> de Sousa, K.; Youngberg, B.; van Heerwaarden, J.; Dorado-Betancourt, H.; van Etten, J. (2026) AI-ready analytical workflows for product testing with users in agriculture. Version 0.1.0. <https://github.com/AgrDataSci/tricot-analysis-workflows>.
 
 The most recent version of the workflows and this paper is always available at the repository link above.
 
@@ -190,6 +172,6 @@ The workflows, decision records, archive and this paper are openly available on 
 
 # Acknowledgments
 
-This work is part of the CGIAR Digital Transformation Accelerator. We thank all funders who supported this research through their contributions to the CGIAR Trust Fund (<https://www.cgiar.org/funders/>). [Additional grants to be confirmed.] We thank the co-authors of the original studies, whose scripts are kept in the archive, and the farmers and consumers who took part in the trials.
+This work is part of the CGIAR Digital Transformation Accelerator. We thank all funders who supported this research through their contributions to the CGIAR Trust Fund (<https://www.cgiar.org/funders/>). [Additional grants to be confirmed.] We thank David Brown (Cornell University), Martina Occelli (ETH Zurich) and Geon Kang (Scuola Superiore Sant'Anna) for the original scripts from which several use cases were generalized, and the co-authors of all studies whose scripts are kept in the archive. We thank the farmers and consumers who took part in the trials.
 
 # References
