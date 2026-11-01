@@ -30,7 +30,9 @@ address:
     city: Wageningen
     country: The Netherlands
 abstract: |
-  Testing agricultural products with the people who will use them produces data that are easy to collect and easy to misread. Rankings from hundreds of farmers or consumers, each judging three products out of many in their own conditions, can tell breeders which candidates to advance, which traits users value and which products suit which environments. Getting there takes a chain of analytical choices, each with defensible alternatives and limits. Over ten years, these choices lived in project scripts that few people could find, fewer could read, and none recorded why a method was chosen over another. AI assistants now write analysis code on request, but given only scripts they reproduce them, mistakes included. We present an AI-ready set of analytical workflows for product testing with users, built from the scripts of 21 projects by researchers at Bioversity International and Wageningen University. Each workflow starts from a scientific question, follows a decision record that states the default method, its alternatives and what the results cannot support, and runs on synthetic data with a known answer and with tests that run on every change. Moving the archived scripts into tested workflows exposed errors that had gone unnoticed in the original analyses, and an error made in a recent analysis became a workflow in its own right. The repository works as a skill for any AI assistant. It is the analysis layer of a set of linked AI-ready resources, developed within the CGIAR Digital Transformation Accelerator, on published evidence, field protocols, on-farm trial data and analytical approaches for the demand-led development of agricultural products.
+  A breeder has data from 150 farmers on 12 bean varieties. She asks an AI assistant which traits drive overall preference, and whether her programme should breed for taste. With no curated source, the assistant writes plausible code from general knowledge. Given old project scripts, it copies them, mistakes included. Neither route tells her whether the method fits the question, or what the answer cannot support.
+
+  tricot-analysis-workflows gives her assistant what it needs to answer as the developers of the methods would. Each workflow starts from a scientific question and follows a decision record that states the default method, its alternatives and its limits. Tests on synthetic data with a known answer run on every change. The repository works as a skill for any AI assistant and as R projects for analysts. It is the analysis layer of ai-ready-documentation, linked AI-ready resources for the demand-led development of agricultural products.
 keywords:
  - demand-led product development
  - product testing with users
@@ -61,110 +63,57 @@ The most recent version of the workflows and this paper is always available at t
 
 # Statement of need
 
-Products that people want are tested with the people who will use them. The tricot approach asks each participant to test three products out of a larger set, assigned at random, and to rank them in their own field or home [@vanEtten2011; @vanEtten2019]. It has been used for more than 30 crops in more than 25 countries, and extended to consumer testing and to product concepts that do not yet exist [@deSousa2024]. The data it produces are rankings, often combined with socio-economic, climate, genomic and measured trait data.
+The breeder tests new varieties as many programmes now do, with the people who will grow and eat them. In the tricot approach, each farmer grows three varieties drawn at random from a larger set and ranks them in their own field [@vanEtten2019; @deSousa2024]. Her team combines farmers' evaluations with socio-economic, climate, genomic and measured trait data.
 
-Turning these data into decisions takes a chain of choices. Rankings are modelled with Plackett-Luce models [@Turner2020], which raise questions of network connectivity, uncertainty and reference items. Asking which traits drive preference raises questions of correlated traits and of participants who ranked some traits but not others. Asking whether groups of users differ raises questions of how to form the groups and how to test them. Linking rankings with climate raises questions of time windows and phenology [@vanEtten2019pnas; @deSousa2023climatrends], and comparing rankings with measured yield or estimating heritability from rankings raises questions of genetic parameters [@DoradoBetancourt2026]. Each choice has defensible alternatives, and each limits what the results can support.
+To turn the data into a decision, she makes a chain of choices. When she fits a statistical model, she decides how to express uncertainty and which variety to use as reference. When she asks which traits drive preference, she decides how to treat traits that move together and farmers who skipped a trait. When she compares groups of farmers, she decides how to form and test the groups. If she links the data with climate, she chooses time windows and growth stages [@vanEtten2019pnas; @deSousa2023climatrends]. If she links them with genetics, she estimates heritability from farmers' evaluations [@DoradoBetancourt2026]. Each choice has defensible alternatives. Each limits what she can claim.
 
-For ten years, these choices were made in project scripts. They were written for one dataset, by one person, under deadline. The scripts produced the results of published studies on beans, groundnut, cassava, potato, teff, sweetpotato and many other crops [@Kang2025; @Occelli2024], but they did not record why a method was chosen, which alternatives were rejected, or what the results could not say. A new analyst could copy a script but not the reasoning behind it.
+For ten years, our team made these choices in project scripts, each written for one dataset under deadline. The scripts produced published studies on sweetpotato, cassava, beans, potato, groundnut and other crops [@Moyo2021; @Alamu2023; @Occelli2024; @Kang2025; @Daudi2026]. They did not record why we chose a method, which alternatives we rejected, or what the results could not say. From these scripts the breeder can copy the code but not the reasoning. So can her AI assistant.
 
-AI assistants make this gap more costly. Asked to analyse tricot data, an assistant with no curated source writes plausible code from general knowledge. Given a folder of old scripts, it reproduces them faithfully, including their mistakes and their outdated packages. Neither route tells the assistant, or the person using it, whether the method fits the question.
+She needs the reasoning, recorded next to code she can trust. With both, she and her assistant can reuse a method correctly and see where it stops.
 
-We built the workflows so that researchers, and the AI assistants they work with, can analyse product testing data the way the people who developed the methods would, and can see why.
+# State of the field
 
-# Place in the AI-ready suite
+Before she asks an assistant, the breeder looks for help in five places. The documentation of PlackettLuce [@Turner2020] and gosset tells her how to call each function, not which one fits her question or what its results cannot support. ClimMob-analysis gives her the standard report of the ClimMob platform [@Quiros2024], a sound default with no route to other questions. A template for reproducible analysis organises her project but does not choose her methods [@deSousaLaporte2026]. Published papers describe methods, but their shared code fits one dataset. General instruction files for AI coding assistants carry no reasoning about rankings. We know of no resource that joins the question, the rationale for each choice and tested code for ranking data. The breeder needs one that both she and her assistant can follow.
 
-The workflows are the analysis layer of ai-ready-documentation (<https://github.com/AgrDataSci/ai-ready-documentation>), a set of linked repositories in which each layer carries its own skill. The evidence layer holds verified summaries of the published literature [@Chase2026kb]. The data layer holds the harmonized on-farm trial data, and the protocol layer the field protocols. ClimMob-analysis produces the standard reports of the ClimMob platform [@Quiros2024]. A shared template supports reproducible analyses across them [@deSousaLaporte2026].
+# From a question to an answer
 
-Each layer answers a different question. The evidence layer says what we know, the data layer what we observed, the report layer what a trial found, and this layer how we reason with the data and why. An assistant can move from a published finding to the data behind it and to the workflow that reproduces the analysis on new data. Questions on linking trial data with climate, soil and other environmental data also belong here.
+So the breeder pastes the link of ai-ready-documentation into an AI assistant with web access, attaches the ClimMob export of her trial and writes the request below.
 
-# Content
+> I ran a tricot trial with 150 farmers and 12 bean varieties. Farmers ranked yield, taste, cooking time and overall preference after harvest. Which traits drive overall preference, and should we breed for taste? <https://github.com/AgrDataSci/ai-ready-documentation>
 
-The workflows answer eight questions.
+Each step of the answer depends on one part of the repository.
 
-1. Which varieties do participants prefer, and how sure are we?
-2. Which traits drive overall preference?
-3. Do different groups of users prefer different varieties?
-4. How do climate and environment shape performance?
-5. Do on-farm and on-station results agree, and is preference heritable?
-6. Which measured traits, from the lab or the station, explain preference?
-7. Which product concept do consumers prefer?
-8. How many participants do we need?
+1.  **Routing.** The skill of ai-ready-documentation sends analysis questions here. A routing table in `SKILL.md` matches the question, not a method name, to one of eight use cases, from preferred varieties to the number of participants needed.
+2.  **Decision records.** Before proposing a method, the assistant reads the record on trait associations, one of six. It learns that overall preference is the target, that yield is not assumed to dominate, and that the results show association, not cause.
+3.  **Input checks.** Each use case states its inputs and assumptions. Here the same farmers ranked all traits at one moment, so the approach fits. Had researchers measured cooking time, the assistant would first have asked for the observer, method and units.
+4.  **Known answers.** The assistant adapts the script to the columns of the export. It then runs the tests, whose synthetic data have known drivers of preference, to confirm that the adapted code still finds them. A GitHub Action runs these tests for every use case on every change, so a broken dependency fails a test instead of producing a wrong result.
+5.  **Status labels.** It reports the marginal and partial association of each trait with overall preference, with bootstrap intervals over farmers. It names the status of the use case, from `historical` to `validated-against-original-results`, so the breeder knows how far to trust it.
+6.  **Limits and credit.** It closes with what the results cannot support. A strong link between taste and overall preference does not show that breeding for taste will raise adoption. It credits the team and the publications behind the approach.
 
-Six decision records set out the reasoning behind them, on ranking, trait associations, socio-economic heterogeneity, climate and environment, genetic gain, and consumer and concept testing. Each record states the default approach, the alternatives and when to prefer them, and the limits of interpretation. The records are written as methodological rationale from the team, not as independent validation of the methods or software they cite.
-
-The archive keeps the original scripts of 21 projects, from groundnut and cassava in Tanzania and Nigeria to beans in Central America, potato in Rwanda, teff in Ethiopia, forage grasses and leys, and consumer tests of processed foods and product concepts. They are kept for provenance and credit, and are not maintained.
-
-# Repository structure
+Two rules keep the assistant on this path. First, the archive is closed. It keeps the original scripts of 21 projects for provenance and credit. The skill tells assistants not to open, run or recommend them unless the user asks, because they use retired packages and hard-coded paths. Second, we record every departure from archived code. When we analysed a forage trial in Norway, we first estimated the value of more answers by subsampling the real answers. Because the subsamples shared participants with the full data, they overstated accuracy. The use case on the number of participants now simulates new participants. It keeps the biased function as a warning. Its tests check that the function overstates accuracy.
 
 ```text
 tricot-analysis-workflows/
-|-- SKILL.md            # Skill instructions and question routing
-|-- AGENTS.md           # Rules for AI agents
-|-- llms.txt            # Short map of the repository for AI tools
-|-- decisions/          # One decision record per topic
-|-- use-cases/          # One self-contained workflow per question
-|   |-- _template/      # Starting point for new use cases
+|-- SKILL.md        # Skill instructions and question routing
+|-- AGENTS.md       # Rules for AI agents
+|-- decisions/      # One decision record per topic
+|-- use-cases/      # One self-contained R project per question
 |   `-- <question>/
-|       |-- README.md            # Question, inputs, assumptions, approach,
-|       |                        # alternatives, interpretation, limits
-|       |-- script/01-analysis.R # The workflow
-|       |-- script/helper/       # Documented functions, synthetic data
-|       |-- tests/               # Tests with a known answer
-|       |-- data/  output/
-|       `-- references.bib
-|-- archive/            # Original project scripts, for provenance only
-|-- docs/               # This paper
-|-- CITATION.cff
-|-- LICENSE
+|       |-- README.md  # Question, inputs, approach, limits
+|       |-- script/    # Workflow, functions, synthetic data
+|       `-- tests/     # Tests with a known answer
+`-- archive/        # Original project scripts, closed
 ```
 
-Each use case follows the layout of the shared template [@deSousaLaporte2026] and is its own RStudio project, so it runs from its folder with relative paths.
+# Using the workflows
 
-# Key features
+Like the breeder, users can paste the link of ai-ready-documentation into any assistant with web access, upload the skill to Claude or clone it into the skills directory of Claude Code. Analysts who work in R open the `.Rproj` file of a use case, run `script/01-analysis.R`, swap in their own data and run `tests/run-tests.R`. Through the other layers of the suite, an assistant can also run a workflow on the published trials of a crop and region and compare the results with earlier studies.
 
--   **Question first.** Users and assistants start from the scientific question, not from a method name. A routing table in the skill sends each question to a use case and its decision record.
--   **Decision records.** Before proposing a method, an assistant reads the record for the topic. It states the default, the alternatives, and what the results cannot support. For example, rankings do not establish adoption, market share or the causal effect of climate.
--   **Known answers.** Every use case simulates data in which the true answer is known, such as the true worth of each variety or the traits that truly drive preference, and its tests check that the workflow recovers it.
--   **Continuous testing.** A GitHub Action runs the tests and the analysis of every use case on every change, on a shared set of packages, so a change in a dependency shows up as a failing test rather than a wrong result.
--   **Status labels.** Each use case carries one label, from `historical` and `reviewed-not-executed` to `tested-on-synthetic-data` and `validated-against-original-results`, so users know how far to trust it.
--   **Recorded corrections.** When a use case departs from the archived script, its README says what changed and why.
--   **Credit.** Answers credit the team that developed an approach and the publications behind it. Genetic parameters from rankings are the domain of the Wageningen team, and the skill directs users to their two-step method [@DoradoBetancourt2026].
--   **A closed archive.** The skill tells assistants not to open, run or recommend archived code unless the user asks. Old scripts use retired packages and hard-coded paths, and an assistant that reads them tends to copy them.
-
-# Verification and evaluation
-
-Moving the archived scripts into tested workflows was itself a review, and it found errors that had gone unnoticed. In one script, the selection of traits that drive preference computed partial correlations but never used them. Its p-values came from the marginal correlations, so the backward selection never conditioned on the other traits and became a single filter on marginal p-values. In another, the heritability of cassava preference counted locations from a different column than the one in the model, so the denominator did not match the variance components. In a third, best linear unbiased predictors of texture traits were combined by position rather than by genotype name, entered a model on a scale shrunk by their own repeatability, and included traits that are products of each other. Each correction is recorded in the use case, with the reasoning, and covered by a test.
-
-The workflow on participant numbers came from an error in our own recent work. In a forage trial in Norway, 93 farms registered and 35 returned their ranking of overall preference at the first cut. To show the team and the farmers how much each extra answer matters, the first analysis drew subsamples of the 35 answers and compared each fit with the fit on all of them. Agreement rose steadily towards one, which looked like a clear message. It was not. The subsamples share farms with the full data, so agreement must approach one as the subsample grows, whatever the true accuracy, and the method says nothing about answers the trial does not have. The corrected workflow takes the fitted model as the truth, simulates new trials of any size and compares each refit with the truth. On the forage trial, it gave a 50 per cent chance of identifying the best mixture with the 35 answers and 67 per cent if all 93 farms answered. Both the error and the correction are now part of the use case, and a test checks that the subsampling approach overstates accuracy. The same simulation now appears in the standard ClimMob reports, so every trial team sees the value of more answers.
-
-The same forage trial tested two other parts of the reasoning. Worth estimates suggested that the northern and southern regions ranked the mixtures differently, and a first draft of a farmer flyer said so. Neither the likelihood-ratio test nor a permutation test supported the claim, and the flyer was changed to say that the regions looked different but that there were not yet enough answers to tell. Partial correlations between traits, the next step of the trait workflow, had bootstrap intervals that spanned almost the whole range from minus one to one with 20 to 30 farms per pair of traits. Both lessons are now in the decision records.
-
-All eight use cases run on synthetic data and pass their tests. None has yet been labelled `validated-against-original-results`, which requires reproducing the published results from the original data. That is the next step for the use cases whose data are published in the data layer.
-
-# Supporting demand-led product development
-
-The workflows support decisions across the life of a product. Before a trial, the participant workflow tells a team how many answers it needs to identify the best candidates with a given confidence. During a trial, the same workflow shows participants and partners why their answers count, which matters when response rates fall. After a trial, the ranking, trait and group workflows tell breeders which candidates users prefer, how sure the ranking is, which traits drive the preference and whether different users want different products. The climate and genetic gain workflows link performance to environments and to genetic parameters, and the concept workflow tests products that do not yet exist. Each answer comes with the uncertainty and the limits stated in the decision record.
-
-Through the data layer, an assistant can apply these workflows to the published trials of a specific crop and region. Through the evidence layer, it can compare the results with what earlier studies found. Together, the layers form the analytical basis for AI-supported recommendations that match candidate products with user demand and with climate risk.
-
-# Implementation and usage
-
-Users reach the workflows in four ways.
-
-1.  **In Claude.** Download the skill and upload it. The assistant reads the routing table whenever a question concerns the analysis of tricot, on-farm ranking or concept testing data, then the relevant decision record and use case.
-2.  **In Claude Code.** Clone the repository into the skills directory, or work in a clone of it to adapt a use case to new data.
-3.  **By sharing a link.** Paste the link of ai-ready-documentation (<https://github.com/AgrDataSci/ai-ready-documentation>) into an AI assistant with web access. Its routing skill sends analysis questions here.
-4.  **In R.** Open the `.Rproj` file of a use case, run `script/01-analysis.R`, then replace the simulated data with your own and run `tests/run-tests.R` to check that the adapted code still recovers known answers.
-
-Contributors add a use case by copying the template, writing the question, assumptions, alternatives and limits before the code, simulating data with a known answer, and opening a pull request. The use case runs in continuous testing from its first commit.
+Contributors copy the template, write the question, assumptions, alternatives and limits before the code, simulate data with a known answer and open a pull request. Continuous testing covers the new use case from its first commit.
 
 # Limitations
 
-The workflows document how one group of researchers approaches these questions. They are guidance, not prescription, and a method being documented here does not show that it is the best one for a given dataset. The decision records state reasoning from the team, and users should check the assumptions and alternatives against their own design. All use cases are tested on synthetic data, which shows that the code recovers a known answer under the model's assumptions, not that the assumptions hold for real data. None has yet been validated against the original published results. The workflows are written in R only. The archive holds scripts from published and unpublished work and may contain errors beyond those already found. Assistants depend on following the rules in the skill, which the tests of the code cannot check.
-
-# Conclusion
-
-Product testing with users produces rankings that can guide which products are developed and released, but only through a chain of analytical choices that have rarely been written down. Recording the question, the default method, its alternatives and its limits next to code that is tested on known answers lets researchers and AI assistants analyse new data the way the methods were meant to be used, and see where they stop. Moving ten years of scripts into this form found errors in published analyses, and recording our own recent errors turned them into guidance. The workflows grow with each new question and connect published evidence, trial data and standard reports into one analytical practice.
+The workflows document how our group approaches these questions. They guide the breeder's choices but do not make them for her. The decision records state our reasoning, not independent validation of the methods they cite. Tests on synthetic data show that the code recovers a known answer when the model's assumptions hold, not that the assumptions hold for her data. We have not yet validated any use case against the original published results. The workflows are in R only. Finally, the assistant must follow the rules in the skill. No code test can check that it does.
 
 # Code and data availability
 
