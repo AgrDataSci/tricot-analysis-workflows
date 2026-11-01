@@ -8,7 +8,7 @@ test_that("simulated rankings give each participant three ranked items", {
   m = unclass(R)
   expect_equal(nrow(m), 40)
   expect_true(all(rowSums(m > 0) == 3))
-  expect_true(all(apply(m, 1, function(r) identical(sort(r[r > 0]), c(1, 2, 3)))))
+  expect_true(all(apply(m, 1, function(r) all(sort(r[r > 0]) == 1:3))))
 })
 
 test_that("simulated rankings follow the log-worths", {
