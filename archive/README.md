@@ -31,3 +31,13 @@ Status of all code in this folder is **historical**. It is not maintained, and s
 | wageningen-genetic-gain-cassava | heritability, genetic gain, on-farm vs on-station |
 | wageningen-genetic-gain-groundnut | heritability, genetic gain, on-farm vs on-station |
 | worldveg-choose-growth-thrive | climate data and covariates |
+
+## Original repositories and publications
+
+Some projects have their own public repository, which is the reference version of their code and data. Cite the publication when you use these approaches.
+
+| Folder | Publication | Original repository |
+|---|---|---|
+| occelli-tricot-pvs | Occelli et al. (2024), Agricultural Economics, https://doi.org/10.1111/agec.12819 | https://github.com/AgrDataSci/socioeco-tricot |
+| potato-kang-et-al | Kang et al. (2025), Experimental Agriculture, https://doi.org/10.1017/S0014479725100100 | not yet public |
+| (not archived here) | Brown et al. (2022), Crop Science, https://doi.org/10.1002/csc2.20817 | https://github.com/AgrDataSci/Data_synthesis_bean_tricot_CA |

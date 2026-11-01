@@ -1,0 +1,127 @@
+---
+title: AI-ready analytical workflows for product testing with users in agriculture
+author:
+  - name: Kauê de Sousa
+    email: k.desousa@cgiar.org
+    affiliation: a,b
+    correspondingauthor: true
+  - name: Brayden Youngberg
+    affiliation: c
+  - name: Joost van Heerwaarden
+    affiliation: d
+  - name: Hugo Dorado-Betancourt
+    affiliation: d
+  - name: Jacob van Etten
+    affiliation: a
+address:
+  - code: a
+    organization: Digital Inclusion, Bioversity International
+    city: Montpellier
+    country: France
+  - code: b
+    organization: Department of Agricultural Sciences, University of Inland Norway
+    city: Hamar
+    country: Norway
+  - code: c
+    organization: Climate Action, Bioversity International
+    city: Montpellier
+    country: France
+  - code: d
+    organization: Wageningen University and Research
+    city: Wageningen
+    country: The Netherlands
+abstract: |
+  A breeder has data from 150 farmers on 12 bean varieties. She asks an AI assistant which traits drive overall preference, and whether her programme should breed for taste. With no curated source, the assistant writes plausible code from general knowledge. Given old project scripts, it copies them, mistakes included. Neither route tells her whether the method fits the question, or what the answer cannot support.
+
+  tricot-analysis-workflows gives her assistant what it needs to answer as the developers of the methods would. Each workflow starts from a scientific question and follows a decision record that states the default method, its alternatives and its limits. Tests on synthetic data with a known answer run on every change. The repository works as a skill for any AI assistant and as R projects for analysts. It is the analysis layer of ai-ready-documentation, linked AI-ready resources for the demand-led development of agricultural products.
+keywords:
+ - demand-led product development
+ - product testing with users
+ - tricot
+ - Plackett-Luce
+ - on-farm testing
+ - reproducibility
+ - AI-ready documentation
+ - FAIR principles
+journal: "Zenodo"
+date: "`r Sys.Date()`"
+linenumbers: false
+numbersections: false
+bibliography: paper.bib
+classoption: 3p, authoryear
+output:
+  rticles::elsevier_article:
+    keep_tex: false
+---
+
+# Suggested citation
+
+> de Sousa, K.; Youngberg, B.; van Heerwaarden, J.; Dorado-Betancourt, H.; van Etten, J. (2026) AI-ready analytical workflows for product testing with users in agriculture. Version 0.1.0. <https://github.com/AgrDataSci/tricot-analysis-workflows>.
+
+The most recent version of the workflows and this paper is always available at the repository link above.
+
+\pagebreak
+
+# Statement of need
+
+The breeder tests new varieties as many programmes now do, with the people who will grow and eat them. In the tricot approach, each farmer grows three varieties drawn at random from a larger set and ranks them in their own field [@vanEtten2019; @deSousa2024]. Her team combines farmers' evaluations with socio-economic, climate, genomic and measured trait data.
+
+To turn the data into a decision, she makes a chain of choices. When she fits a statistical model, she decides how to express uncertainty and which variety to use as reference. When she asks which traits drive preference, she decides how to treat traits that move together and farmers who skipped a trait. When she compares groups of farmers, she decides how to form and test the groups. If she links the data with climate, she chooses time windows and growth stages [@vanEtten2019pnas; @deSousa2023climatrends]. If she links them with genetics, she estimates heritability from farmers' evaluations [@DoradoBetancourt2026]. Each choice has defensible alternatives. Each limits what she can claim.
+
+For ten years, our team made these choices in project scripts, each written for one dataset under deadline. The scripts produced published studies on sweetpotato, cassava, beans, potato, groundnut and other crops [@Moyo2021; @Alamu2023; @Occelli2024; @Kang2025; @Daudi2026]. They did not record why we chose a method, which alternatives we rejected, or what the results could not say. From these scripts the breeder can copy the code but not the reasoning. So can her AI assistant.
+
+She needs the reasoning, recorded next to code she can trust. With both, she and her assistant can reuse a method correctly and see where it stops.
+
+# State of the field
+
+Before she asks an assistant, the breeder looks for help in five places. The documentation of PlackettLuce [@Turner2020] and gosset tells her how to call each function, not which one fits her question or what its results cannot support. ClimMob-analysis gives her the standard report of the ClimMob platform [@Quiros2024], a sound default with no route to other questions. A template for reproducible analysis organises her project but does not choose her methods [@deSousaLaporte2026]. Published papers describe methods, but their shared code fits one dataset. General instruction files for AI coding assistants carry no reasoning about rankings. We know of no resource that joins the question, the rationale for each choice and tested code for ranking data. The breeder needs one that both she and her assistant can follow.
+
+# From a question to an answer
+
+So the breeder pastes the link of ai-ready-documentation into an AI assistant with web access, attaches the ClimMob export of her trial and writes the request below.
+
+> I ran a tricot trial with 150 farmers and 12 bean varieties. Farmers ranked yield, taste, cooking time and overall preference after harvest. Which traits drive overall preference, and should we breed for taste? <https://github.com/AgrDataSci/ai-ready-documentation>
+
+Each step of the answer depends on one part of the repository.
+
+1.  **Routing.** The skill of ai-ready-documentation sends analysis questions here. A routing table in `SKILL.md` matches the question, not a method name, to one of eight use cases, from preferred varieties to the number of participants needed.
+2.  **Decision records.** Before proposing a method, the assistant reads the record on trait associations, one of six. It learns that overall preference is the target, that yield is not assumed to dominate, and that the results show association, not cause.
+3.  **Input checks.** Each use case states its inputs and assumptions. Here the same farmers ranked all traits at one moment, so the approach fits. Had researchers measured cooking time, the assistant would first have asked for the observer, method and units.
+4.  **Known answers.** The assistant adapts the script to the columns of the export. It then runs the tests, whose synthetic data have known drivers of preference, to confirm that the adapted code still finds them. A GitHub Action runs these tests for every use case on every change, so a broken dependency fails a test instead of producing a wrong result.
+5.  **Status labels.** It reports the marginal and partial association of each trait with overall preference, with bootstrap intervals over farmers. It names the status of the use case, from `historical` to `validated-against-original-results`, so the breeder knows how far to trust it.
+6.  **Limits and credit.** It closes with what the results cannot support. A strong link between taste and overall preference does not show that breeding for taste will raise adoption. It credits the team and the publications behind the approach.
+
+Two rules keep the assistant on this path. First, the archive is closed. It keeps the original scripts of 21 projects for provenance and credit. The skill tells assistants not to open, run or recommend them unless the user asks, because they use retired packages and hard-coded paths. Second, we record every departure from archived code. When we analysed a forage trial in Norway, we first estimated the value of more answers by subsampling the real answers. Because the subsamples shared participants with the full data, they overstated accuracy. The use case on the number of participants now simulates new participants. It keeps the biased function as a warning. Its tests check that the function overstates accuracy.
+
+```text
+tricot-analysis-workflows/
+|-- SKILL.md        # Skill instructions and question routing
+|-- AGENTS.md       # Rules for AI agents
+|-- decisions/      # One decision record per topic
+|-- use-cases/      # One self-contained R project per question
+|   `-- <question>/
+|       |-- README.md  # Question, inputs, approach, limits
+|       |-- script/    # Workflow, functions, synthetic data
+|       `-- tests/     # Tests with a known answer
+`-- archive/        # Original project scripts, closed
+```
+
+# Using the workflows
+
+Like the breeder, users can paste the link of ai-ready-documentation into any assistant with web access, upload the skill to Claude or clone it into the skills directory of Claude Code. Analysts who work in R open the `.Rproj` file of a use case, run `script/01-analysis.R`, swap in their own data and run `tests/run-tests.R`. Through the other layers of the suite, an assistant can also run a workflow on the published trials of a crop and region and compare the results with earlier studies.
+
+Contributors copy the template, write the question, assumptions, alternatives and limits before the code, simulate data with a known answer and open a pull request. Continuous testing covers the new use case from its first commit.
+
+# Limitations
+
+The workflows document how our group approaches these questions. They guide the breeder's choices but do not make them for her. The decision records state our reasoning, not independent validation of the methods they cite. Tests on synthetic data show that the code recovers a known answer when the model's assumptions hold, not that the assumptions hold for her data. We have not yet validated any use case against the original published results. The workflows are in R only. Finally, the assistant must follow the rules in the skill. No code test can check that it does.
+
+# Code and data availability
+
+The workflows, decision records, archive and this paper are openly available on GitHub at <https://github.com/AgrDataSci/tricot-analysis-workflows> under the MIT license. Synthetic data are generated by the scripts in each use case. No personal data are included.
+
+# Acknowledgments
+
+This work is part of the CGIAR Digital Transformation Accelerator. We thank all funders who supported this research through their contributions to the CGIAR Trust Fund (<https://www.cgiar.org/funders/>). [Additional grants to be confirmed.] We thank the co-authors of all studies whose scripts are kept in the archive. We thank the farmers and consumers who took part in the trials.
+
+# References
