@@ -1,6 +1,6 @@
 # How many participants do we need?
 
-**Status** reviewed-not-executed
+**Status** tested-on-synthetic-data
 **Decision record** [ranking](../../decisions/ranking.md)
 **Derived from** the analysis of a tricot trial of forage mixtures in Norway (2026), where few registered farms returned their rankings, and the `data_value` step of [ClimMob-analysis](https://github.com/AgrDataSci/ClimMob-analysis)
 
@@ -49,7 +49,7 @@ A tempting shortcut draws subsamples of the real answers and compares each fit w
 
 ## Interpretation
 
-On the synthetic data (12 items, 93 registered, 35 answers), the curve gives the chance of finding the best item with the 35 answers and with all 93, and the number of participants needed for an 80% chance. Report it as "if the current estimates were true, this many answers would find the best item this often". It is a planning and communication tool, not a property of the trial.
+On the synthetic data (12 items, 93 registered, 35 answers), the 35 answers give a 76% chance of finding the best item and a Kendall tau of 0.74 with the true order. If all 93 registered participants answered, the chance would be 91% (tau 0.85), and 93 is the smallest simulated size that reaches 80%. Subsampling the real answers would report a tau of 0.73 with 18 participants, where simulating new participants gives 0.60. Report it as "if the current estimates were true, this many answers would find the best item this often". It is a planning and communication tool, not a property of the trial.
 
 ## Limitations
 
