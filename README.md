@@ -9,7 +9,7 @@
 
 *AI-ready reasoning from rankings to decisions*
 
-> Kauê de Sousa, David Brown, Martina Occelli, Geon Kang, Joost van Heerwaarden, Hugo Dorado-Betancourt, Jacob van Etten
+> Kauê de Sousa, Brayden Youngberg, David Brown, Martina Occelli, Geon Kang, Joost van Heerwaarden, Hugo Dorado-Betancourt, Jacob van Etten
 
 The main analytical approaches used at Bioversity International and Wageningen University for tricot and on-farm ranking data, written so that researchers and AI agents can follow how we get from observations to scientific conclusions.
 
@@ -70,6 +70,7 @@ These workflows document how our team has approached particular questions. They 
 ## Authors
 
 - Kauê de Sousa, Bioversity International and University of Inland Norway
+- Brayden Youngberg, Bioversity International
 - David Brown, Cornell University
 - Martina Occelli, ETH Zurich
 - Geon Kang, Scuola Superiore Sant'Anna, Pisa
