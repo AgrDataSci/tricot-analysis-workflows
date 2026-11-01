@@ -25,7 +25,7 @@ One row per participant in the ClimMob tricot format.
 
 Rows with ties, missing values or letters other than A, B, C are dropped and counted.
 
-In ClimMob data the column coded `overall` is not always the final overall preference. A project can hold only one `overall` code, so later overall rankings appear as `generalappreciation`, `generalpreference` or `grownext`. Use the most recent overall-type question as the default outcome, and report earlier ones as stage-specific results. See "Which question is overall preference" in the [ranking decision record](../../decisions/ranking.md).
+In ClimMob data the column coded `overall` is not always the final overall preference. A project can hold only one `overall` code, so later overall rankings appear as `generalappreciation` or `generalpreference`. Use the most recent overall-type question as the default outcome, and report earlier ones as stage-specific results. Use `grownext` as the outcome only when no overall-type question exists. See "Which question is overall preference" in the [ranking decision record](../../decisions/ranking.md).
 
 ## Assumptions
 

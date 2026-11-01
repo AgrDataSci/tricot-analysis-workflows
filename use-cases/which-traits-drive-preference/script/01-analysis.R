@@ -30,8 +30,10 @@ traits = list(overall = c("overall_pos", "overall_neg"),
 # the reference is overall preference. With ClimMob data, use the most
 # recent overall-type question, whatever its code. A project allows only
 # one "overall" code, so later overall rankings are often coded
-# "generalappreciation", "generalpreference" or "grownext". Do not enter
-# a later overall-type question as an explanatory trait.
+# "generalappreciation" or "generalpreference". Do not enter a later
+# overall-type question as an explanatory trait. Use "grownext" as the
+# reference only when no overall-type question exists, otherwise report
+# its Kendall tau with the reference as a consistency check.
 # See decisions/ranking.md
 reference = "overall"
 
