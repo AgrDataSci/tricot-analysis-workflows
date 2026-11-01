@@ -24,6 +24,7 @@ Start from your scientific question, not from a method name.
 | Your question | Use case | Decision record |
 |---|---|---|
 | Which varieties do participants prefer, and how sure are we? | [which-varieties-do-participants-prefer](use-cases/which-varieties-do-participants-prefer/) | [ranking](decisions/ranking.md) |
+| How many participants do we need? Is the response rate enough? | [how-many-participants-do-we-need](use-cases/how-many-participants-do-we-need/) | [ranking](decisions/ranking.md) |
 | Which traits drive overall preference? | [which-traits-drive-preference](use-cases/which-traits-drive-preference/) | [trait associations](decisions/trait-associations.md) |
 | Do different groups of users prefer different varieties? | [do-user-groups-prefer-different-varieties](use-cases/do-user-groups-prefer-different-varieties/) | [socioeconomic heterogeneity](decisions/socioeconomic-heterogeneity.md) |
 | How do climate and environment shape performance? | [how-does-climate-shape-performance](use-cases/how-does-climate-shape-performance/) | [climate and environment](decisions/climate-environment.md) |

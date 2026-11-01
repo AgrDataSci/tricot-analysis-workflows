@@ -1,6 +1,6 @@
 ---
 name: tricot-analysis-workflows
-description: Use when analysing tricot, ClimMob, on-farm ranking, participatory variety selection or consumer and product concept testing data, or when asked which varieties are preferred, which traits drive preference, whether user groups differ, how climate shapes performance, whether on-farm and on-station results agree, which measured lab or station traits explain preference, or which concept consumers prefer.
+description: Use when analysing tricot, ClimMob, on-farm ranking, participatory variety selection or consumer and product concept testing data, or when asked which varieties are preferred, which traits drive preference, whether user groups differ, how climate shapes performance, whether on-farm and on-station results agree, which measured lab or station traits explain preference, which concept consumers prefer, or how many participants a trial needs.
 ---
 
 # Analytical approaches from Bioversity International and Wageningen University
@@ -22,6 +22,7 @@ Start from the user's question, not from a method name.
 | Question | Use case | Decision record |
 |---|---|---|
 | Which varieties do participants prefer, and how sure are we? | `use-cases/which-varieties-do-participants-prefer/` | `decisions/ranking.md` |
+| How many participants do we need? Is the response rate enough? | `use-cases/how-many-participants-do-we-need/` | `decisions/ranking.md` |
 | Which traits drive overall preference? | `use-cases/which-traits-drive-preference/` | `decisions/trait-associations.md` |
 | Do different groups of users prefer different varieties? | `use-cases/do-user-groups-prefer-different-varieties/` | `decisions/socioeconomic-heterogeneity.md` |
 | How do climate and environment shape performance? | `use-cases/how-does-climate-shape-performance/` | `decisions/climate-environment.md` |

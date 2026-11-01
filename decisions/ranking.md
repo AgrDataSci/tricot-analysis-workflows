@@ -8,6 +8,9 @@ Status: methodological rationale from Kauê de Sousa (Bioversity International),
 - **Non-hierarchical clusters.** An alternative for identifying user personas, integrating socioeconomic, environmental and management covariates. Clusters are defined without the preference outcome unless explicitly designed otherwise. Then assess whether preference models differ across clusters. Check comparability and the assumptions of the likelihood-ratio test. Statistical significance is not operational usefulness.
 - **Cluster search.** Default operational search is k = 2 to 5, judged on stability, adequacy, interpretability, representation and decision feasibility. Report when no solution is defensible. Larger k can be examined as a sensitivity analysis.
 
+- **How many participants.** Judge whether the answers are enough by simulating new trials from the fitted model (use case `how-many-participants-do-we-need`). Do not subsample the real answers and compare with the full fit: subsamples share participants with the full data, so agreement rises towards 1 whatever the real accuracy.
+- **Few answers.** Name a group of top items rather than a strict order, give the bootstrap probability of a top-k place, and say that the order will change as more answers arrive.
+
 ## Archive examples
 
 - `archive/groundnut-tanzania/`
