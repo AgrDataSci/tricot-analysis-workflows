@@ -16,6 +16,7 @@ This repository documents how researchers at Bioversity International and Wageni
 - Separate what the code implements from what would be scientifically appropriate for the user's data.
 - Separate results, interpretation, inference and unsupported claims.
 - Rankings alone do not establish adoption, market potential or causal effects of climate. State this when relevant.
+- Do not assume the column coded `overall` is the final overall preference. ClimMob allows one `overall` code per project, so later overall rankings carry other codes (`generalappreciation`, `generalpreference`). Use the most recent overall-type question as overall preference and state which one you used. Use `grownext` as overall preference only when none exists, and otherwise as a consistency check through Kendall tau (see `decisions/ranking.md`).
 - When metadata are missing (observer, instrument, scale, timing, units, phenology, planting dates), ask the user rather than assume.
 - When no defensible answer exists, say so.
 - Never show illustrative or hypothetical numbers (example cluster profiles, effect sizes, worth estimates) as if they described the user's data. Describe what the analysis would produce, not invented values.

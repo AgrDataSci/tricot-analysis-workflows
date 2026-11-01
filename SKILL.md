@@ -35,11 +35,12 @@ When the question spans several rows, start with the ranking use case and add th
 ## How to work
 
 1. Read the decision record, then the use-case `README.md`. They give the default method, the alternatives and what the results cannot support. Do not propose a workflow of your own before reading them.
-2. Check the user's data against the README's input section. Ask for anything missing rather than assume it, especially observer, scale and units for measured traits, planting dates and phenology for climate windows, and harmonized genotype names across trials.
-3. Adapt `script/helper/functions.R` and `script/01-analysis.R` to the user's data. Each use case follows the layout of template-repo-data-analysis, and all paths are relative to the use-case folder. Keep the checks (data loss, network connectivity, stability, extrapolation). They are part of the method, not decoration.
-4. If you can run code, run the use-case tests (`Rscript tests/run-tests.R`) before trusting the adapted code, then run the analysis.
-5. Report the use case's status label, what the results show, what they do not show, and any assumption the user's data may break.
-6. Use `script/01-analysis.R` as the reference implementation. The use cases are the curated, tested code. Do not open, audit, run, adapt or recommend code from `archive/` unless the user explicitly asks for it, and never suggest reviewing archived scripts as a next step. The archive is a historical record for people.
+2. Identify the overall preference outcome. In ClimMob only one question can carry the code `overall`, so later overall rankings appear as `generalappreciation` or `generalpreference`. Use the most recent overall-type question as overall preference, keep earlier ones as stage-specific outcomes, and say which one you used. Use `grownext` as overall preference only when no overall-type question exists. Otherwise report its Kendall tau with the overall outcome as a consistency check. The rule is in `decisions/ranking.md`.
+3. Check the user's data against the README's input section. Ask for anything missing rather than assume it, especially observer, scale and units for measured traits, planting dates and phenology for climate windows, and harmonized genotype names across trials.
+4. Adapt `script/helper/functions.R` and `script/01-analysis.R` to the user's data. Each use case follows the layout of template-repo-data-analysis, and all paths are relative to the use-case folder. Keep the checks (data loss, network connectivity, stability, extrapolation). They are part of the method, not decoration.
+5. If you can run code, run the use-case tests (`Rscript tests/run-tests.R`) before trusting the adapted code, then run the analysis.
+6. Report the use case's status label, what the results show, what they do not show, and any assumption the user's data may break.
+7. Use `script/01-analysis.R` as the reference implementation. The use cases are the curated, tested code. Do not open, audit, run, adapt or recommend code from `archive/` unless the user explicitly asks for it, and never suggest reviewing archived scripts as a next step. The archive is a historical record for people.
 
 ## Boundaries
 
