@@ -24,6 +24,7 @@ address:
     country: Norway
   - code: c
     organization: Climate Action, Bioversity International
+    city: Montpellier
     country: France
   - code: d
     organization: Wageningen University and Research
