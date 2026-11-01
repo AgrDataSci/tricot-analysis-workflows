@@ -12,7 +12,7 @@ author:
   - name: Hugo Dorado-Betancourt
     affiliation: d
   - name: Jacob van Etten
-    affiliation: c
+    affiliation: a
 address:
   - code: a
     organization: Digital Inclusion, Bioversity International
@@ -23,7 +23,7 @@ address:
     city: Hamar
     country: Norway
   - code: c
-    organization: Bioversity International
+    organization: Climate Action, Bioversity International
     country: France
   - code: d
     organization: Wageningen University and Research
