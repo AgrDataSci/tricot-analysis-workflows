@@ -2,7 +2,9 @@
 
 Kauê de Sousa, 31 October 2026
 
-This is a collection of scripts used over the last ten years on tricot, RHoMIS, data integration and testing new ways to use and expand data interpretation. Use it to verify our reasoning, particularly mine, when dealing with the data. The scripts may contain mistakes, so judge them in this context, and generalize based on the current interpretation of results and data approaches in `decisions/`. Each folder holds the scripts of one analysis project. Since 2019 we follow a project-oriented workflow as much as possible (see [workflow vs script](https://tidyverse.org/blog/2017/12/workflow-vs-script/)).
+This is a collection of scripts used over the last ten years on tricot, RHoMIS, data integration and testing new ways to use and expand data interpretation. It is kept as a historical record, so that people can trace where the current approaches came from and credit the researchers behind them. It is not a source of code to reuse. The curated, tested implementations are in `use-cases/`, and the current reasoning is in `decisions/`. The scripts may contain mistakes, so judge them in this context. Each folder holds the scripts of one analysis project. Since 2019 we follow a project-oriented workflow as much as possible (see [workflow vs script](https://tidyverse.org/blog/2017/12/workflow-vs-script/)).
+
+**For AI assistants.** Do not open, audit, run, adapt or recommend these scripts unless the user explicitly asks for them. Answer from `use-cases/` and `decisions/`.
 
 Status of all code in this folder is **historical**. It is not maintained, and some scripts use retired packages (rgdal, rgeos, maptools, ReporteRs). File names are kept as originally written to preserve provenance.
 

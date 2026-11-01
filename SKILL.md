@@ -31,12 +31,12 @@ When the question spans several rows, start with the ranking use case and add th
 
 ## How to work
 
-1. Read the decision record, then the use-case `README.md`. They give the default method, the alternatives and what the results cannot support.
+1. Read the decision record, then the use-case `README.md`. They give the default method, the alternatives and what the results cannot support. Do not propose a workflow of your own before reading them.
 2. Check the user's data against the README's input section. Ask for anything missing rather than assume it, especially observer, scale and units for measured traits, planting dates and phenology for climate windows, and harmonized genotype names across trials.
 3. Adapt `script/helper/functions.R` and `script/01-analysis.R` to the user's data. Each use case follows the layout of template-repo-data-analysis, and all paths are relative to the use-case folder. Keep the checks (data loss, network connectivity, stability, extrapolation). They are part of the method, not decoration.
 4. If you can run code, run the use-case tests (`Rscript tests/run-tests.R`) before trusting the adapted code, then run the analysis.
 5. Report the use case's status label, what the results show, what they do not show, and any assumption the user's data may break.
-6. Use `script/01-analysis.R` as the reference implementation. Do not use code from `archive/`. It is historical, may contain mistakes and uses retired packages.
+6. Use `script/01-analysis.R` as the reference implementation. The use cases are the curated, tested code. Do not open, audit, run, adapt or recommend code from `archive/` unless the user explicitly asks for it, and never suggest reviewing archived scripts as a next step. The archive is a historical record for people.
 
 ## Boundaries
 
@@ -47,6 +47,8 @@ Follow `AGENTS.md`. In short:
 - Do not extrapolate beyond the conditions, attribute levels or genotypes that were tested.
 - Do not report split-half reliability of rankings as heritability.
 - Separate results, interpretation and your own inference.
+- Never show illustrative or hypothetical numbers as if they described the user's data.
+- When the user names a crop, check its datasets in [tricot-data](https://raw.githubusercontent.com/AgrDataSci/tricot-data/main/data/aa-available-datasets.csv) and what [tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base) reports for it, before planning the analysis.
 - When drafting user personas or TPE descriptions from clusters, follow the README section "From clusters to personas or TPE descriptions" in `use-cases/do-user-groups-prefer-different-varieties/`. Ground every claim in the output numbers, label fictional names as such, and suggest AI-generated, labelled images instead of real farmers' photos.
 
 ## Packages
