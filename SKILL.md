@@ -3,7 +3,7 @@ name: tricot-analysis-workflows
 description: Use when analysing tricot, ClimMob, on-farm ranking, participatory variety selection or consumer and product concept testing data, or when asked which varieties are preferred, which traits drive preference, whether user groups differ, how climate shapes performance, whether on-farm and on-station results agree, which measured lab or station traits explain preference, which concept consumers prefer, or how many participants a trial needs.
 ---
 
-# Analytical approaches from Bioversity International and Wageningen University
+# Analytical workflows for product testing with users in agriculture
 
 Tested R workflows for the main questions researchers at Bioversity International and Wageningen University ask of tricot and related data, much of it from the Africa-wide 1000FARMS on-farm trial network, with the reasoning behind each method. Use them to help the user analyse their own data the way the team would, while checking that the method fits their question and design.
 

@@ -1,4 +1,4 @@
-# Analytical approaches from Bioversity International and Wageningen University
+# Analytical workflows for product testing with users in agriculture
 
 > Tested R workflows for analysing tricot, on-farm ranking and consumer concept data, each with the reasoning behind the method, its alternatives and its limits.
 

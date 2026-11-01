@@ -5,7 +5,11 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/AgrDataSci/tricot-analysis-workflows/blob/main/LICENSE)
 <!-- badges: end -->
 
-# tricot-analysis-workflows
+# Analytical workflows for product testing with users in agriculture
+
+*AI-ready reasoning from rankings to decisions*
+
+> Kauê de Sousa, Brayden Youngberg, Joost van Heerwaarden, Hugo Dorado-Betancourt, Jacob van Etten
 
 The main analytical approaches used at Bioversity International and Wageningen University for tricot and on-farm ranking data, written so that researchers and AI agents can follow how we get from observations to scientific conclusions.
 
@@ -66,9 +70,7 @@ These workflows document how our team has approached particular questions. They 
 ## Authors
 
 - Kauê de Sousa, Bioversity International and University of Inland Norway
-- David Brown, Cornell University
-- Martina Occelli, ETH Zurich
-- Geon Kang, Scuola Superiore Sant'Anna, Pisa
+- Brayden Youngberg, Bioversity International
 - Joost van Heerwaarden, Wageningen University
 - Hugo Dorado-Betancourt, Wageningen University
 - Jacob van Etten, Bioversity International
