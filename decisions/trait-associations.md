@@ -7,6 +7,9 @@ Status: methodological rationale from Kauê de Sousa (Bioversity International),
 - **Who evaluates.** All ranking traits are evaluated by farmers in this workflow. Quantitative traits may be measured by researchers or farmers. Record observer, instrument, method, scale, timing and units. If unknown, ask the analyst rather than assume.
 - **Causality.** Correlation is not causal attribution. Document dependence, uncertainty and alternative explanations.
 
+- **Small samples.** Partial correlations from an inverted tau matrix need many participants who ranked every pair of traits. With about 20 to 30 participants per pair, bootstrap intervals of partial correlations can span almost the whole range from -1 to 1. Then report marginal Kendall tau with bootstrap intervals and say that partial associations cannot be estimated yet.
+- **Traits from different moments.** When traits are ranked at different times (establishment, winter, harvest), each pair is computed on the participants who answered both. Report the n of each pair, because attrition changes who is compared.
+
 ## Archive examples
 
 - `archive/groundnut-tanzania/` (Kendall partial correlation with backward selection)
