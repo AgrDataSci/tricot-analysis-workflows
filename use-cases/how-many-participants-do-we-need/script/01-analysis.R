@@ -1,5 +1,5 @@
 # How many participants do we need?
-# Status: reviewed-not-executed
+# Status: tested-on-synthetic-data
 # Decision record: decisions/ranking.md
 #
 # Scientific intent

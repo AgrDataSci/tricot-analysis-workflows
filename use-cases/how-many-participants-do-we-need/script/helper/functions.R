@@ -1,5 +1,5 @@
 # Functions for the use case "How many participants do we need?"
-# Status: reviewed-not-executed (see tests/)
+# Status: tested-on-synthetic-data (see tests/)
 # Decision record: decisions/ranking.md
 #
 # Scientific intent
