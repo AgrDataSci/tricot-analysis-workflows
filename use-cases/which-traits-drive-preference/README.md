@@ -24,6 +24,8 @@ One row per participant, in the ClimMob tricot format.
 | `<trait>_pos`, `<trait>_neg` | best and worst item for each trait, as A, B or C |
 | grouping variables | optional, for example gender |
 
+The reference trait is overall preference. In ClimMob data it is the most recent overall-type question, which may be coded `generalappreciation`, `generalpreference` or `grownext` rather than `overall`. Set `reference` in `script/01-analysis.R` to that column and keep any later overall-type question out of the explanatory traits. Earlier overall rankings can serve as the reference in a separate, stage-specific model with traits recorded at or before that stage. See "Which question is overall preference" in the [ranking decision record](../../decisions/ranking.md).
+
 Rows with ties, missing values, letters other than A, B, C, or best equal to worst are dropped for that trait and counted in the output. All ranked traits are evaluated by participants. Measured traits are out of scope here. If they are added, record observer, instrument, scale, timing and units first.
 
 ## Assumptions
