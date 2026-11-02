@@ -49,7 +49,7 @@ When the user asks for an analysis and supplies data, or asks for the scripts, r
 Skip this for quick exploratory questions, such as checking columns or a single summary, unless the user asks for the files.
 
 1. Name the project folder `<crop>-<use-case>-<YYYYMMDD>`, for example `cassava-which-traits-drive-preference-20261102`.
-2. Use the template folders that the analysis needs. Always include `data/`, `script/`, `output/`, `decisions/`, `metadata/` and `README.md`. Add `tests/` and `docs/` when the analysis has them.
+2. Use the template folders that the analysis needs. Always include `data/`, `script/`, `output/`, `decisions/`, `metadata/` and `README.md`. Add `tests/` and `docs/` when the analysis has them. Add an `.Rproj` file named after the project folder, copied from the template's, so the project opens in RStudio with the root as working directory.
 3. Put the user's input in `data/` unchanged. Write cleaned or derived data to `output/` from the scripts, never by hand.
 4. Number the scripts (`01-`, `02-`) and use paths relative to the project root, so the project runs on any computer.
 5. If the user supplied their own scripts and your scripts differ substantially from them, keep the originals unchanged in `script/user-script/`. Substantial means a different method, model, data filtering or outcome variable, not only renamed objects or updated paths. In the README, list what changed and why, script by script. When the changes are minor, edit the user's scripts in place and note the edits in the README.
@@ -60,7 +60,7 @@ Skip this for quick exploratory questions, such as checking columns or a single 
    - if no faithful equivalent exists for a method (for example PlackettLuce with ties, qvcalc or Plackett-Luce trees), do not approximate it. Deliver the untested R script without that output and tell the user.
 7. Copy the use-case decision record into `decisions/` and record any change you made to the default method and why.
 8. Fill `metadata/provenance.json` so each output points to its script, input file and decision record. Never invent a DOI, ORCID, license or funder. Write `null` and tell the user.
-9. Record the software of each run in `script/session-info/`, as the template does, and pin package versions in `renv.lock` when you can.
+9. Record the software of each run in `script/session-info/`, as the template does, and pin package versions in `renv.lock` when you can. Include `.Rprofile` and the `renv/` folder only when you ran `renv::snapshot()`. The template's `.Rprofile` activates renv, so without `renv/` R fails on startup.
 10. In `README.md`, state the scientific question, the use case and its status label, the commit or version of this repository you used, how to rerun the analysis, and what the results cannot support. Credit the workflow as described under Credit.
 11. Deliver the project as a zip file by default. Deliver it as a plain folder when the user works in a local project or repository.
 
