@@ -60,7 +60,7 @@ Skip this for quick exploratory questions, such as checking columns or a single 
    - if no faithful equivalent exists for a method (for example PlackettLuce with ties, qvcalc or Plackett-Luce trees), do not approximate it. Deliver the untested R script without that output and tell the user.
 7. Copy the use-case decision record into `decisions/` and record any change you made to the default method and why.
 8. Fill `metadata/provenance.json` so each output points to its script, input file and decision record. Never invent a DOI, ORCID, license or funder. Write `null` and tell the user.
-9. Record the R version and package versions with `renv.lock` or `sessionInfo()` in `output/session-info.txt`.
+9. Record the software of each run in `script/session-info/`, as the template does, and pin package versions in `renv.lock` when you can.
 10. In `README.md`, state the scientific question, the use case and its status label, the commit or version of this repository you used, how to rerun the analysis, and what the results cannot support. Credit the workflow as described under Credit.
 11. Deliver the project as a zip file by default. Deliver it as a plain folder when the user works in a local project or repository.
 
