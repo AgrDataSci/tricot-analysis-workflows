@@ -42,6 +42,30 @@ When the question spans several rows, start with the ranking use case and add th
 6. Report the use case's status label, what the results show, what they do not show, and any assumption the user's data may break.
 7. Use `script/01-analysis.R` as the reference implementation. The use cases are the curated, tested code. Do not open, audit, run, adapt or recommend code from `archive/` unless the user explicitly asks for it, and never suggest reviewing archived scripts as a next step. The archive is a historical record for people.
 
+## Deliver a reproducible project
+
+When the user asks for an analysis and supplies data, or asks for the scripts, return the full analysis as a project that follows [template-repo-data-analysis](https://doi.org/10.5281/zenodo.15224388). Show the main results in the chat as usual. The project is an addition, not a replacement.
+
+Skip this for quick exploratory questions, such as checking columns or a single summary, unless the user asks for the files.
+
+1. Name the project folder `<crop>-<use-case>-<YYYYMMDD>`, for example `cassava-which-traits-drive-preference-20261102`.
+2. Use the template folders that the analysis needs. Always include `data/`, `script/`, `output/`, `decisions/`, `metadata/` and `README.md`. Add `tests/` and `docs/` when the analysis has them.
+3. Put the user's input in `data/` unchanged. Write cleaned or derived data to `output/` from the scripts, never by hand.
+4. Number the scripts (`01-`, `02-`) and use paths relative to the project root, so the project runs on any computer.
+5. If the user supplied their own scripts and your scripts differ substantially from them, keep the originals unchanged in `script/user-script/`. Substantial means a different method, model, data filtering or outcome variable, not only renamed objects or updated paths. In the README, list what changed and why, script by script. When the changes are minor, edit the user's scripts in place and note the edits in the README.
+6. Generate every file in `output/` by running the scripts. If you cannot run R, run the analysis in Python or another language you can execute, then translate it to R for `script/`. In that case
+   - keep the code that produced the outputs in `script/other-language/`, so the outputs remain reproducible
+   - mark each R script as untested in its header and in the README
+   - name the packages you used in place of the R ones and say where results may differ
+   - if no faithful equivalent exists for a method (for example PlackettLuce with ties, qvcalc or Plackett-Luce trees), do not approximate it. Deliver the untested R script without that output and tell the user.
+7. Copy the use-case decision record into `decisions/` and record any change you made to the default method and why.
+8. Fill `metadata/provenance.json` so each output points to its script, input file and decision record. Never invent a DOI, ORCID, license or funder. Write `null` and tell the user.
+9. Record the R version and package versions with `renv.lock` or `sessionInfo()` in `output/session-info.txt`.
+10. In `README.md`, state the scientific question, the use case and its status label, the commit or version of this repository you used, how to rerun the analysis, and what the results cannot support. Credit the workflow as described under Credit.
+11. Deliver the project as a zip file by default. Deliver it as a plain folder when the user works in a local project or repository.
+
+Before packaging, check the input for personal data such as names, phone numbers, ID numbers or exact GPS points. Warn the user and ask whether to remove, pseudonymize or keep it. Do not include it by default.
+
 ## Boundaries
 
 Follow `AGENTS.md`. In short:
