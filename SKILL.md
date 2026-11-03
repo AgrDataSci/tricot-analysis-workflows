@@ -64,6 +64,8 @@ Skip this for quick exploratory questions, such as checking columns or a single 
 10. In `README.md`, state the scientific question, the use case and its status label, the commit or version of this repository you used, how to rerun the analysis, and what the results cannot support. Credit the workflow as described under Credit.
 11. Deliver the project as a zip file by default. Deliver it as a plain folder when the user works in a local project or repository.
 
+Draw every map in the Equal Earth projection (EPSG:8857), the equal-area world map the UN General Assembly endorsed in September 2026. Keep coordinates in WGS84 for calculations and project only to draw, for example `coord_sf(crs = sf::st_crs("EPSG:8857"), default_crs = sf::st_crs(4326))`. Interactive tile maps stay in Web Mercator. The rule is in `AGENTS.md`.
+
 Before packaging, check the input for personal data such as names, phone numbers, ID numbers or exact GPS points. Warn the user and ask whether to remove, pseudonymize or keep it. Do not include it by default.
 
 ## Boundaries
