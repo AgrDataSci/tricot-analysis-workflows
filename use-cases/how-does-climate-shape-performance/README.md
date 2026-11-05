@@ -16,7 +16,7 @@ It does not establish that climate causes the difference. Climate is confounded 
 
 ## Input data
 
-- Tricot rankings with a planting date per plot.
+- tricot rankings with a planting date per plot.
 - Daily maximum and minimum temperature per plot as an array `[plot, day, 2]`, and daily rainfall as a matrix `[plot, day]`, with dates (YYYY-MM-DD) as names. With real data these come from documented sources, for example CHIRPS through the chirps package and NASA POWER or AgERA5 through climatrends.
 - Phenology for the crop and varieties, the base temperature and the degree days to the target stage, with its source.
 

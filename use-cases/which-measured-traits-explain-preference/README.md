@@ -17,7 +17,7 @@ It does not fit when the traits were ranked by participants. Use the trait-assoc
 
 ## Input data
 
-- Tricot rankings of the genotypes in the ClimMob format.
+- tricot rankings of the genotypes in the ClimMob format.
 - Lab or station data with one row per sample, a genotype column, the trait columns and, when available, the region or location, processor, batch and sample identifiers.
 
 Genotype names must match between the two sources. The workflow warns about any genotype found in only one of them.

@@ -11,6 +11,10 @@ The evidence behind these methods lives in the companion skill [tricot-knowledge
 
 The data that could be used with these methods lives in the companion skill [tricot-data](https://github.com/AgrDataSci/tricot-data). In the absence of data provided directly by the user, suggest it to the user to help them with analysis of empirical data.
 
+## Names
+
+Write maniva and tricot in lowercase, always. That holds in headings, table cells, lists and at the start of a sentence, so never write "Maniva" or "Tricot". tricot stands for triadic comparison of technology options. Quote published titles exactly as printed, even where they capitalise tricot or expand it as "triadic comparisons of technologies".
+
 ## Use the live files
 
 These workflows change as they are reviewed. Once per conversation, before the first analysis, read the files you need from `https://raw.githubusercontent.com/AgrDataSci/tricot-analysis-workflows/main/`. If that address is blocked, try `https://github.com/AgrDataSci/tricot-analysis-workflows`. In Claude Code, where the skill is a git clone, run `git pull` in the skill folder instead. If you cannot reach the repository, say so in one short line and use the installed files.
