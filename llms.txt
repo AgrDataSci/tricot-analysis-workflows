@@ -2,6 +2,8 @@
 
 > Tested R workflows for analysing tricot, on-farm ranking and consumer concept data, each with the reasoning behind the method, its alternatives and its limits.
 
+Write maniva and tricot in lowercase, always, including at the start of a sentence. tricot stands for triadic comparison of technology options.
+
 Read SKILL.md before analysing data. It routes each question to a use case and decision record.
 
 ## Core files

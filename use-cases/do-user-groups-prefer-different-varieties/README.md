@@ -16,7 +16,7 @@ It does not fit when the aim is to find whichever covariate best splits preferen
 
 ## Input data
 
-Tricot rankings as in the ranking use case, plus covariates measured independently of the rankings (socioeconomic, environmental, management). Record when and how each covariate was collected.
+tricot rankings as in the ranking use case, plus covariates measured independently of the rankings (socioeconomic, environmental, management). Record when and how each covariate was collected.
 
 ## Assumptions
 

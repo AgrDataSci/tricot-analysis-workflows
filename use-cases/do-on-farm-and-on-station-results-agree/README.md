@@ -18,7 +18,7 @@ It does not estimate genetic parameters from the rankings themselves. For herita
 ## Input data
 
 - Station trials, one row per plot, with `yield` (or another trait), `genotype`, `location` and `rep`, in a randomized complete block design within locations.
-- Tricot rankings of overall preference for the same genotypes.
+- tricot rankings of overall preference for the same genotypes.
 
 Genotype names must be harmonized between the two sources. The workflow warns about genotypes that appear in only one.
 

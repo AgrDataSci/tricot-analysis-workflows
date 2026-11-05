@@ -8,6 +8,7 @@ This repository documents how researchers at Bioversity International and Wageni
 2. Read the decision record in `decisions/` before proposing any method or using any code. It states the default method, the alternatives, and the limits of interpretation. Do not propose a workflow of your own before reading it.
 3. Work from `use-cases/`. They are the curated, tested implementations of each approach. Check the status label of each use case and report it to the user.
 4. Do not open, audit, run, adapt or recommend code from `archive/` unless the user explicitly asks for it. The archive is a historical record for people, kept for provenance. It may contain mistakes, deprecated packages (rgdal, rgeos, maptools, ReporteRs) and hard-coded paths. Never suggest reviewing archived scripts as a next step.
+5. Write maniva and tricot in lowercase, always, including headings, table cells and the start of a sentence. Never write "Maniva" or "Tricot". tricot stands for triadic comparison of technology options. Quote published titles exactly as printed, even where they capitalise tricot or expand it as "triadic comparisons of technologies".
 
 ## Rules
 
