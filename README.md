@@ -5,6 +5,8 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/AgrDataSci/tricot-analysis-workflows/blob/main/LICENSE)
 <!-- badges: end -->
 
+<a href="https://github.com/AgrDataSci/maniva"><img src="docs/maniva-logo.svg" alt="Part of maniva" height="64" align="right"></a>
+
 # Analytical workflows for product testing with users in agriculture
 
 *AI-ready reasoning from rankings to decisions*
@@ -13,7 +15,7 @@
 
 The main analytical approaches used at Bioversity International and Wageningen University for tricot and on-farm ranking data, written so that researchers and AI agents can follow how we get from observations to scientific conclusions.
 
-This repository is the analysis layer of [ai-ready-documentation](https://github.com/AgrDataSci/ai-ready-documentation). The other layers answer what we know ([tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base)), what we observed ([tricot-data](https://github.com/AgrDataSci/tricot-data)) and how standard ClimMob reports are produced ([ClimMob-analysis](https://github.com/AgrDataSci/ClimMob-analysis)). This one explains how we reason with the data and why.
+This repository is the analysis layer of [maniva](https://github.com/AgrDataSci/maniva). The other layers answer what we know ([tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base)), what we observed ([tricot-data](https://github.com/AgrDataSci/tricot-data)) and how standard ClimMob reports are produced ([ClimMob-analysis](https://github.com/AgrDataSci/ClimMob-analysis)). This one explains how we reason with the data and why.
 
 ## About 1000FARMS
 
