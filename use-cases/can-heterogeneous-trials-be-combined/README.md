@@ -50,7 +50,7 @@ Record the climate source, its spatial and temporal resolution and the download 
 
 ## Interpretation
 
-On the synthetic data, 23 of 26 trials pass the screening and give about 80 rankings of about 25 genotypes on three metrics. The tree splits the units on a rainfall index of the evaluation period, the simulated driver is the maximum length of dry spell, and never on temperature. In the dry node the five dry-sensitive genotypes lose worth relative to the reference, and in the other node they do not. The split variable is selected in most of the 100 subsample refits. Reliability of the reference is 0.5 by definition, and genotypes evaluated in few units in a node have wide quasi-standard errors. Run the script to see the numbers for the current versions of the packages.
+On the synthetic data, 23 of 26 trials pass the screening and give about 80 rankings of about 25 genotypes on three metrics. The tree splits the units on a rainfall index of the evaluation period, the simulated driver is the maximum length of dry spell, and never on temperature. In the dry node the seven dry-sensitive genotypes lose worth relative to the reference, and in the other node they do not. The split variable is selected in most of the 100 subsample refits. Reliability of the reference is 0.5 by definition, and genotypes evaluated in few units in a node have wide quasi-standard errors. Run the script to see the numbers for the current versions of the packages.
 
 A split shows that the ranking differs between conditions. It is consistent with the simulated effect, and in real data it is a hypothesis about the environment, not a mechanism.
 

@@ -8,7 +8,7 @@
 #
 # The truth built into the simulation
 #   - 30 genotypes. "Reference" has the highest resistance, like Calcutta 4
-#     in the paper. Five genotypes are dry-sensitive. Their resistance drops
+#     in the paper. Seven genotypes are dry-sensitive. Their resistance drops
 #     by `effect` when the longest dry spell in the evaluation period (MLDS)
 #     exceeds `threshold` days. Nothing else depends on climate.
 #   - Three metrics score the same latent resistance. "dii" is a disease
@@ -24,7 +24,7 @@
 simulate_heterogeneous_trials = function(n_trials = 26,
                                          n_items = 30,
                                          threshold = 13,
-                                         effect = 2,
+                                         effect = 2.5,
                                          seed = 2026) {
 
   set.seed(seed)
@@ -38,7 +38,7 @@ simulate_heterogeneous_trials = function(n_trials = 26,
             paste0("Landrace ", sprintf("%02d", 1:17)))
   items = items[seq_len(n_items)]
   resistance = stats::setNames(c(2.5, stats::rnorm(n_items - 1, 0, 1)), items)
-  sensitive = sample(items[-1], 5)
+  sensitive = sample(items[-1], 7)
 
   # one site per trial, with its own tendency to long dry spells
   dry_persistence = stats::runif(n_trials, 0.50, 0.95)
@@ -125,7 +125,7 @@ simulate_heterogeneous_trials = function(n_trials = 26,
     do.call("rbind", lapply(seq_len(n_blocks[i]), function(b) {
       latent = resistance[g] -
         effect * cycles$dry[k] * (g %in% sensitive) +
-        stats::rnorm(length(g), sd = 0.6)
+        stats::rnorm(length(g), sd = 0.45)
       data.frame(trial = trial[i], cycle = cycles$cycle[k],
                  block = if (level[i] == "block") b else NA_integer_,
                  genotype = g,

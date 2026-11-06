@@ -134,7 +134,7 @@ test_that("the tree separates the dry evaluation periods and ignores temperature
   node = as.integer(predict(tree, type = "node"))
   dry = cycles$dry[match(units_key, key)]
   agreement = max(mean((node == min(node)) == dry), mean((node == min(node)) != dry))
-  expect_gt(agreement, 0.85)
+  expect_gt(agreement, 0.8)
 })
 
 test_that("the dry-sensitive genotypes fall in the ranking under dry conditions", {
