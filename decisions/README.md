@@ -23,6 +23,7 @@ Supplied by the researcher and not independently verified in these records.
 - [Dorado et al. 2026, TAG](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/dorado-2026-tag.md)
 - [Brown et al. 2022, Crop Science](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/brown-2022-cropsci.md)
 - [Brown et al. 2023, Agronomy Journal](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/brown-2023-agronj.md)
+- [Gesesse et al. 2023, PNAS](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/gesesse-2023-pnas.md)
 - [van Etten et al. 2019, PNAS](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/vanetten-2019-pnas.md)
 - [Voss et al. 2025, PPP](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/voss-2025-ppp.md)
 - [van Etten et al. 2023, PNAS](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/vanetten-2023-pnas.md)

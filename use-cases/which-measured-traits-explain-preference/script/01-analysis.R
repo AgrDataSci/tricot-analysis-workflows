@@ -2,7 +2,7 @@
 # Status: tested-on-synthetic-data
 # Decision record: decisions/trait-associations.md, decisions/genetic-gain.md
 # Derived from: archive/rtbfoods-eba-nigeria (02_estimate_blups.R, 03_pladmm.R),
-#   archive/teff-elife/01_farmers_oa.R
+#   archive/etnam-farmer-ratings/01_farmers_oa.R
 #
 # Run from the use-case folder (open the .Rproj) with  Rscript script/01-analysis.R
 

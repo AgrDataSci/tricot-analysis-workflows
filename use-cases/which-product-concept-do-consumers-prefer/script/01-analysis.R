@@ -2,7 +2,7 @@
 # Status: tested-on-synthetic-data
 # Decision record: decisions/consumer-concept-testing.md
 # Derived from: archive/rtbfoods-consumer-testing, archive/maize-concept-testing,
-#   archive/mip-concept-testing, archive/teff-elife
+#   archive/mip-concept-testing, archive/etnam-farmer-ratings
 #
 # Run from the use-case folder (open the .Rproj) with  Rscript script/01-analysis.R
 

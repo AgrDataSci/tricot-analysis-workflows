@@ -10,5 +10,5 @@ Status: methodological rationale from Kauê de Sousa (Bioversity International),
 
 - `archive/crop-variety-management-pnas/`
 - `archive/osiris-1000farms/`
-- `archive/teff-elife/`
+- `archive/etnam-farmer-ratings/`
 - `archive/worldveg-choose-growth-thrive/`

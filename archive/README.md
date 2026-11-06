@@ -28,7 +28,7 @@ Status of all code in this folder is **historical**. It is not maintained, and s
 | rhomis | household indicators, gender, food security |
 | rtbfoods-consumer-testing | consumer testing |
 | rtbfoods-eba-nigeria | eba consumer testing in Nigeria, lab trait BLUPs, pladmm and pltree with trait covariates |
-| teff-elife | farmer data, environmental data |
+| etnam-farmer-ratings | farmer Likert scores to paired comparisons and rankings, Plackett-Luce trees on gender and location, pladmm with station BLUPs, environmental data |
 | tricot-rhomis | linking tricot and RHoMIS data |
 | wageningen-genetic-gain-cassava | heritability, genetic gain, on-farm vs on-station |
 | wageningen-genetic-gain-groundnut | heritability, genetic gain, on-farm vs on-station |
@@ -45,3 +45,4 @@ Some projects have their own public repository, which is the reference version o
 | (not archived here) | Brown et al. (2022), Crop Science, https://doi.org/10.1002/csc2.20817 | https://github.com/AgrDataSci/Data_synthesis_bean_tricot_CA |
 | musa-blsd-data-synthesis | Brown et al. (2023), Agronomy Journal, https://doi.org/10.1002/agj2.21436 | https://github.com/AgrDataSci/Data_Synthesis_Musa_Trials_BLSD |
 | cgiar-csi-2020 | webinar, CGIAR CSI Annual Meeting 2020 | https://github.com/AgrDataSci/cgiar-csi-2020 |
+| etnam-farmer-ratings | Gesesse et al. (2023), PNAS, https://doi.org/10.1073/pnas.2205774119 | https://github.com/AgrDataSci/teff-breeding-elife (mislabelled as the teff paper) |

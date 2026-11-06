@@ -2,7 +2,7 @@
 
 **Status** tested-on-synthetic-data
 **Decision record** [climate and environment](../../decisions/climate-environment.md)
-**Derived from** [archive/crop-variety-management-pnas](../../archive/crop-variety-management-pnas/), [archive/teff-elife](../../archive/teff-elife/), [archive/osiris-1000farms](../../archive/osiris-1000farms/) `02-get-climate-data.R`, [archive/worldveg-choose-growth-thrive](../../archive/worldveg-choose-growth-thrive/) `03-get-climate-covar.R`
+**Derived from** [archive/crop-variety-management-pnas](../../archive/crop-variety-management-pnas/), [archive/etnam-farmer-ratings](../../archive/etnam-farmer-ratings/), [archive/osiris-1000farms](../../archive/osiris-1000farms/) `02-get-climate-data.R`, [archive/worldveg-choose-growth-thrive](../../archive/worldveg-choose-growth-thrive/) `03-get-climate-covar.R`
 
 ## Scientific question
 
