@@ -159,7 +159,7 @@ test_that("split stability returns frequencies that sum to at most B", {
 
 test_that("reliability, coverage and fit are reported per node", {
   tree = fit_synthesis_tree(M, covariates)
-  rel = gosset::reliability(tree, ref = "Reference")
+  rel = suppressWarnings(node_reliability(tree, ref = "Reference"))
   expect_true(all(rel$reliability[rel$item == "Reference"] == 0.5))
   ev = evaluations_by_node(tree, M)
   expect_equal(sum(ev[, -1]), sum(M > 0))

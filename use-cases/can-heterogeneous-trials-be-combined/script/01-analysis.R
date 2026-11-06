@@ -126,7 +126,7 @@ cat("Refits with no split:", stability$no_split, "of 100\n")
 worth = worth_by_node(tree, ref = "Reference")
 print(worth, digits = 2)
 
-rel = reliability(tree, ref = "Reference")
+rel = node_reliability(tree, ref = "Reference")
 print(rel, digits = 3)
 
 evals = evaluations_by_node(tree, M)

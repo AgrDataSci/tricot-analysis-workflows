@@ -37,7 +37,7 @@ simulate_heterogeneous_trials = function(n_trials = 26,
             paste0("Hybrid ", sprintf("%02d", 1:12)),
             paste0("Landrace ", sprintf("%02d", 1:17)))
   items = items[seq_len(n_items)]
-  resistance = stats::setNames(c(2.5, stats::rnorm(n_items - 1, 0, 1)), items)
+  resistance = stats::setNames(c(2, stats::rnorm(n_items - 1, 0, 0.8)), items)
   sensitive = sample(items[-1], 7)
 
   # one site per trial, with its own tendency to long dry spells
@@ -125,7 +125,7 @@ simulate_heterogeneous_trials = function(n_trials = 26,
     do.call("rbind", lapply(seq_len(n_blocks[i]), function(b) {
       latent = resistance[g] -
         effect * cycles$dry[k] * (g %in% sensitive) +
-        stats::rnorm(length(g), sd = 0.45)
+        stats::rnorm(length(g), sd = 0.6)
       data.frame(trial = trial[i], cycle = cycles$cycle[k],
                  block = if (level[i] == "block") b else NA_integer_,
                  genotype = g,

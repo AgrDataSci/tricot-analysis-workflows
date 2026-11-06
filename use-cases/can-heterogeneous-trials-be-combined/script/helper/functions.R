@@ -505,6 +505,45 @@ worth_by_node = function(tree, ref) {
 }
 
 
+#' Reliability per node, with a fallback when quasi-variances fail
+#'
+#' gosset::reliability() gives the probability of outperforming the reference
+#' with quasi-standard errors from qvcalc. In sparse pooled data a node can
+#' have genotypes with so few evaluations, or so clearly ordered, that the
+#' information matrix is not positive definite and qvcalc stops. The
+#' reliability itself only needs the worth, so it is then computed from the
+#' node coefficients without standard errors, with a warning. Report it as
+#' such, and do not read a reliability without a standard error as precise.
+#'
+#' @param tree pltree
+#' @param ref character, the reference genotype
+#' @return data.frame with node, item, reliability, reliabilitySE (NA in the
+#'   fallback) and worth
+node_reliability = function(tree, ref) {
+
+  out = tryCatch(gosset::reliability(tree, ref = ref), error = function(e) NULL)
+
+  if (!is.null(out)) {
+    return(data.frame(out[, c("node", "item", "reliability", "reliabilitySE", "worth")],
+                      row.names = NULL))
+  }
+
+  warning("quasi-variances could not be computed, reliability is reported ",
+          "from the worth without standard errors", call. = FALSE)
+
+  nodes = partykit::nodeids(tree, terminal = TRUE)
+  do.call("rbind", lapply(nodes, function(k) {
+    lw = stats::coef(tree, node = k, ref = ref, log = TRUE)
+    worth = exp(lw) / sum(exp(lw))
+    data.frame(node = k, item = names(worth),
+               reliability = as.numeric(worth / (worth[ref] + worth)),
+               reliabilitySE = NA_real_, worth = as.numeric(worth),
+               row.names = NULL)
+  }))
+
+}
+
+
 #' Number of evaluations per genotype per terminal node
 #'
 #' The distribution of evaluations across nodes is unbalanced in pooled data,

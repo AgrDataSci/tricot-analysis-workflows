@@ -39,7 +39,7 @@ Record the climate source, its spatial and temporal resolution and the download 
 5. Set the evaluation window of each cycle, with later cycles starting where the previous one ended (`evaluation_window`), and compute rainfall and temperature indices with climatrends over it (`climate_indices`). Drop covariates with near-zero variance and report strong correlations (`screen_covariates`).
 6. Fit a Plackett-Luce tree in explanatory mode (`fit_synthesis_tree`), alpha 0.05 with Bonferroni correction, minimum node size 35% of the units and two pseudo-rankings to keep the network connected after a split.
 7. Refit the tree on subsamples of 80% of the units and count how often each variable is selected (`split_stability`), following Philipp et al. (2018) and the stablelearner package used in the paper.
-8. Report log worth per node against the reference (`worth_by_node`), reliability, the probability of outperforming the reference (`gosset::reliability`, Eskridge and Mumm 1992), the number of evaluations per genotype per node (`evaluations_by_node`) and the goodness of fit (`goodness_of_fit`).
+8. Report log worth per node against the reference (`worth_by_node`), reliability, the probability of outperforming the reference (`node_reliability`, which wraps `gosset::reliability`, Eskridge and Mumm 1992, and falls back to worth without standard errors when quasi-variances fail), the number of evaluations per genotype per node (`evaluations_by_node`) and the goodness of fit (`goodness_of_fit`).
 
 ## Alternatives
 
