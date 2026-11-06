@@ -37,6 +37,7 @@ Start from your scientific question, not from a method name.
 | Do on-farm and on-station results agree? Is preference heritable? | [do-on-farm-and-on-station-results-agree](use-cases/do-on-farm-and-on-station-results-agree/) | [genetic gain](decisions/genetic-gain.md) |
 | Which measured traits (lab or station) explain preference? | [which-measured-traits-explain-preference](use-cases/which-measured-traits-explain-preference/) | [trait associations](decisions/trait-associations.md), [genetic gain](decisions/genetic-gain.md) |
 | Which product concept do consumers prefer? | [which-product-concept-do-consumers-prefer](use-cases/which-product-concept-do-consumers-prefer/) | [consumer and concept testing](decisions/consumer-concept-testing.md) |
+| Can trials with different measurements and designs be combined into one analysis? | [can-heterogeneous-trials-be-combined](use-cases/can-heterogeneous-trials-be-combined/) | [data synthesis](decisions/data-synthesis.md) |
 
 ## Structure
 

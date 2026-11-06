@@ -11,6 +11,7 @@ Status of all code in this folder is **historical**. It is not maintained, and s
 | Folder | Main topics |
 |---|---|
 | amaranth-africa | data cleaning and merging, ranking |
+| cgiar-csi-2020 | station yields pooled as rankings, climate covariates, Plackett-Luce trees |
 | crop-variety-management-pnas | climate covariates, Plackett-Luce trees, variety portfolios, spatial extrapolation |
 | ethiopia-grass | ranking |
 | groundnut-tanzania | Kendall partial correlation, backward selection, clusters, trial maps |
@@ -19,6 +20,7 @@ Status of all code in this folder is **historical**. It is not maintained, and s
 | maize-concept-testing | concept testing, co-occurrence analysis |
 | mip-concept-testing | concept testing, clusters, model validation |
 | moyo-et-al-sweetpotato | consumer tasting, text analysis |
+| musa-blsd-data-synthesis | heterogeneous trial data converted to rankings, AgERA5 climate covariates, Plackett-Luce trees, stability, reliability |
 | nextgen-cassava | ranking, Plackett-Luce trees |
 | occelli-tricot-pvs | econometric analysis, food security |
 | osiris-1000farms | climate data, clusters |
@@ -41,3 +43,5 @@ Some projects have their own public repository, which is the reference version o
 | occelli-tricot-pvs | Occelli et al. (2024), Agricultural Economics, https://doi.org/10.1111/agec.12819 | https://github.com/AgrDataSci/socioeco-tricot |
 | potato-kang-et-al | Kang et al. (2025), Experimental Agriculture, https://doi.org/10.1017/S0014479725100100 | not yet public |
 | (not archived here) | Brown et al. (2022), Crop Science, https://doi.org/10.1002/csc2.20817 | https://github.com/AgrDataSci/Data_synthesis_bean_tricot_CA |
+| musa-blsd-data-synthesis | Brown et al. (2023), Agronomy Journal, https://doi.org/10.1002/agj2.21436 | https://github.com/AgrDataSci/Data_Synthesis_Musa_Trials_BLSD |
+| cgiar-csi-2020 | webinar, CGIAR CSI Annual Meeting 2020 | https://github.com/AgrDataSci/cgiar-csi-2020 |
