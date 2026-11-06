@@ -1,6 +1,6 @@
 ---
 name: tricot-analysis-workflows
-description: Use when analysing tricot, ClimMob, on-farm ranking, participatory variety selection or consumer and product concept testing data, or when asked which varieties are preferred, which traits drive preference, whether user groups differ, how climate shapes performance, whether on-farm and on-station results agree, which measured lab or station traits explain preference, which concept consumers prefer, or how many participants a trial needs.
+description: Use when analysing tricot, ClimMob, on-farm ranking, participatory variety selection or consumer and product concept testing data, or when asked which varieties are preferred, which traits drive preference, whether user groups differ, how climate shapes performance, whether on-farm and on-station results agree, which measured lab or station traits explain preference, which concept consumers prefer, how many participants a trial needs, or whether trials with different metrics, designs, genotypes or years can be pooled into one analysis (data synthesis).
 ---
 
 # Analytical workflows for product testing with users in agriculture
@@ -33,6 +33,7 @@ Start from the user's question, not from a method name.
 | Do on-farm and on-station results agree? | `use-cases/do-on-farm-and-on-station-results-agree/` | `decisions/genetic-gain.md` |
 | Which measured traits (lab or station) explain preference? | `use-cases/which-measured-traits-explain-preference/` | `decisions/trait-associations.md`, `decisions/genetic-gain.md` |
 | Which product concept do consumers prefer? | `use-cases/which-product-concept-do-consumers-prefer/` | `decisions/consumer-concept-testing.md` |
+| Can trials with different measurements and designs be combined into one analysis? | `use-cases/can-heterogeneous-trials-be-combined/` | `decisions/data-synthesis.md` |
 
 When the question spans several rows, start with the ranking use case and add the others. When no row fits, say so, use the closest decision record as guidance, and label the approach as your own methodological inference.
 
