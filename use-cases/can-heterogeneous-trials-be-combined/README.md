@@ -1,6 +1,6 @@
 # Can trials with different measurements and designs be combined into one analysis?
 
-**Status** reviewed-not-executed
+**Status** tested-on-synthetic-data
 **Decision record** [data synthesis](../../decisions/data-synthesis.md)
 **Derived from** [archive/musa-blsd-data-synthesis](../../archive/musa-blsd-data-synthesis/) (Brown et al. 2023, Agronomy Journal, [10.1002/agj2.21436](https://doi.org/10.1002/agj2.21436)) and [archive/cgiar-csi-2020](../../archive/cgiar-csi-2020/) `wheat.R`, where station yields from 255 sites in India were first pooled as rankings
 
@@ -50,9 +50,9 @@ Record the climate source, its spatial and temporal resolution and the download 
 
 ## Interpretation
 
-On the synthetic data, 23 of 26 trials pass the screening and give about 80 rankings of about 25 genotypes on three metrics. The tree splits the units on a rainfall index of the evaluation period, the simulated driver is the maximum length of dry spell, and never on temperature. In the dry node the seven dry-sensitive genotypes lose worth relative to the reference, and in the other node they do not. The split variable is selected in most of the 100 subsample refits. Reliability of the reference is 0.5 by definition, and genotypes evaluated in few units in a node have wide quasi-standard errors. Run the script to see the numbers for the current versions of the packages.
+On the synthetic data (run of 6 November 2026, R 4.6.2, PlackettLuce 0.4.5, gosset 1.6.0, climatrends 1.3.0), 23 of 26 trials pass the screening, 15 on the disease index, 5 on youngest leaf spotted and 3 on days to symptoms. They give 105 rankings of 29 genotypes, after 202 tied entries are dropped. No genotype is removed for connectivity or rarity. The tree makes one split, on heavy-rain days (R10mm) at 20, with 67 rankings on the wetter side and 38 on the drier side. R10mm is selected in 89 of 100 subsample refits, and 5 refits make no split. The simulated driver is the maximum length of dry spell, and in this simulation the sites with long dry spells are also the sites with fewer heavy-rain days, so the tree picks a correlated rainfall index and still separates the simulated dry periods in 81% of the units (85 of 105). Temperature is never used. The dry-sensitive genotypes lose worth in the drier node and not in the wetter one. McFadden pseudo R2 is 0.43 and the average Kendall tau between observed and fitted rankings is 0.75. In one node the quasi-variances cannot be computed, so reliability there comes from the worth alone, without standard errors, as the warning says.
 
-A split shows that the ranking differs between conditions. It is consistent with the simulated effect, and in real data it is a hypothesis about the environment, not a mechanism.
+This mirrors the paper, where the dry spell index was selected while rainfall totals did not differ between the nodes. The report of correlated covariates is the place to see which other indices could have been chosen. A split shows that the ranking differs between conditions. It is consistent with the simulated effect, and in real data it is a hypothesis about the environment, not a mechanism.
 
 ## Limitations
 
@@ -68,4 +68,5 @@ A split shows that the ranking differs between conditions. It is consistent with
 - `script/01-analysis.R` is the workflow. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
 - `script/helper/simulate-data.R` simulates the trials, the climate and the metrics.
 - `tests/` holds the tests, run with `Rscript tests/run-tests.R`.
+- `output/worth-by-node.png` shows log worth per node with point size by number of evaluations. `output/synthesis-tree.png` is the tree plot, drawn only when node standard errors can be computed.
 - `references.bib` lists the publications behind the method.
