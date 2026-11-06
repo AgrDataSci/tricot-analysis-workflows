@@ -11,8 +11,12 @@ Status: methodological rationale from Kauê de Sousa (Bioversity International),
 - **Traits from different moments.** When traits are ranked at different times (establishment, winter, harvest), each pair is computed on the participants who answered both. Report the n of each pair, because attrition changes who is compared.
 - **Reference outcome.** Use the most recent overall-type question as the reference, whatever its ClimMob code (`overall`, `generalappreciation`, `generalpreference`). Use `grownext` as reference only when none of these exists, and otherwise report its Kendall tau with the reference as a consistency check. See "Which question is overall preference" in [ranking](ranking.md). Never enter a later overall-type question as an explanatory trait. When the question is about a specific stage, run a separate model with that stage's overall ranking as reference, using only traits recorded at or before it.
 
+- **Measured traits as item covariates.** When traits are measured in the lab or on station (BLUPs of yield components, texture, colour, phenology), model log worth as a linear function of them with `PlackettLuce::pladmm()`, test the covariate model against the free Plackett-Luce model, and read a coefficient as the change in log worth per unit of the trait, holding the others fixed. Fit it per participant group or per tree node to see whether groups weigh the traits differently, as the EtNAM scripts did by gender and location (use case `which-measured-traits-explain-preference`, scripts in `archive/rtbfoods-eba-nigeria/` and `archive/etnam-farmer-ratings/`). Coefficients depend on the scale of each trait, so standardise or report the scale, and do not compare raw coefficients between groups whose covariates were scaled differently.
+
 ## Archive examples
 
 - `archive/groundnut-tanzania/` (Kendall partial correlation with backward selection)
 - `archive/issd-ethiopia/`
 - `archive/potato-kang-et-al/`
+- `archive/rtbfoods-eba-nigeria/` (lab trait BLUPs as item covariates, pladmm)
+- `archive/etnam-farmer-ratings/` (station BLUPs as item covariates by gender and location)
