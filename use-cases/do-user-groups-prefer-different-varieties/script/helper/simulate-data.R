@@ -60,3 +60,57 @@ if (sys.nframe() == 0L) {
   dat = simulate_tricot()
   utils::write.csv(dat, "data/synthetic-tricot.csv", row.names = FALSE)
 }
+
+
+# Simulate tricot data with a predefined group confounded with site
+#
+# The truth built into the simulation
+#   - Two sites with opposite preferences, as when the same varieties meet
+#     different growing conditions.
+#   - Women are concentrated in the south site (share_women_south) and men
+#     in the north (share_women_north), as in trials where women were
+#     recruited mostly in some districts.
+#   - With gender_effect = FALSE gender has no effect on preference within a
+#     site, so any difference between women and men pooled over sites is a
+#     site effect. With gender_effect = TRUE women give two varieties a
+#     higher worth in both sites.
+simulate_known_groups = function(n_per_site = 300,
+                                 n_items = 8,
+                                 share_women_north = 0.15,
+                                 share_women_south = 0.75,
+                                 gender_effect = FALSE,
+                                 shift = 1.5,
+                                 seed = 2026) {
+
+  set.seed(seed)
+
+  items = c("Check", paste0("Variety ", sprintf("%02d", seq_len(n_items - 1))))
+
+  site = rep(c("north", "south"), each = n_per_site)
+  p_women = ifelse(site == "north", share_women_north, share_women_south)
+  gender = ifelse(stats::runif(length(site)) < p_women, "woman", "man")
+  n = length(site)
+
+  lw_north = stats::setNames(seq(1.2, -1.2, length.out = n_items), items)
+  lw_south = stats::setNames(rev(lw_north), items)
+  bonus = stats::setNames(rep(0, n_items), items)
+  if (gender_effect) bonus[c("Variety 03", "Variety 05")] = shift
+
+  alloc = t(replicate(n, sample(items, 3)))
+  colnames(alloc) = c("item_A", "item_B", "item_C")
+
+  gumbel = function(n) -log(-log(stats::runif(n)))
+
+  bw = t(vapply(seq_len(n), function(i) {
+    lw = if (site[i] == "north") lw_north else lw_south
+    if (gender[i] == "woman") lw = lw + bonus
+    u = lw[alloc[i, ]] + gumbel(3)
+    o = order(u, decreasing = TRUE)
+    c(LETTERS[o[1]], LETTERS[o[3]])
+  }, character(2)))
+  colnames(bw) = c("overall_pos", "overall_neg")
+
+  data.frame(id = seq_len(n), alloc, bw, site = site, gender = gender,
+             stringsAsFactors = FALSE)
+
+}

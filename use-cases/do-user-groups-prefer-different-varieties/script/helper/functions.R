@@ -2,7 +2,14 @@
 # Status: tested-on-synthetic-data (see tests/)
 # Decision record: decisions/socioeconomic-heterogeneity.md and decisions/ranking.md
 #
-# Scientific intent
+# Two entry points
+#   A. Predefined groups (women and men, districts). Check the answers per
+#      group, check confounding with site, test the groups within sites and
+#      report worth with quasi-standard errors (functions at the end of
+#      this file, from group_eligibility onwards).
+#   B. User types from covariates, below.
+#
+# Scientific intent of part B
 #   Find groups of participants (user personas) from socioeconomic,
 #   environmental and management covariates, then ask whether variety
 #   preferences differ between those groups. The groups are defined without
@@ -375,5 +382,285 @@ famd_scores = function(covariates, ncp = NULL) {
   scores = as.data.frame(f$ind$coord[, seq_len(ncp), drop = FALSE])
   attr(scores, "eigenvalues") = eig
   scores
+
+}
+
+
+# ................................................................
+# Predefined groups (women and men, districts, projects, age classes)
+#
+# When the groups were designed into the study there is nothing to cluster.
+# The question is whether the groups differ in preference, and whether that
+# difference belongs to the group or to where the group happens to be. The
+# functions below follow the rules of the ClimMob report workflow
+# (AgrDataSci/ClimMob-analysis, R/44_group_analysis.R)
+#   - unlabelled answers are not compared
+#   - a group needs at least min_n valid answers (20 by default)
+#   - when the smallest group holds less than 25% of the answers the pooled
+#     ranking is dominated by the largest group, so a balanced ranking is
+#     reported beside it
+# and add what the report does not do
+#   - check whether the group is confounded with site or district
+#   - test the group within strata, so a site effect is not read as a
+#     group effect
+#   - report worth with quasi-standard errors and the n behind each group
+# ................................................................
+
+
+#' Which groups have enough answers to be compared
+#'
+#' @param group grouping vector, one value per ranking
+#' @param min_n minimum number of valid answers per group
+#' @param exclude labels that are never compared
+#' @return data.frame with group, n, share, eligible and reason
+group_eligibility = function(group, min_n = 20,
+                             exclude = c("Not specified", "")) {
+
+  g = as.character(group)
+  g = g[!is.na(g)]
+
+  tb = table(g)
+  labelled = sum(tb[!names(tb) %in% exclude])
+
+  out = data.frame(group = names(tb),
+                   n = as.integer(tb),
+                   share = as.integer(tb) / labelled,
+                   stringsAsFactors = FALSE)
+
+  out$eligible = out$n >= min_n & !out$group %in% exclude
+  out$reason = ifelse(out$group %in% exclude, "no_label",
+                      ifelse(out$n < min_n, "too_few", "ok"))
+  out$share[out$group %in% exclude] = NA
+
+  out[order(-out$n), , drop = FALSE]
+
+}
+
+
+#' Is the group confounded with a stratum such as site or district?
+#'
+#' Cross-tabulates group and stratum and computes Cramer's V. A V above
+#' max_v means the group mostly lives in some strata, so a difference in
+#' preference between groups can be a difference between strata. Use
+#' stratified_heterogeneity() before reading any group difference.
+#'
+#' @param group grouping vector
+#' @param stratum stratum vector, same length
+#' @param max_v Cramer's V above which the group is flagged as confounded
+#' @return list with the table of counts, Cramer's V and the flag
+confounding_check = function(group, stratum, max_v = 0.3) {
+
+  tab = table(group = group, stratum = stratum)
+  chi = suppressWarnings(stats::chisq.test(tab, correct = FALSE)$statistic)
+  v = sqrt(as.numeric(chi) / (sum(tab) * (min(dim(tab)) - 1)))
+
+  if (v > max_v) {
+    warning("group and stratum are associated (Cramer's V = ", round(v, 2),
+            "). Read group differences from stratified_heterogeneity()",
+            call. = FALSE)
+  }
+
+  list(counts = tab, cramers_v = v, confounded = v > max_v)
+
+}
+
+
+#' Log-likelihood and degrees of freedom of one Plackett-Luce model per cell
+cell_loglik = function(R, cell) {
+
+  fits = lapply(split(seq_len(nrow(R)), cell, drop = TRUE), function(i) {
+    stats::logLik(PlackettLuce::PlackettLuce(R[i, ]))
+  })
+
+  c(loglik = sum(vapply(fits, as.numeric, numeric(1))),
+    df = sum(vapply(fits, function(l) attr(l, "df"), numeric(1))))
+
+}
+
+
+#' Do groups differ in preference within strata?
+#'
+#' Compares one model per stratum (site, district) with one model per stratum
+#' and group. The difference is the evidence that the group matters once
+#' location is held fixed. Strata where any group has fewer than min_cell
+#' answers are left out and listed, because they cannot inform the
+#' comparison. The permutation test shuffles group labels within each
+#' stratum, so it keeps the stratum composition and does not rely on the
+#' chi-squared approximation.
+#'
+#' @param R rankings
+#' @param group grouping vector, one per ranking
+#' @param stratum stratum vector, one per ranking
+#' @param min_cell minimum answers per group within a stratum
+#' @param nperm number of permutations, 0 to skip
+#' @param seed integer
+#' @return data.frame with deviance, df, p values, the strata used and the
+#'   strata left out
+stratified_heterogeneity = function(R, group, stratum, min_cell = 10,
+                                    nperm = 200, seed = 1) {
+
+  group = as.character(group)
+  stratum = as.character(stratum)
+
+  cells = table(stratum, group)
+  ok = rownames(cells)[apply(cells, 1, function(x) all(x >= min_cell))]
+  dropped = setdiff(rownames(cells), ok)
+
+  if (length(ok) == 0) {
+    stop("no stratum has at least ", min_cell, " answers in every group",
+         call. = FALSE)
+  }
+
+  keep = stratum %in% ok
+  R = R[keep, ]
+  group = group[keep]
+  stratum = stratum[keep]
+
+  dev = function(g) {
+    l0 = cell_loglik(R, stratum)
+    l1 = cell_loglik(R, paste(stratum, g, sep = "::"))
+    c(deviance = as.numeric(2 * (l1["loglik"] - l0["loglik"])),
+      df = as.numeric(l1["df"] - l0["df"]))
+  }
+
+  obs = dev(group)
+
+  p_perm = NA_real_
+  if (nperm > 0) {
+    set.seed(seed)
+    idx = split(seq_along(group), stratum)
+    perm = vapply(seq_len(nperm), function(b) {
+      g = group
+      for (i in idx) g[i] = g[i][sample.int(length(i))]
+      dev(g)[["deviance"]]
+    }, numeric(1))
+    p_perm = (sum(perm >= obs[["deviance"]]) + 1) / (nperm + 1)
+  }
+
+  data.frame(deviance = obs[["deviance"]],
+             df = obs[["df"]],
+             p_chisq = stats::pchisq(obs[["deviance"]], obs[["df"]],
+                                     lower.tail = FALSE),
+             p_permutation = p_perm,
+             n = nrow(R),
+             strata_used = paste(ok, collapse = ", "),
+             strata_dropped = paste(dropped, collapse = ", "))
+
+}
+
+
+#' Worth per group with quasi-standard errors and the n behind each estimate
+#'
+#' Log-worth relative to a reference item, with quasi-standard errors from
+#' qvcalc so intervals can be compared between items. When qvcalc fails
+#' (sparse data, a non positive definite information matrix) the estimate is
+#' kept and the standard error is NA, with a warning. Never read an estimate
+#' without a standard error as precise.
+#'
+#' @param R rankings
+#' @param group grouping vector
+#' @param ref reference item
+#' @param level confidence level of the intervals
+#' @return long data.frame with group, n, item, estimate, quasi_se, lower,
+#'   upper and the number of answers in which the item was ranked
+worth_with_intervals = function(R, group, ref, level = 0.95) {
+
+  z = stats::qnorm(1 - (1 - level) / 2)
+  M = unclass(R)
+
+  out = lapply(split(seq_len(nrow(R)), as.character(group)), function(i) {
+
+    m = PlackettLuce::PlackettLuce(R[i, ])
+    est = stats::coef(m, ref = ref, log = TRUE)
+    est = est[!grepl("^tie", names(est))]
+
+    qse = tryCatch({
+      qv = qvcalc::qvcalc(m, ref = match(ref, names(est)))$qvframe
+      stats::setNames(qv$quasiSE, rownames(qv))[names(est)]
+    }, error = function(e) {
+      warning("quasi-standard errors could not be computed for a group, ",
+              "estimates are reported without them", call. = FALSE)
+      stats::setNames(rep(NA_real_, length(est)), names(est))
+    })
+
+    data.frame(n = length(i),
+               item = names(est),
+               estimate = as.numeric(est),
+               quasi_se = as.numeric(qse),
+               lower = as.numeric(est - z * qse),
+               upper = as.numeric(est + z * qse),
+               n_ranked = as.integer(colSums(M[i, names(est), drop = FALSE] > 0)),
+               row.names = NULL)
+
+  })
+
+  out = do.call("rbind", Map(function(d, g) cbind(group = g, d), out, names(out)))
+  rownames(out) = NULL
+  out
+
+}
+
+
+#' Agreement between groups on the order of the items
+#'
+#' Kendall tau between the worth of each pair of groups, and how many of each
+#' group's top items the other group shares. Groups can agree on the order
+#' and still pick different top items, or the reverse. Report both.
+#'
+#' @param R rankings
+#' @param group grouping vector
+#' @param top number of top items compared
+agreement_between_groups = function(R, group, top = 3) {
+
+  w = lapply(split(seq_len(nrow(R)), as.character(group)), function(i) {
+    x = stats::coef(PlackettLuce::PlackettLuce(R[i, ]), log = FALSE)
+    x[!grepl("^tie", names(x))]
+  })
+
+  g = names(w)
+  pairs = utils::combn(g, 2)
+
+  do.call("rbind", lapply(seq_len(ncol(pairs)), function(j) {
+    a = w[[pairs[1, j]]]
+    b = w[[pairs[2, j]]]
+    common = intersect(names(a), names(b))
+    top_a = names(sort(a[common], decreasing = TRUE))[seq_len(top)]
+    top_b = names(sort(b[common], decreasing = TRUE))[seq_len(top)]
+    data.frame(group_a = pairs[1, j], group_b = pairs[2, j],
+               kendall_tau = stats::cor(a[common], b[common], method = "kendall"),
+               shared_top = length(intersect(top_a, top_b)),
+               top = top)
+  }))
+
+}
+
+
+#' Pooled and balanced rankings
+#'
+#' The pooled ranking weighs every answer equally, so the largest group
+#' dominates it. The balanced ranking gives every group the same total
+#' weight. Report both when the smallest group holds less than 25% of the
+#' answers, as the ClimMob report does.
+#'
+#' @param R rankings
+#' @param group grouping vector
+balanced_ranking = function(R, group) {
+
+  n = table(group)
+  wt = 1 / as.numeric(n[as.character(group)])
+  wt = wt / mean(wt)
+
+  wp = stats::coef(PlackettLuce::PlackettLuce(R), log = FALSE)
+  wb = stats::coef(PlackettLuce::PlackettLuce(R, weights = wt), log = FALSE)
+  items = names(wp)[!grepl("^tie", names(wp))]
+
+  out = data.frame(item = items,
+                   worth_pooled = 100 * wp[items] / sum(wp[items]),
+                   worth_balanced = 100 * wb[items] / sum(wb[items]),
+                   row.names = NULL)
+  out$rank_pooled = rank(-out$worth_pooled, ties.method = "min")
+  out$rank_balanced = rank(-out$worth_balanced, ties.method = "min")
+
+  out[order(out$rank_balanced), ]
 
 }

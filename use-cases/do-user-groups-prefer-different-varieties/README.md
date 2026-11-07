@@ -1,30 +1,76 @@
 # Do different groups of users prefer different varieties?
 
-**Status** tested-on-synthetic-data
+**Status** part B tested-on-synthetic-data, part A tests added (see tests/)
 **Decision record** [socioeconomic heterogeneity](../../decisions/socioeconomic-heterogeneity.md) and [ranking](../../decisions/ranking.md)
-**Derived from** [archive/groundnut-tanzania](../../archive/groundnut-tanzania/) `05-data-analysis-clusters.R`, [archive/mip-concept-testing](../../archive/mip-concept-testing/) `02-clusters-identification.R`, [archive/osiris-1000farms](../../archive/osiris-1000farms/) `03-clusters-identification.R`
+**Derived from** [archive/groundnut-tanzania](../../archive/groundnut-tanzania/) `05-data-analysis-clusters.R`, [archive/mip-concept-testing](../../archive/mip-concept-testing/) `02-clusters-identification.R`, [archive/osiris-1000farms](../../archive/osiris-1000farms/) `03-clusters-identification.R`, and the group analysis of the ClimMob report ([ClimMob-analysis](https://github.com/AgrDataSci/ClimMob-analysis) `R/44_group_analysis.R`)
 
 ## Scientific question
 
-Can participants be grouped into interpretable user types from who they are and how they farm, and do those groups prefer different varieties?
+Do groups of users, women and men, districts, or user types built from how people farm, prefer different varieties? And is a difference between groups a property of the group, or of where the group happens to be?
 
-## Intended use
+## Two entry points
+
+| You have | Use | Typical question |
+|---|---|---|
+| Groups designed into the study, and few covariates (gender, district, age class) | **A. Predefined groups** | Did women and men rank the varieties differently? |
+| Socioeconomic, environmental or management covariates for each participant | **B. User types from covariates** | Which user types exist, and do they prefer different varieties? |
+
+Start with A whenever gender or another designed group is in the question. Move to B when covariates exist, because a single social variable is a coarse proxy for the users a breeding programme targets (see "What the evidence says" below). Use a Plackett-Luce tree (`PlackettLuce::pltree`) instead when the question is which covariate best splits preferences.
+
+## Input data
+
+tricot rankings as in the ranking use case. For A, one group label and one site or district label per participant. For B, covariates measured independently of the rankings (socioeconomic, environmental, management). Record when and how each was collected.
+
+## A. Predefined groups
+
+### Assumptions
+
+- Each participant belongs to one group, recorded before or independently of the rankings.
+- Site or district is recorded for every participant, so the group can be tested within it.
+
+### Approach
+
+1. **Enough answers per group** (`group_eligibility()`). Unlabelled answers ("Not specified") are never compared. A group needs at least 20 valid answers of the trait analysed, the rule of the ClimMob report. Report the n of every group, including those left out.
+2. **Confounding with site** (`confounding_check()`). Cross-tabulate group and site and compute Cramer's V. When women were recruited mostly in some districts, any difference between women and men pooled over districts can be a difference between districts. A V above 0.3 is flagged.
+3. **Test within sites** (`stratified_heterogeneity()`). Compare one Plackett-Luce model per site with one model per site and group, by likelihood ratio and by a permutation test that shuffles group labels within each site. This is the test of the group. Sites where any group has fewer than 10 answers are left out and listed. The pooled test (`preference_heterogeneity()`, as in B) is shown beside it only to make the confounding visible.
+4. **Worth with uncertainty** (`worth_with_intervals()`). Log-worth per group relative to a reference, with quasi-standard errors and 95% intervals, the n of the group and how often each variety was ranked in it. When quasi-variances fail the estimate is kept without a standard error and flagged.
+5. **Agreement and balance** (`agreement_between_groups()`, `balanced_ranking()`). Kendall tau between the group worths and the number of top-three varieties the groups share. When the smallest group holds under 25% of the answers, report the balanced ranking beside the pooled one, as the ClimMob report does, because the pooled ranking follows the largest group.
+6. **Trait by trait.** Run steps 3 to 5 on each trait, not only on overall preference. Groups often agree on the overall winner and disagree on the traits behind it.
+
+### Interpretation
+
+The synthetic data have two sites with opposite preferences, women concentrated in the south site and no gender effect within either site. Pooled over sites, women and men look clearly different. Within sites they do not, and the stratified test says so. With `gender_effect = TRUE` women value two varieties more in both sites, and the stratified test detects it. The tests check both outcomes. Run `script/01-analysis.R` for the numbers.
+
+### What the results cannot support
+
+- A group difference pooled over sites, when the group is confounded with site. Report the within-site test.
+- "Women prefer variety X" from worth plots alone. With fewer than about 30 answers per group, worth plots look different when the test is not significant. Write that there are not yet enough answers to tell.
+- A result for a site that was left out of the stratified test.
+- Numbers without the code that produced them, the n per group and the uncertainty. An AI assistant that cannot run the code delivers the script and says that no result was computed.
+
+## What the evidence says
+
+- **Same ideotype, different trait weights.** Aemiro Woldeyohannes, Matteo Dell'Acqua and colleagues found that the teff varieties women and men scored highest came from different genetic backgrounds but shared one ideotype, tall, high-yielding and fast-maturing. Trait weights still differed, with women's appreciation tracking biomass and panicle weight and men's plant height and grain filling. Their women's sample was small and unevenly spread across the two sites, the design step 2 checks ([Woldeyohannes et al. 2022](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/woldeyohannes-2022-elife.md)).
+- **Agreement on market traits, divergence on labour.** In groundnut tricot trials across Tanzania, Happy Daudi and colleagues found women valued early maturity, ease of harvesting and ease of shelling, and men haulm yield, while both converged on tan seed colour and small to medium kernels. The differences sat in specific traits, which is why step 6 tests trait by trait ([Daudi et al. 2026](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/daudi-2026-fes.md)).
+- **Gender is one axis among several.** Béla Teeken, Hale Tufan and colleagues surveyed 792 cassava users in Nigeria. Women favoured gari quality traits and men productivity traits, but the gap widened in food-insecure households, shifted with household type and with who controls household resources, and varied by region. Women heading their own households weighed quality more than women living with a spouse ([Teeken et al. 2021](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/teeken-2021-fsufs.md)).
+
+The workflow lands on the last point. A test between women and men is the first check, not the conclusion. A difference, or its absence, holds for those groups in those places. When household or farm covariates exist, build user types with part B and keep gender as a covariate within the types rather than as a type of its own.
+
+## B. User types from covariates
+
+### Intended use
 
 Use it to define breeding target users or to differentiate recommendations. The groups are built from covariates only, without the rankings, and the preference test comes afterwards. That keeps the test from being circular and gives groups that can be recognized in the field without knowing anyone's rankings.
 
 It does not fit when the aim is to find whichever covariate best splits preferences. Use Plackett-Luce trees for that.
 
-## Input data
-
-tricot rankings as in the ranking use case, plus covariates measured independently of the rankings (socioeconomic, environmental, management). Record when and how each covariate was collected.
-
-## Assumptions
+### Assumptions
 
 - Covariates are measured before, or independently of, the rankings.
 - Each participant belongs to one group.
 - The clustering covariates are chosen for the decision at hand, the users you want to target. Skewed variables are log-transformed.
 
-## Approach
+### Approach
 
 1. Cluster participants on all chosen covariates, numeric and categorical together, with model-based clustering and variable selection (`VarSelLCM::VarSelCluster`). Each variable is declared relevant or irrelevant to the clusters, so a variable unrelated to the segments does not shape them.
 2. Compare k = 2 to 5 and choose k by ICL, which penalizes overlapping clusters. BIC is reported as well. It tends to split a segment into similar subgroups.
@@ -32,7 +78,7 @@ tricot rankings as in the ranking use case, plus covariates measured independent
 4. Test whether preferences differ between clusters with `gosset::likelihood_ratio()` and with a permutation test that shuffles cluster labels and refits (200 permutations). Then test every pair of clusters (`pairwise_heterogeneity()`). Clusters that do not differ in preference need no separate recommendation, even when their profiles differ.
 5. Report worth per cluster and the cluster profiles, including the variables declared irrelevant.
 
-## Choosing a clustering method for mixed data
+### Choosing a clustering method for mixed data
 
 Socioeconomic data mix numeric variables (farm size, distance to market) with categorical ones (gender of the household head, group membership). How a method weighs them decides what the clusters mean. The workflow fits three methods on the same data and compares them. In the simulation, household head is unrelated to the segments and enters every method.
 
@@ -48,7 +94,7 @@ Socioeconomic data mix numeric variables (farm size, distance to market) with ca
 
 Whatever method you use, run `variable_influence()`. It refits leaving out one variable at a time and compares the clusters with each categorical variable. It flags household head in the Gower solution (agreement 1.00 with the clusters, 0.00 after removing it). Theory still comes first. A method can show that a variable is irrelevant to the structure, not whether it matters for the decision.
 
-## Alternatives
+### Alternatives
 
 - Plackett-Luce trees (`PlackettLuce::pltree`) split on covariates using the rankings. They find groups that differ in preference but give hierarchical binary partitions that may not be actionable personas.
 - Gower distance with PAM and the stability search (`cluster_search()`), for numeric covariates only or with categorical variables down-weighted.
@@ -56,13 +102,13 @@ Whatever method you use, run `variable_influence()`. It refits leaving out one v
 - Latent class ranking models estimate groups and preferences jointly.
 - Covariate models of worth, when one covariate is the question.
 
-## Interpretation
+### Interpretation
 
 On the synthetic data (800 participants, two segments with opposite preferences, household head unrelated), ICL selects k = 2. BIC would select k = 3, splitting the subsistence segment in two. The two clusters match the true segments (adjusted Rand index 0.92), and household head is declared irrelevant. Cluster 1 (59%) has smaller farms, sells 25% of the harvest and lives farther from market. Cluster 2 (41%) has larger farms, sells 73% and lives closer. Household head is balanced in both. Preferences clearly differ (deviance 486 on 7 df, permutation p = 0.005), and the worth per cluster ranks the varieties in nearly opposite order.
 
 A significant test means the preference structure differs. Whether the difference justifies separate recommendations depends on the worth per cluster and on whether the groups can be reached in practice.
 
-## From clusters to personas or TPE descriptions
+### From clusters to personas or TPE descriptions
 
 Once the clusters are defensible, an AI assistant can draft user personas (socioeconomic clusters) or descriptions of the target population of environments (environmental clusters) from the output files. Give it `output/cluster-profile.csv`, `output/worth-by-cluster.csv`, `output/cluster-criteria.csv` and the cluster sizes. This is also the step where an assistant is most likely to invent details, so follow these rules.
 
@@ -119,6 +165,7 @@ Every number in the rewrite comes from the table. The interpretive step, "grows 
 
 ## Limitations
 
+- Group tests depend on the site labels. A group confounded with an unrecorded factor (market access, ethnicity, recruitment route) cannot be separated from it.
 - Clusters depend on the covariates chosen and on their scaling. Report both.
 - Stability is necessary but not sufficient. Clusters must also be interpretable and usable by the people who will act on them.
 - With unbalanced cluster sizes, the smaller cluster's worth estimates are less precise.
@@ -126,6 +173,6 @@ Every number in the rewrite comes from the table. The interpretive step, "grows 
 ## Files
 
 - `script/helper/functions.R` holds the documented functions.
-- `script/01-analysis.R` is the workflow. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
-- `script/helper/simulate-data.R` simulates two segments with different covariates and preferences.
+- `script/01-analysis.R` is the workflow, part A then part B. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
+- `script/helper/simulate-data.R` simulates two segments with different covariates and preferences (`simulate_tricot()`, part B), and gender confounded with site (`simulate_known_groups()`, part A).
 - `tests/` holds the tests, run with `Rscript tests/run-tests.R`.
