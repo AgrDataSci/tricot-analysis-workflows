@@ -1,6 +1,6 @@
 # Do different groups of users prefer different varieties?
 
-**Status** part B tested-on-synthetic-data, part A tests added (see tests/)
+**Status** tested-on-synthetic-data
 **Decision record** [socioeconomic heterogeneity](../../decisions/socioeconomic-heterogeneity.md) and [ranking](../../decisions/ranking.md)
 **Derived from** [archive/groundnut-tanzania](../../archive/groundnut-tanzania/) `05-data-analysis-clusters.R`, [archive/mip-concept-testing](../../archive/mip-concept-testing/) `02-clusters-identification.R`, [archive/osiris-1000farms](../../archive/osiris-1000farms/) `03-clusters-identification.R`, and the group analysis of the ClimMob report ([ClimMob-analysis](https://github.com/AgrDataSci/ClimMob-analysis) `R/44_group_analysis.R`)
 
@@ -39,7 +39,7 @@ tricot rankings as in the ranking use case. For A, one group label and one site 
 
 ### Interpretation
 
-The synthetic data have two sites with opposite preferences, women concentrated in the south site and no gender effect within either site. Pooled over sites, women and men look clearly different. Within sites they do not, and the stratified test says so. With `gender_effect = TRUE` women value two varieties more in both sites, and the stratified test detects it. The tests check both outcomes. Run `script/01-analysis.R` for the numbers.
+The synthetic data have two sites with opposite preferences, women concentrated in the south site and no gender effect within either site. Pooled over sites, women and men look clearly different. Within sites they do not, and the stratified test says so. With `gender_effect = TRUE` women value two varieties more in both sites, and the stratified test detects it. In the run of `script/01-analysis.R` gender and site are strongly associated (Cramer's V 0.58). Pooled over sites the gender difference looks overwhelming (deviance 100.6 on 7 df, p < 0.001, permutation p = 0.005, the smallest possible with 200 permutations). Within sites it disappears (deviance 12.8 on 14 df, p = 0.54, permutation p = 0.54). Both sites kept at least 10 answers per group. The tests check this outcome and the opposite one.
 
 ### What the results cannot support
 
