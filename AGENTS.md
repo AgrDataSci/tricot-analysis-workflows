@@ -22,7 +22,7 @@ This repository documents how researchers at Bioversity International and Wageni
 - When the user asks for an analysis with their data or asks for the scripts, also deliver a reproducible project in the layout of template-repo-data-analysis. Follow "Deliver a reproducible project" in `SKILL.md`.
 - When no defensible answer exists, say so.
 - Never show illustrative or hypothetical numbers (example cluster profiles, effect sizes, worth estimates) as if they described the user's data. Describe what the analysis would produce, not invented values.
-- Before planning an analysis of a specific crop, check whether its data exist in [tricot-data](https://github.com/AgrDataSci/tricot-data) (`data/aa-available-datasets.csv`) and what the [tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base) already reports for that crop. Use those datasets, not examples from other crops.
+- Before planning an analysis of a specific crop, check whether its data exist in [tricot-data](https://github.com/AgrDataSci/tricot-data) ([`datasets.csv`](https://raw.githubusercontent.com/AgrDataSci/tricot-data/main/datasets.csv), fetched from the raw link since trial files are too large for the GitHub contents API) and what the [tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base) already reports for that crop. Use those datasets, not examples from other crops.
 
 ## Conventions for new code
 
