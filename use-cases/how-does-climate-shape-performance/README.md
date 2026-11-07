@@ -2,7 +2,7 @@
 
 **Status** tested-on-synthetic-data
 **Decision record** [climate and environment](../../decisions/climate-environment.md)
-**Derived from** [archive/crop-variety-management-pnas](../../archive/crop-variety-management-pnas/), [archive/teff-elife](../../archive/teff-elife/), [archive/osiris-1000farms](../../archive/osiris-1000farms/) `02-get-climate-data.R`, [archive/worldveg-choose-growth-thrive](../../archive/worldveg-choose-growth-thrive/) `03-get-climate-covar.R`
+**Derived from** [archive/crop-variety-management-pnas](../../archive/crop-variety-management-pnas/), [archive/etnam-farmer-ratings](../../archive/etnam-farmer-ratings/), [archive/osiris-1000farms](../../archive/osiris-1000farms/) `02-get-climate-data.R`, [archive/worldveg-choose-growth-thrive](../../archive/worldveg-choose-growth-thrive/) `03-get-climate-covar.R`
 
 ## Scientific question
 
@@ -31,7 +31,7 @@ Record the climate source, its spatial and temporal resolution, and the download
 
 1. Estimate the window from planting to flowering per plot with `climatrends::GDD(..., return.as = "ndays")`.
 2. Compute maxDT, DTR and SU (`climatrends::temperature`) and Rtotal (`climatrends::rainfall`) over that window.
-3. Fit a Plackett-Luce tree on the indices (`PlackettLuce::pltree`, alpha 0.01, at least 100 rankings per node).
+3. Fit a Plackett-Luce tree on the indices (`PlackettLuce::pltree`, at least 100 rankings per node). The script uses alpha 0.01, the conservative choice. With real data use 0.05 or 0.10 and keep 0.01 for data sets above 5,000 participants or a demanding review ([climate and environment](../../decisions/climate-environment.md)).
 4. Refit with fixed 30-day and 90-day windows to show how the conclusion depends on the window.
 5. Flag target sites outside the observed range of any index, or with a Mahalanobis distance beyond the 99% chi-squared quantile, which catches combinations never observed even when each index is in range.
 

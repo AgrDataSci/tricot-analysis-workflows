@@ -3,7 +3,7 @@
 **Status** tested-on-synthetic-data
 **Decision record** [trait associations](../../decisions/trait-associations.md) and [genetic gain](../../decisions/genetic-gain.md)
 **Domain leads for genetic parameters** Joost van Heerwaarden and Hugo Dorado-Betancourt (Wageningen University)
-**Derived from** [archive/rtbfoods-eba-nigeria](../../archive/rtbfoods-eba-nigeria/) (`02_estimate_blups.R`, `03_pladmm.R`) and [archive/teff-elife](../../archive/teff-elife/) `01_farmers_oa.R`
+**Derived from** [archive/rtbfoods-eba-nigeria](../../archive/rtbfoods-eba-nigeria/) (`02_estimate_blups.R`, `03_pladmm.R`) and [archive/etnam-farmer-ratings](../../archive/etnam-farmer-ratings/) `01_farmers_oa.R`
 
 ## Scientific question
 

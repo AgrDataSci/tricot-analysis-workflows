@@ -1,6 +1,6 @@
 # Can trials with different measurements and designs be combined into one
 # analysis?
-# Status: reviewed-not-executed
+# Status: tested-on-synthetic-data
 # Decision record: decisions/data-synthesis.md
 # Derived from: archive/musa-blsd-data-synthesis (Brown et al. 2023, Agronomy
 #   Journal, https://doi.org/10.1002/agj2.21436) and
@@ -155,8 +155,21 @@ write.csv(stability$frequency, "output/split-stability.csv", row.names = FALSE)
 write.csv(stability$cutpoints, "output/split-cutpoints.csv", row.names = FALSE)
 write.csv(gof, "output/goodness-of-fit.csv", row.names = FALSE)
 
+# log worth per node against the reference, in the spirit of Figure 4 of
+# the paper. Drawn from the coefficients, so it works even when node
+# standard errors cannot be computed
+png("output/worth-by-node.png", width = 1800, height = 2000, res = 150)
+plot_worth_by_node(worth, evals, cutpoint = first_cutpoint(tree),
+                   variable = split_variables(tree)[1])
+dev.off()
+
+# the tree plot from PlackettLuce and gosset needs node standard errors,
+# which can fail in sparse nodes, so it is optional
 png("output/synthesis-tree.png", width = 2400, height = 1400, res = 150)
-plot(tree)
+tryCatch(plot(tree), error = function(e) {
+  message("tree plot skipped, ", conditionMessage(e))
+  plot.new()
+})
 dev.off()
 
 sessionInfo()

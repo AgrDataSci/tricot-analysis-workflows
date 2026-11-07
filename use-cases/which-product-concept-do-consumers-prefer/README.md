@@ -2,7 +2,7 @@
 
 **Status** tested-on-synthetic-data
 **Decision record** [consumer and concept testing](../../decisions/consumer-concept-testing.md)
-**Derived from** [archive/rtbfoods-consumer-testing](../../archive/rtbfoods-consumer-testing/), [archive/maize-concept-testing](../../archive/maize-concept-testing/), [archive/mip-concept-testing](../../archive/mip-concept-testing/), [archive/teff-elife](../../archive/teff-elife/)
+**Derived from** [archive/rtbfoods-consumer-testing](../../archive/rtbfoods-consumer-testing/), [archive/maize-concept-testing](../../archive/maize-concept-testing/), [archive/mip-concept-testing](../../archive/mip-concept-testing/), [archive/etnam-farmer-ratings](../../archive/etnam-farmer-ratings/)
 
 ## Scientific question
 

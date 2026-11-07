@@ -1,6 +1,6 @@
 ---
 name: tricot-analysis-workflows
-description: Use when analysing tricot, ClimMob, on-farm ranking, participatory variety selection or consumer and product concept testing data, or when asked which varieties are preferred, which traits drive preference, whether user groups differ, how climate shapes performance, whether on-farm and on-station results agree, which measured lab or station traits explain preference, which concept consumers prefer, how many participants a trial needs, or whether trials with different metrics, designs, genotypes or years can be pooled into one analysis (data synthesis).
+description: Use when analysing tricot, ClimMob, on-farm ranking, participatory variety selection or consumer and product concept testing data, or when asked which varieties are preferred, which traits drive preference, whether user groups differ, how climate shapes performance, whether on-farm and on-station results agree, which measured lab or station traits explain preference, which concept consumers prefer, how many participants a trial needs, or whether trials with different metrics, designs, genotypes or years can be pooled into one analysis (data synthesis), or whether farmer scores on a Likert scale can be analysed as rankings.
 ---
 
 # Analytical workflows for product testing with users in agriculture
@@ -34,6 +34,7 @@ Start from the user's question, not from a method name.
 | Which measured traits (lab or station) explain preference? | `use-cases/which-measured-traits-explain-preference/` | `decisions/trait-associations.md`, `decisions/genetic-gain.md` |
 | Which product concept do consumers prefer? | `use-cases/which-product-concept-do-consumers-prefer/` | `decisions/consumer-concept-testing.md` |
 | Can trials with different measurements and designs be combined into one analysis? | `use-cases/can-heterogeneous-trials-be-combined/` | `decisions/data-synthesis.md` |
+| Can farmer ratings (scores on a short scale) be analysed as rankings? | `use-cases/can-farmer-ratings-be-analysed-as-rankings/` | `decisions/data-synthesis.md` |
 
 When the question spans several rows, start with the ranking use case and add the others. When no row fits, say so, use the closest decision record as guidance, and label the approach as your own methodological inference.
 
@@ -83,7 +84,9 @@ Follow `AGENTS.md`. In short:
 - Do not report split-half reliability of rankings as heritability.
 - Separate results, interpretation and your own inference.
 - Never show illustrative or hypothetical numbers as if they described the user's data.
-- When the user names a crop, check its datasets in [tricot-data](https://raw.githubusercontent.com/AgrDataSci/tricot-data/main/data/aa-available-datasets.csv) and what [tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base) reports for it, before planning the analysis.
+- When the user names a crop, check its datasets in [tricot-data](https://raw.githubusercontent.com/AgrDataSci/tricot-data/main/datasets.csv) and what [tricot-knowledge-base](https://github.com/AgrDataSci/tricot-knowledge-base) reports for it, before planning the analysis.
+- When asked whether women and men, or districts, prefer different varieties, follow part A of `use-cases/do-user-groups-prefer-different-varieties/`. Report the n per group, check whether the group is confounded with site and test the group within sites. A difference pooled over sites is not a group difference when the group is unevenly spread.
+- Report a computed result only with the code that produced it, the n behind each estimate and its uncertainty. If you cannot run R, give the script and say that no result was computed. Never present estimates you did not compute.
 - When drafting user personas or TPE descriptions from clusters, follow the README section "From clusters to personas or TPE descriptions" in `use-cases/do-user-groups-prefer-different-varieties/`. Ground every claim in the output numbers, label fictional names as such, and suggest AI-generated, labelled images instead of real farmers' photos.
 
 ## Packages

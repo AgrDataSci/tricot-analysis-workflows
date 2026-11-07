@@ -1,7 +1,7 @@
 # How do climate and environment shape variety performance?
 # Status: tested-on-synthetic-data
 # Decision record: decisions/climate-environment.md
-# Derived from: archive/crop-variety-management-pnas, archive/teff-elife,
+# Derived from: archive/crop-variety-management-pnas, archive/etnam-farmer-ratings,
 #   archive/osiris-1000farms/02-get-climate-data.R,
 #   archive/worldveg-choose-growth-thrive/03-get-climate-covar.R
 #

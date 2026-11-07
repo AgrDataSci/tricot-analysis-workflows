@@ -105,3 +105,73 @@ test_that("cluster profiles cover numeric and categorical covariates", {
   expect_true(all(c("farm_size", "household_head = woman") %in% p$variable))
   expect_equal(ncol(p), 3)
 })
+
+
+# Predefined groups ---------------------------------------------------------
+
+test_that("group eligibility drops unlabelled and small groups", {
+  g = c(rep("man", 40), rep("woman", 12), rep("Not specified", 5))
+  e = group_eligibility(g, min_n = 20)
+  expect_equal(e$eligible[e$group == "man"], TRUE)
+  expect_equal(e$reason[e$group == "woman"], "too_few")
+  expect_equal(e$reason[e$group == "Not specified"], "no_label")
+  expect_true(is.na(e$share[e$group == "Not specified"]))
+})
+
+test_that("a site effect is not read as a gender effect once sites are held fixed", {
+  dat = simulate_known_groups(gender_effect = FALSE)
+  rk = build_rankings(dat, items, input)
+  R = rk$rankings
+  d = dat[rk$valid, ]
+  expect_warning(cc <- confounding_check(d$gender, d$site), "associated")
+  expect_true(cc$confounded)
+  # pooled over sites, women and men look different
+  naive = preference_heterogeneity(R, d$gender, nperm = 20)
+  expect_lt(naive$p_chisq, 0.001)
+  # within sites they do not
+  st = stratified_heterogeneity(R, d$gender, d$site, nperm = 50)
+  expect_gt(st$p_chisq, 0.01)
+  expect_gt(st$p_permutation, 0.01)
+  expect_equal(st$strata_dropped, "")
+})
+
+test_that("a real gender effect survives stratification", {
+  dat = simulate_known_groups(gender_effect = TRUE)
+  rk = build_rankings(dat, items, input)
+  d = dat[rk$valid, ]
+  st = stratified_heterogeneity(rk$rankings, d$gender, d$site, nperm = 50)
+  expect_lt(st$p_chisq, 0.001)
+  expect_lt(st$p_permutation, 0.05)
+})
+
+test_that("strata without enough answers in every group are left out and listed", {
+  dat = simulate_known_groups(share_women_north = 0.01)
+  rk = build_rankings(dat, items, input)
+  d = dat[rk$valid, ]
+  st = stratified_heterogeneity(rk$rankings, d$gender, d$site, nperm = 0)
+  expect_equal(st$strata_dropped, "north")
+  expect_equal(st$strata_used, "south")
+})
+
+test_that("worth comes with quasi-standard errors and the n behind it", {
+  dat = simulate_known_groups()
+  rk = build_rankings(dat, items, input)
+  d = dat[rk$valid, ]
+  w = worth_with_intervals(rk$rankings, d$gender, ref = "Check")
+  expect_setequal(unique(w$group), c("man", "woman"))
+  expect_equal(sum(table(d$gender)), sum(tapply(w$n, w$group, unique)))
+  expect_true(all(is.finite(w$quasi_se[w$item != "Check"])))
+  expect_true(all(w$lower <= w$estimate & w$estimate <= w$upper, na.rm = TRUE))
+})
+
+test_that("balanced ranking gives every group the same total weight", {
+  dat = simulate_known_groups()
+  rk = build_rankings(dat, items, input)
+  d = dat[rk$valid, ]
+  b = balanced_ranking(rk$rankings, d$gender)
+  expect_equal(sum(b$worth_pooled), 100)
+  expect_equal(sum(b$worth_balanced), 100)
+  ag = agreement_between_groups(rk$rankings, d$gender)
+  expect_equal(nrow(ag), 1)
+  expect_true(ag$kendall_tau >= -1 && ag$kendall_tau <= 1)
+})

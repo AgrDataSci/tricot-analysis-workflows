@@ -3,7 +3,8 @@
 # Decision record: decisions/socioeconomic-heterogeneity.md, decisions/ranking.md
 # Derived from: archive/groundnut-tanzania/05-data-analysis-clusters.R,
 #   archive/mip-concept-testing/02-clusters-identification.R,
-#   archive/osiris-1000farms/03-clusters-identification.R
+#   archive/osiris-1000farms/03-clusters-identification.R,
+#   AgrDataSci/ClimMob-analysis R/44_group_analysis.R (part A)
 #
 # Run from the use-case folder (open the .Rproj) with  Rscript script/01-analysis.R
 
@@ -12,17 +13,66 @@ library("gosset")
 library("cluster")
 library("VarSelLCM")
 library("FactoMineR")
+library("qvcalc")
 
 source("script/helper/functions.R")
 source("script/helper/simulate-data.R")
 
 dir.create("output", showWarnings = FALSE)
 
+items = c("item_A", "item_B", "item_C")
+input = c("overall_pos", "overall_neg")
+
+# A. Predefined groups ====================================================
+# Women and men, districts, age classes. The groups were designed into the
+# study, so nothing is clustered. The questions are whether each group has
+# enough answers, whether the group is confounded with site, and whether the
+# groups differ once site is held fixed. Replace the simulation with your
+# data, with one row per participant and the group and site columns
+dat_a = simulate_known_groups(gender_effect = FALSE)
+
+rk_a = build_rankings(dat_a, items, input)
+R_a = rk_a$rankings
+dat_a = dat_a[rk_a$valid, ]
+
+# A1. Enough answers per group? Groups below 20 valid answers are not
+# compared, unlabelled answers never are
+elig = group_eligibility(dat_a$gender, min_n = 20)
+print(elig, digits = 2)
+
+# A2. Is the group confounded with site?
+conf = confounding_check(dat_a$gender, dat_a$site)
+print(conf$counts)
+cat("Cramer's V between gender and site:", round(conf$cramers_v, 2), "\n")
+
+# A3. Pooled over sites, then within sites. Only the stratified test speaks
+# to gender. The pooled test is shown to make the confounding visible
+naive = preference_heterogeneity(R_a, dat_a$gender, nperm = 200)
+strat = stratified_heterogeneity(R_a, dat_a$gender, dat_a$site, nperm = 200)
+print(rbind(pooled_over_sites = naive[c("deviance", "df", "p_chisq", "p_permutation")],
+            within_sites = strat[c("deviance", "df", "p_chisq", "p_permutation")]),
+      digits = 3)
+cat("Strata used:", strat$strata_used, " Strata left out:", strat$strata_dropped, "\n")
+
+# A4. Worth per group with quasi-standard errors and n, agreement between
+# groups, and the balanced ranking when one group is a small minority
+wi = worth_with_intervals(R_a, dat_a$gender, ref = "Check")
+print(wi, digits = 2)
+print(agreement_between_groups(R_a, dat_a$gender), digits = 2)
+if (min(elig$share, na.rm = TRUE) < 0.25) print(balanced_ranking(R_a, dat_a$gender), digits = 2)
+
+utils::write.csv(elig, "output/group-eligibility.csv", row.names = FALSE)
+utils::write.csv(as.data.frame(conf$counts), "output/group-by-site.csv", row.names = FALSE)
+utils::write.csv(rbind(cbind(test = "pooled_over_sites", naive[c("deviance", "df", "p_chisq", "p_permutation")]),
+                       cbind(test = "within_sites", strat[c("deviance", "df", "p_chisq", "p_permutation")])),
+                 "output/group-heterogeneity.csv", row.names = FALSE)
+utils::write.csv(wi, "output/worth-by-group.csv", row.names = FALSE)
+
+# B. User types from covariates ===========================================
+
 # 1. Read data ------------------------------------------------------------
 dat = simulate_tricot()
 
-items = c("item_A", "item_B", "item_C")
-input = c("overall_pos", "overall_neg")
 covars = c("farm_size", "share_sold", "market_distance", "household_head")
 
 rk = build_rankings(dat, items, input)

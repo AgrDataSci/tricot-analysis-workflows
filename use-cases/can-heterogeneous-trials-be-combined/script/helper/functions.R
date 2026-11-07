@@ -1,6 +1,6 @@
 # Functions for the use case "Can trials with different measurements and
 # designs be combined into one analysis?"
-# Status: reviewed-not-executed (see tests/)
+# Status: tested-on-synthetic-data (see tests/)
 # Decision record: decisions/data-synthesis.md
 #
 # Scientific intent
@@ -587,5 +587,44 @@ goodness_of_fit = function(tree, M) {
              cragg_uhler = pr2$CraggUhler,
              kendall_tau = kt$kendallTau,
              row.names = NULL)
+
+}
+
+
+#' Dot plot of log worth per node, genotypes sorted by the first node
+#'
+#' One panel per terminal node. Point size follows the number of evaluations
+#' of the genotype in that node, so a genotype with a high worth and a single
+#' evaluation is visibly weaker evidence.
+#'
+#' @param worth data.frame from worth_by_node
+#' @param evals data.frame from evaluations_by_node
+#' @param cutpoint numeric, first cut point for the panel titles
+#' @param variable character, first split variable for the panel titles
+plot_worth_by_node = function(worth, evals, cutpoint = NA, variable = NA) {
+
+  nodes = grep("^node_", names(worth), value = TRUE)
+  o = order(worth[[nodes[1]]])
+  worth = worth[o, ]
+  evals = evals[match(worth$genotype, evals$genotype), ]
+  rng = range(unlist(worth[nodes]), na.rm = TRUE)
+
+  op = graphics::par(mfrow = c(1, length(nodes)),
+                     mar = c(4, 8, 3, 1), oma = c(0, 0, 0, 0))
+  on.exit(graphics::par(op))
+
+  for (k in seq_along(nodes)) {
+    n = evals[[nodes[k]]]
+    graphics::plot(worth[[nodes[k]]], seq_len(nrow(worth)), xlim = rng,
+                   yaxt = "n", ylab = "", xlab = "log worth against the reference",
+                   pch = 19, cex = 0.6 + 1.5 * n / max(evals[nodes], 1),
+                   col = ifelse(n == 0, "grey70", "grey20"),
+                   main = paste0(nodes[k], if (!is.na(variable))
+                     paste0("  (", variable, if (k == 1) " <= " else " > ",
+                            round(cutpoint, 1), ")")))
+    graphics::abline(v = 0, lty = 2, col = "grey50")
+    if (k == 1) graphics::axis(2, at = seq_len(nrow(worth)), labels = worth$genotype,
+                               las = 1, cex.axis = 0.8)
+  }
 
 }
