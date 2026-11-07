@@ -27,15 +27,23 @@ tricot rankings as in the ranking use case. For A, one group label and one site 
 
 - Each participant belongs to one group, recorded before or independently of the rankings.
 - Site or district is recorded for every participant, so the group can be tested within it.
+- The data producer sampled participants in proportion to who grows the crop, so women and men need not be 50-50. Women's crops (small millets, leafy vegetables) and men's cash crops (maize, wheat) give different ratios by design. Report the ratio, do not reweight it to parity (sampling chapter by Teeken, Cairns and Zaman-Allah in [Chase et al. 2026](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/chase-2026-book.md)).
 
 ### Approach
 
 1. **Enough answers per group** (`group_eligibility()`). Unlabelled answers ("Not specified") are never compared. A group needs at least 20 valid answers of the trait analysed, the rule of the ClimMob report. Report the n of every group, including those left out.
 2. **Confounding with site** (`confounding_check()`). Cross-tabulate group and site and compute Cramer's V. When women were recruited mostly in some districts, any difference between women and men pooled over districts can be a difference between districts. A V above 0.3 is flagged.
-3. **Test within sites** (`stratified_heterogeneity()`). Compare one Plackett-Luce model per site with one model per site and group, by likelihood ratio and by a permutation test that shuffles group labels within each site. This is the test of the group. Sites where any group has fewer than 10 answers are left out and listed. The pooled test (`preference_heterogeneity()`, as in B) is shown beside it only to make the confounding visible.
-4. **Worth with uncertainty** (`worth_with_intervals()`). Log-worth per group relative to a reference, with quasi-standard errors and 95% intervals, the n of the group and how often each variety was ranked in it. When quasi-variances fail the estimate is kept without a standard error and flagged.
-5. **Agreement and balance** (`agreement_between_groups()`, `balanced_ranking()`). Kendall tau between the group worths and the number of top-three varieties the groups share. When the smallest group holds under 25% of the answers, report the balanced ranking beside the pooled one, as the ClimMob report does, because the pooled ranking follows the largest group.
-6. **Trait by trait.** Run steps 3 to 5 on each trait, not only on overall preference. Groups often agree on the overall winner and disagree on the traits behind it.
+3. **Simplest test.** Split the rankings by group and compare one model per group with the pooled model, with `gosset::likelihood_ratio()`. This is enough when the group is spread evenly across sites.
+
+   ```r
+   G = PlackettLuce::group(R, seq_len(nrow(R)))
+   gosset::likelihood_ratio(G, split = gender)
+   ```
+
+4. **Test within sites** (`stratified_heterogeneity()`), when step 2 flags confounding. Compare one Plackett-Luce model per site with one model per site and group, by likelihood ratio and by a permutation test that shuffles group labels within each site. This is the test of the group. Sites where any group has fewer than 10 answers are left out and listed. The simplest test of step 3 is shown beside it to make the confounding visible.
+5. **Worth with uncertainty** (`worth_with_intervals()`). Log-worth per group relative to a reference, with quasi-standard errors and 95% intervals, the n of the group and how often each variety was ranked in it. When quasi-variances fail the estimate is kept without a standard error and flagged.
+6. **Agreement and balance** (`agreement_between_groups()`, `balanced_ranking()`). Kendall tau between the group worths and the number of top-three varieties the groups share. When the smallest group holds under 25% of the answers, report the balanced ranking beside the pooled one, as the ClimMob report does, because the pooled ranking follows the largest group.
+7. **Trait by trait.** Run steps 3 to 6 on each trait, not only on overall preference. Groups often agree on the overall winner and disagree on the traits behind it.
 
 ### Interpretation
 
@@ -51,7 +59,7 @@ The synthetic data have two sites with opposite preferences, women concentrated 
 ## What the evidence says
 
 - **Same ideotype, different trait weights.** Aemiro Woldeyohannes, Matteo Dell'Acqua and colleagues found that the teff varieties women and men scored highest came from different genetic backgrounds but shared one ideotype, tall, high-yielding and fast-maturing. Trait weights still differed, with women's appreciation tracking biomass and panicle weight and men's plant height and grain filling. Their women's sample was small and unevenly spread across the two sites, the design step 2 checks ([Woldeyohannes et al. 2022](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/woldeyohannes-2022-elife.md)).
-- **Agreement on market traits, divergence on labour.** In groundnut tricot trials across Tanzania, Happy Daudi and colleagues found women valued early maturity, ease of harvesting and ease of shelling, and men haulm yield, while both converged on tan seed colour and small to medium kernels. The differences sat in specific traits, which is why step 6 tests trait by trait ([Daudi et al. 2026](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/daudi-2026-fes.md)).
+- **Agreement on market traits, divergence on labour.** In groundnut tricot trials across Tanzania, Happy Daudi and colleagues found women valued early maturity, ease of harvesting and ease of shelling, and men haulm yield, while both converged on tan seed colour and small to medium kernels. The differences sat in specific traits, which is why step 7 tests trait by trait ([Daudi et al. 2026](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/daudi-2026-fes.md)).
 - **Gender is one axis among several.** Béla Teeken, Hale Tufan and colleagues surveyed 792 cassava users in Nigeria. Women favoured gari quality traits and men productivity traits, but the gap widened in food-insecure households, shifted with household type and with who controls household resources, and varied by region. Women heading their own households weighed quality more than women living with a spouse ([Teeken et al. 2021](https://github.com/AgrDataSci/tricot-knowledge-base/blob/main/papers/teeken-2021-fsufs.md)).
 
 The workflow lands on the last point. A test between women and men is the first check, not the conclusion. A difference, or its absence, holds for those groups in those places. When household or farm covariates exist, build user types with part B and keep gender as a covariate within the types rather than as a type of its own.
