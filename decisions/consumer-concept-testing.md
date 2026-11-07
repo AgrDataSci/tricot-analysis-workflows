@@ -18,7 +18,7 @@ Status: methodological rationale from Kauê de Sousa (Bioversity International),
 - **Who prefers what.** Split by predefined groups (country, gender, urban or rural) and test the split with the likelihood ratio (`gosset::likelihood_ratio`), or fit a tree on participant covariates. Reliability against a check is reported per group.
 - **Market segments.** Segments are built from socio-economic covariates without the preference outcome (FAMD, one-hot encoding, k-means, elbow for k), named from their covariate profiles, and then tested against the rankings (script, MIP). Compare the segment model with an intercept-only model, a gender model and a tree on the raw covariates by blocked cross-validation (`gosset::crossvalidation`), and keep the segments only when they predict rankings better than the simpler models (script, `03-model-validation.R`). The rules in [socioeconomic heterogeneity](socioeconomic-heterogeneity.md) apply.
 - **Open answers.** Reasons for choosing or rejecting a product are text. Clean, tokenise and count terms per product, draw word clouds and co-occurrence networks of terms, and run a correspondence analysis of terms against products and groups (script, maize and sweetpotato). Text analysis explains the rankings, it does not replace them.
-- **Alpha.** As in [climate and environment](climate-environment.md), 0.01 for large data sets or when the case needs a conservative threshold, 0.05 or 0.10 in ordinary studies, always stated.
+- **Alpha.** As in [climate and environment](climate-environment.md), 0.05 or 0.10 in practice, always stated with the reason. 0.01 is an optional conservative choice for large data sets (above 5,000 participants) or to convince demanding reviewers, not a rule.
 
 ## Alternatives
 
