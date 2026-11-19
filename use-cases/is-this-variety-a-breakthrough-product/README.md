@@ -13,7 +13,7 @@ Does a variety give at least 25% more yield than the check in farmers' fields, h
 
 Use it to screen on-farm trial data for candidate breakthrough products, defined by Cairns et al. (2026) as varieties with at least 25% higher productivity or value in farmers' fields. It gives the on-farm side of the evidence.
 
-It does not make the decision. A breakthrough decision is generally taken with station data, which maniva does not connect yet. In tricot-data only the five groundnut trials from Tanzania have on-station companions, and those files are not in the release. See the use case [do on-farm and on-station results agree](../do-on-farm-and-on-station-results-agree/) for comparing the two sources.
+It does not make the decision, for two reasons. A breakthrough decision combines station trials and on-farm testing, and neither is enough alone. maniva does not connect station data yet. In tricot-data only the five groundnut trials from Tanzania have on-station companions, and those files are not in the release. Yield is also one driver of what farmers choose, not the single driver, so the yield verdict here is one line of a trait profile that this draft does not compute yet. See the decision record. See the use case [do on-farm and on-station results agree](../do-on-farm-and-on-station-results-agree/) for comparing the two sources.
 
 ## Input data
 
@@ -69,7 +69,7 @@ CIAT common bean tricot trials in Tanzania that started in 2021 or 2022, from tr
 
 Check Uyole 03, labelled a historical check in the metadata.
 
-| Variety | Trials started | Trials used | Yield ratio (95% interval) | P(mean gain ≥ 25%) | Reliability at 25% (interval) | Plots | Direct pairs, wins by 25% | Verdict |
+| Variety | Trials started | Trials used | Yield ratio (95% interval) | P(mean gain ≥ 25%) | Reliability at 25% (interval) | Plots | Direct pairs, wins by 25% | Yield verdict |
 |---|---|---|---|---|---|---|---|---|
 | TARIBEAN 3 | 2021 | 2 | 1.51 (1.02 to 2.25) | 0.83 | 0.59 (0.43 to 0.79) | 38 | 3, 2 | supported |
 | TARIBEAN 3 | 2022 | 6 | 1.87 (1.11 to 3.15) | 0.94 | 0.69 (0.51 to 0.80) | 42 | 10, 7 | supported |
@@ -80,7 +80,7 @@ Check Uyole 03, labelled a historical check in the metadata.
 
 Check Calima Uyole, labelled the comparative check, trials of both years (10 trials).
 
-| Variety | Yield ratio (95% interval) | P(mean gain ≥ 25%) | Reliability at 25% | Plots | Direct pairs, wins by 25% | Verdict |
+| Variety | Yield ratio (95% interval) | P(mean gain ≥ 25%) | Reliability at 25% | Plots | Direct pairs, wins by 25% | Yield verdict |
 |---|---|---|---|---|---|---|
 | TARIBEAN 1 | 1.37 (0.93 to 2.02) | 0.68 | 0.54 | 105 | 13, 9 | indicative |
 | TARIBEAN 3 | 1.36 (1.01 to 1.84) | 0.71 | 0.54 | 93 | 10, 6 | indicative |
@@ -90,7 +90,8 @@ Farmers rank TARIBEAN 3 above Uyole 03 with probability 0.62 (90 rankings) and T
 What this example shows, and what it does not.
 
 - **The check decides the verdict.** Both varieties are supported against Uyole 03 and only indicative against Calima Uyole.
-- **On-farm data only.** These trials have no station data in maniva. The example cannot stand for a breakthrough decision, which is generally taken with station data.
+- **On-farm data only.** These trials have no station data in maniva. The example cannot stand for a breakthrough decision, which combines station and on-farm evidence.
+- **Yield and overall preference only.** Farmers also ranked marketability, grain colour, grain size, taste, cooking time, maturity and resistance traits in these trials. They are not in the tables yet. The yield verdicts say nothing about them.
 - **Few direct pairs.** Only TARIBEAN 1 has more than 16 farms beside Uyole 03. The reliabilities rest on the model and on one residual variance for all varieties.
 - **Failed plots.** 17% of all plots yielded zero and left the log model. The share is 16% for TARIBEAN 1, 12% for TARIBEAN 3 and 22% for Uyole 03 across both years.
 - **Assumed plot areas.** 504 of 1,583 yields rest on an assumed plot area. The ratio within a farm is safe only if its three plots had the same size.
@@ -99,7 +100,8 @@ What this example shows, and what it does not.
 ## Limitations
 
 - The R scripts are untested. Run `Rscript tests/run-tests.R` first and report what fails.
-- On-farm data only, as above.
+- On-farm data only, as above. The decision needs station and on-farm evidence together.
+- The verdict is about the yield gain only. It is not a verdict on the product, since yield is not the single driver of farmer choice. The trait profile in the decision record is not implemented.
 - One residual variance for all varieties. The model-based reliability cannot show that one variety is less stable than another. Eskridge and Mumm estimate a standard deviation per variety, which needs many direct pairs.
 - With one trial the variety-by-trial variance is set to zero and the interval is too narrow. Check `n_trials`.
 - A trial enters step 1 only if it grew the check. Evidence that links a variety to the check through other varieties in other trials is not used.

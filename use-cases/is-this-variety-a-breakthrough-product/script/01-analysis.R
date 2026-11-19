@@ -16,8 +16,9 @@
 # Alternatives
 #   One mixed model on all plots, or a Bayesian probability model (ProbBreed).
 # Limits
-#   On-farm data only. Station data, where this decision is generally taken,
-#   are not read. Verdict thresholds are provisional.
+#   On-farm data only. The decision combines station and on-farm evidence, and
+#   station data are not read. The verdict is about the yield gain only, since
+#   yield is not the single driver of farmer choice. Thresholds are provisional.
 #
 # Run from the use-case folder (open the .Rproj) with  Rscript script/01-analysis.R
 

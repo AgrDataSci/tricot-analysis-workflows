@@ -36,8 +36,10 @@
 #     question (total production) and are driven by a few extreme plots.
 #
 # Limits
-#   - On-farm data only. A breakthrough decision is generally taken with
-#     station data as well, which this workflow does not read yet.
+#   - On-farm data only. A breakthrough decision combines station and on-farm
+#     evidence, and this workflow does not read station data yet.
+#   - Yield and overall preference only. Yield is not the single driver of
+#     farmer choice, so the verdict is about the yield gain, not the product.
 #   - A log model drops zero yields. They are counted and reported, and they
 #     stay in the direct win share.
 #   - The verdict thresholds are provisional defaults, not a standard.
