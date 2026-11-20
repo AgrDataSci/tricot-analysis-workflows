@@ -56,7 +56,8 @@ Two claims meet here. One says that results from ranking-based testing have low 
 ## Open questions
 
 - Whether the few-item form of repeatability is acceptable to the domain leads, or whether a different statistic should be the default for concept tests.
-- Envirotypes from climate. In the first worked example the envirotype coincides with the country in the pooled data and with the district in Uganda, so climate and place are not separated. A data set with many districts along a climate gradient is needed.
+- Envirotypes from climate. In the maize example the envirotype coincides with the country in the pooled data and with the district in Uganda. In the cassava example of Colombia two envirotypes pass the fair test, and among sweet growers they stay at the edge of it. One data set is a lead and not a result. It needs a second data set along a climate gradient.
+- Whether repeatability is the right yardstick for a segmentation at all. In the cassava example market type reverses the ranking and gives the largest gain in prediction, and it does not raise repeatability because one market is small. The record keeps both statistics and reads a segmentation first on preference and prediction.
 - Whether annual long-term indices are the right description of climate for a concept test, and which thresholds to use for hot days and warm nights in the highlands.
 - The on-farm yield data where the unsegmented ranking shows little signal. That is where the claim about segments has room to show a gain, and those data are not open.
 - Ratings and rankings from the same participants, to settle the claim about absolute scoring with data.

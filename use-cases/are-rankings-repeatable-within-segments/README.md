@@ -179,6 +179,56 @@ What it does not show.
 
 **Against the benchmark concept.** No concept is ranked above the resilient benchmark with confidence in the pooled data. Drought escape reaches 0.51 (0.48 to 0.55) and intercropping 0.49 (0.45 to 0.53). By country, intercropping is above the benchmark in Kenya, 0.56 (0.51 to 0.62), and below it in Uganda, 0.42 (0.38 to 0.48). Drought escape is level with it in Uganda, 0.55 (0.50 to 0.60).
 
+## Second worked example on open data
+
+Video-based concept testing of seven cassava product concepts with 398 farmers in the departments of Bolívar, Córdoba and Sucre in the Caribbean region of Colombia (CIAT with CIRAD as partner, November and December 2024). Data from [tricot-data](https://github.com/AgrDataSci/tricot-data), file `cassava-COL-26ad22f40f6v.json`, CC0 1.0, on `main` at commit 32982e7. 396 farmers gave a complete ranking. The file holds the kind of cassava each farmer grows, sweet for the fresh market, industrial for starch, or both. Daily rainfall (CHIRPS) and temperature (CHIRTS) at the 185 farm or interview points, 2007 to 2021 as in the maize example, with the same thresholds. Run with the Python reference on 2026-11-20, 500 permutations.
+
+**The unsegmented ranking is highly repeatable here too.** Repeatability is 0.84 (0.74 to 0.91) with 50 farmers, 0.93 (0.89 to 0.95) with 100, 0.96 with 200 and 0.98 with all 396. The pseudo R2 of single answers is 0.18.
+
+**Market type is a real segment.** The 342 farmers who grow only sweet cassava and the 54 who grow industrial cassava or both order the concepts almost in reverse.
+
+| Concept | Pooled | Sweet only | Industrial or both |
+|---|---|---|---|
+| La rendidora | 1.13 | 1.39 | 0.21 |
+| Rapidita | 0.74 | 0.95 | -0.37 |
+| La Duradera | 0.58 | 0.71 | -0.23 |
+| Doble Propósito | -0.03 | -0.19 | 0.80 |
+| Prematura | -0.23 | -0.39 | 0.48 |
+| La Súper industrial | -0.97 | -1.23 | 0.47 |
+| La Amarilla | -1.21 | -1.24 | -1.36 |
+
+The Czekanowski similarity of the two markets is 0.52, against 0.87 (0.76 to 0.95) for random splits of the same sizes. This low similarity is real difference, not sample size.
+
+| Scope | Segmentation | Smallest | p, preferences differ | Repeatability, segments | Repeatability, random (95%) | p, more repeatable | Held-out gain |
+|---|---|---|---|---|---|---|---|
+| All | market type | 54 | 0.002 | 0.958 | 0.961 (0.948 to 0.968) | 0.81 | 0.050 |
+| All | department | 78 | 0.002 | 0.933 | 0.943 (0.936 to 0.947) | 0.99 | 0.017 |
+| All | gender | 55 | 0.99 | 0.963 | 0.962 (0.948 to 0.968) | 0.54 | -0.019 |
+| All | age, 2 classes | 189 | 0.95 | 0.962 | 0.962 (0.960 to 0.963) | 0.54 | -0.012 |
+| All | experience, 2 classes | 168 | 0.39 | 0.962 | 0.962 (0.959 to 0.964) | 0.44 | -0.009 |
+| All | sweet cassava area, 2 classes | 161 | 0.026 | 0.961 | 0.963 (0.961 to 0.965) | 0.99 | 0.002 |
+| All | envirotypes, 2 | 112 | 0.002 | 0.966 | 0.962 (0.956 to 0.965) | 0.002 | 0.016 |
+| All | envirotypes, 3 | 75 | 0.002 | 0.948 | 0.943 (0.934 to 0.949) | 0.058 | -0.035 |
+| All | envirotypes, 4 | 74 | 0.004 | 0.925 | 0.924 (0.916 to 0.929) | 0.37 | -0.027 |
+| Sweet only | envirotypes, 2 | 111 | 0.024 | 0.968 | 0.966 (0.963 to 0.968) | 0.050 | 0.006 |
+| Sweet only | envirotypes, 3 | 65 | 0.012 | 0.953 | 0.949 (0.942 to 0.954) | 0.052 | -0.002 |
+| Sweet only | envirotypes, 4 | 65 | 0.010 | 0.935 | 0.932 (0.927 to 0.936) | 0.12 | -0.002 |
+| Sweet only | department | 50 | 0.34 | 0.941 | 0.949 (0.942 to 0.953) | 0.98 | -0.018 |
+| Drier envirotype | market type | 53 | 0.002 | 0.938 | 0.938 (0.920 to 0.947) | 0.59 | 0.051 |
+
+The held-out gain holds out whole municipalities, except for department, which uses random folds. With 14 tests the Bonferroni threshold at 0.05 is 0.004.
+
+- **Market type gives the largest gain in prediction of any segmentation in the two examples**, 0.050 per ranking against 0.016 for country in the maize data. It does not raise repeatability, because the pooled ranking is 86% sweet growers and so is already their ranking, and the industrial group is small.
+- **Two envirotypes pass the fair test.** They differ in preference, they are more repeatable than random groups of the same sizes (p = 0.002) and they predict held-out municipalities better. This is the only segmentation in the two examples that is more repeatable than chance, apart from country.
+- **The envirotypes are a dry and a wet one.** The drier holds 284 farmers, with a longest dry spell of 42 days, 1,510 mm of rain a year and 220 hot days. The wetter holds 112 farmers, nearly all in Bolívar, with a dry spell of 20 days, 1,780 mm and 109 hot days. In the wetter one La rendidora leads by far (1.76) and La Súper industrial is rejected (-1.87). In the drier one the worths lie closer and the early concept Prematura is near the middle (-0.06 against -0.68).
+- **Climate is partly the market.** All but one of the industrial growers are in the drier envirotype. Among sweet growers only, the envirotypes still differ in preference (p = 0.024) and are at the edge of being more repeatable (p = 0.050), with a small gain in prediction. That does not pass the corrected threshold.
+- **Climate does better than the department.** Among sweet growers the three departments do not differ in preference (p = 0.34), while the envirotypes, which cut across Bolívar, do.
+- **Market type holds within the drier envirotype** (p = 0.002), so the market split is not climate under another name.
+
+What the two examples say together. The pooled ranking of concepts is repeatable from about 100 farmers on. Segments matter where markets differ, and what they change is which product fits which farmer, not how stable the result is. Repeatability is the wrong yardstick for a segmentation. Whether preferences differ and whether prediction on held-out places improves are the right ones. Climate envirotypes show their first sign of a gain in repeatability in Colombia, where the points span a real dry to wet gradient, and none in Kenya and Uganda, where the points of a country lie within half a degree.
+
+Limits of this example. One survey of 396 farmers and one region. The industrial segment has 54 farmers. Temperature indices are strongly correlated with each other, so the envirotypes are close to a single dry and hot against wet and cool axis. The reasons farmers gave are in the file in English translation and were not analysed here.
+
 ## Limitations
 
 - The R scripts are untested. Run `Rscript tests/run-tests.R` first and report what fails.
@@ -200,5 +250,5 @@ What it does not show.
 - `script/01-analysis.R` is the workflow. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
 - `script/helper/simulate-data.R` simulates rankings from two segments with a known answer.
 - `script/other-language/repeatability.py` is the Python reference that was run. `run_checks.py` holds its checks and `example-maize-concepts.py` the worked example, which reads the maize concept tests from tricot-data.
-- `script/helper/envirotypes.R` and `script/other-language/envirotypes.py` hold the climate indices and the envirotype step. `example-maize-envirotypes.py` runs it on the maize points and takes the tricot-data folder, the rainfall file and the temperature file as arguments. The climate file used here holds both and is not in this repository.
+- `script/helper/envirotypes.R` and `script/other-language/envirotypes.py` hold the climate indices and the envirotype step. `example-cassava-concepts.py` is the second worked example and takes the tricot-data folder and the climate file. `example-maize-envirotypes.py` runs the envirotype step on the maize points and takes the tricot-data folder, the rainfall file and the temperature file as arguments. The climate files used here hold both and are not in this repository.
 - `tests/` holds the R tests, run with `Rscript tests/run-tests.R`.
