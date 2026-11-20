@@ -338,6 +338,69 @@ def worth_table(rank, segment=None):
     return pd.DataFrame(out, index=lev)
 
 
+# ------------------------------------------------------- building segments ----
+def adjusted_rand(a, b):
+    """Adjusted Rand index of two partitions of the same units, 1 for identical and about 0 for unrelated."""
+    t = pd.crosstab(pd.Series(a).values, pd.Series(b).values).values.astype(float)
+    c2 = lambda x: x * (x - 1) / 2
+    n, s = t.sum(), c2(t).sum()
+    ra, rb = c2(t.sum(axis=1)).sum(), c2(t.sum(axis=0)).sum()
+    e = ra * rb / c2(n)
+    return float((s - e) / ((ra + rb) / 2 - e)) if (ra + rb) / 2 != e else 1.0
+
+
+def _kmeans(Z, k, rng, starts=20, iters=100):
+    best, best_ss = None, np.inf
+    for _ in range(starts):
+        c = Z[rng.choice(len(Z), k, replace=False)]
+        for _ in range(iters):
+            lab = ((Z[:, None, :] - c[None, :, :]) ** 2).sum(axis=2).argmin(axis=1)
+            new = np.array([Z[lab == j].mean(axis=0) if (lab == j).any() else c[j] for j in range(k)])
+            if np.allclose(new, c):
+                break
+            c = new
+        ss = ((Z - c[lab]) ** 2).sum()
+        if ss < best_ss:
+            best, best_ss = lab, ss
+    return best
+
+
+def build_segments(X, k, log=(), seed=1, stability_runs=50):
+    """Segments from covariates alone, never from the rankings.
+
+    X is a table of numeric covariates, one row per unit (a participant for
+    market segments, a location for envirotypes). Columns named in log are
+    log-transformed (log1p), all columns are standardised, missing values
+    take the column median, and k-means gives k groups. Stability is the
+    mean adjusted Rand index between the groups of the full data and the
+    groups refitted on random 80% subsamples. A partition below about 0.7
+    is not stable enough to name.
+
+    k-means on standardised numeric covariates is the simplest defensible
+    choice. With categorical covariates use model-based clustering or FAMD
+    first, as the decision record on socioeconomic heterogeneity says.
+    """
+    X = pd.DataFrame(X).apply(pd.to_numeric, errors="coerce")
+    T = X.copy()
+    for c in log:
+        T[c] = np.log1p(T[c].clip(lower=0))
+    T = T.fillna(T.median())
+    sd = T.std(ddof=0).replace(0, 1)
+    Z = ((T - T.mean()) / sd).values
+    rng = np.random.default_rng(seed)
+    lab = _kmeans(Z, k, rng)
+    aris = []
+    for _ in range(stability_runs):
+        idx = rng.choice(len(Z), int(0.8 * len(Z)), replace=False)
+        aris.append(adjusted_rand(lab[idx], _kmeans(Z[idx], k, rng, starts=5)))
+    order = np.argsort(-np.bincount(lab, minlength=k))  # label 1 is the largest group
+    relab = np.empty(k, int)
+    relab[order] = np.arange(1, k + 1)
+    labels = pd.Series(relab[lab], index=X.index, name="segment")
+    profile = X.groupby(labels.values).mean().assign(n=labels.value_counts().sort_index().values)
+    return labels, profile, float(np.mean(aris))
+
+
 # ----------------------------------------------------------- simulation ----
 def simulate_segments(n=1200, seed=2026, share=0.5, contrast=1.0):
     """Tricot rankings of eight concepts from two segments with a known answer.

@@ -7,7 +7,8 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from repeatability import (simulate_segments, as_rankings, _encode, pl_fit, repeatability, group_repeatability,
-                           repeatability_curve, equal_n, segment_test, cv_gain, benchmark_reliability, worth_table, individual_fit)
+                           repeatability_curve, equal_n, segment_test, cv_gain, benchmark_reliability, worth_table, individual_fit, build_segments, adjusted_rand)
+from envirotypes import climate_indices, screen_indices, envirotypes, simulate_climate
 
 pd.set_option("display.width", 250, "display.max_columns", 40)
 passed = []
@@ -97,5 +98,42 @@ check("true segments raise the pseudo R2 of single answers", fi["pseudo_r2_segme
 # 11. blocked folds are used when blocks are given
 blk = np.arange(len(rank)) % 6
 check("cross-validation by blocks reports its folds", cv_gain(rank, dat.segment, blocks=blk)["folds"] == "blocks")
+
+# 12. segments built from covariates alone
+rng = np.random.default_rng(5)
+cov = pd.DataFrame({"sold": np.where(dat.segment == "market", rng.normal(70, 10, len(dat)), rng.normal(15, 10, len(dat))).clip(0, 100),
+                    "land": np.where(dat.segment == "market", rng.lognormal(1.2, 0.4, len(dat)), rng.lognormal(0.2, 0.4, len(dat)))})
+lab, prof, stab = build_segments(cov, 2, log=["land"])
+check("covariates that follow the true segments recover them", adjusted_rand(lab, dat.segment) > 0.8)
+check("a clear partition is stable", stab > 0.9)
+noise_cov = pd.DataFrame(rng.normal(size=(len(dat), 3)))
+check("a partition of pure noise is unstable", build_segments(noise_cov, 3)[2] < 0.7)
+check("adjusted Rand is 1 for identical partitions and near 0 for unrelated ones", adjusted_rand(lab, lab) == 1.0 and abs(adjusted_rand(lab, dat.noise)) < 0.05)
+check("segments built from covariates pass the fair test", segment_test(rank, lab.values, B=200)["p_repeatability"] < 0.01)
+
+# 13. envirotypes from daily climate
+pts = [f"P{i:02d}" for i in range(40)]
+zone = np.where(np.arange(40) < 20, "wet", "dry")
+rain, temp = simulate_climate(pts, zone)
+ind = climate_indices(rain, temp)
+z = pd.Series(zone, index=pts)
+check("wet points have more rain, cooler days and shorter dry spells", ind.rain_total[z == "wet"].min() > ind.rain_total[z == "dry"].max() and ind.tmax_mean[z == "wet"].max() < ind.tmax_mean[z == "dry"].min() and ind.max_dry_spell[z == "wet"].mean() < ind.max_dry_spell[z == "dry"].mean())
+check("every point rests on the five simulated years", (ind.years_rain == 5).all() and (ind.years_temp == 5).all())
+env, eprof, estab, used = envirotypes(ind, 2)
+check("two envirotypes recover the two simulated zones", adjusted_rand(env.loc[pts], zone) == 1.0 and estab > 0.9)
+short = rain[(pd.to_datetime(rain.date).dt.year < 2011) | (pd.to_datetime(rain.date).dt.month <= 6)]
+check("an incomplete year is left out", (climate_indices(short).years_rain == 4).all())
+flat = ind.copy()
+flat["hot_days"] = 100.0
+check("an index that does not vary is dropped", "hot_days" not in screen_indices(flat)[0])
+check("strongly correlated indices are reported", len(screen_indices(ind)[2]) > 0)
+# preferences that follow the zone: the envirotype of a participant's point passes the fair test
+part_pt = rng.choice(pts, len(dat))
+tied = simulate_segments(seed=11)
+tied_seg = np.where(tied.segment == "market", "wet", "dry")
+wet_pts, dry_pts = [p for p in pts if z[p] == "wet"], [p for p in pts if z[p] == "dry"]
+tied_pt = np.where(tied_seg == "wet", rng.choice(wet_pts, len(tied)), rng.choice(dry_pts, len(tied)))
+check("envirotypes pass the fair test when preference follows climate", segment_test(as_rankings(tied), env.loc[tied_pt].values, B=200)["p_repeatability"] < 0.01)
+check("envirotypes fail it when preference ignores climate", segment_test(rank, env.loc[part_pt].values, B=200)["p_repeatability"] > 0.05)
 
 print(f"\n{len(passed)} checks passed")

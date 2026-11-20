@@ -24,6 +24,7 @@ library("PlackettLuce")
 
 source("script/helper/functions.R")
 source("script/helper/simulate-data.R")
+source("script/helper/envirotypes.R")
 
 dir.create("output", showWarnings = FALSE)
 
@@ -61,6 +62,33 @@ print(eq, digits = 3)
 
 # 5. Reliability against a reference item ---------------------------------
 rel = benchmark_reliability(ord, ref = "C4", segment = dat$segment)
+
+# 5b. Segments and envirotypes built without the rankings ------------------
+# Market segments from several household variables at once. Replace cov with
+# the numeric household variables of the data, one row per participant.
+cov = data.frame(sold = ifelse(dat$segment == "market", 70, 15) + stats::rnorm(nrow(dat), 0, 10),
+                 land = stats::rlnorm(nrow(dat), ifelse(dat$segment == "market", 1.2, 0.2), 0.4))
+hh = build_segments(cov, k = 2, log = "land")
+print(hh$profile)
+cat("stability of the household segments:", round(hh$stability, 2), "\n")
+print(as.data.frame(segment_test(ord, hh$segment)))
+
+# Envirotypes from daily climate. With real data read the files written by the
+# chirps-rainfall and chirts-temperature skills of environment-data,
+#   rain = utils::read.csv("rain.csv.gz"); temp = utils::read.csv("temp.csv.gz")
+# and give each participant the id of its point.
+points = sprintf("P%02d", 1:40)
+zone = rep(c("wet", "dry"), each = 20)
+clim = simulate_climate(points, zone)
+indices = climate_indices(clim$rain, clim$temp)
+print(screen_indices(indices))
+env = envirotypes(indices, k = 2)
+print(env$profile)
+cat("stability of the envirotypes:", round(env$stability, 2), "\n")
+# in this simulation the points are assigned at random, so the envirotypes
+# should not pass the test
+dat$point = sample(points, nrow(dat), replace = TRUE)
+print(as.data.frame(segment_test(ord, env$envirotype[dat$point])))
 
 # 6. Outputs --------------------------------------------------------------
 utils::write.csv(curve, "output/repeatability-curve.csv", row.names = FALSE)

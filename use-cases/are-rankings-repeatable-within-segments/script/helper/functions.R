@@ -414,3 +414,73 @@ benchmark_reliability = function(ord, ref, segment = NULL, B = 300, seed = 1) {
   do.call(rbind, res)
 
 }
+
+
+#' Adjusted Rand index of two partitions of the same units
+#'
+#' @param a,b vectors with a label per unit
+#' @return numeric, 1 for identical partitions and about 0 for unrelated ones
+adjusted_rand = function(a, b) {
+
+  tab = table(a, b)
+  c2 = function(x) x * (x - 1) / 2
+  s = sum(c2(tab))
+  ra = sum(c2(rowSums(tab)))
+  rb = sum(c2(colSums(tab)))
+  e = ra * rb / c2(sum(tab))
+
+  if ((ra + rb) / 2 == e) return(1)
+
+  (s - e) / ((ra + rb) / 2 - e)
+
+}
+
+
+#' Build segments from covariates alone, never from the rankings
+#'
+#' Columns named in log are transformed with log1p, all columns are
+#' standardised, missing values take the column median and k-means gives k
+#' groups. Stability is the mean adjusted Rand index between the groups of
+#' the full data and the groups refitted on random 80% subsamples. A
+#' partition below about 0.7 is not stable enough to name.
+#'
+#' k-means on standardised numeric covariates is the simplest defensible
+#' choice. With categorical covariates use model-based clustering or FAMD
+#' first, as the record on socioeconomic heterogeneity says.
+#'
+#' @param x data.frame of numeric covariates, one row per unit (a participant
+#'   for market segments, a location for envirotypes)
+#' @param k integer, number of segments
+#' @param log character, columns to log-transform
+#' @param seed integer
+#' @param stability_runs integer, number of subsamples
+#' @return list with segment (integer, 1 is the largest group), profile (mean
+#'   covariates and n per segment) and stability
+build_segments = function(x, k, log = character(), seed = 1, stability_runs = 50) {
+
+  set.seed(seed)
+
+  x = as.data.frame(lapply(x, as.numeric))
+  z = x
+  for (v in log) z[[v]] = log1p(pmax(z[[v]], 0))
+  for (v in names(z)) z[[v]][is.na(z[[v]])] = stats::median(z[[v]], na.rm = TRUE)
+  z = scale(z)
+  z[, attr(z, "scaled:scale") == 0] = 0
+
+  lab = stats::kmeans(z, centers = k, nstart = 20)$cluster
+
+  ari = vapply(seq_len(stability_runs), function(i) {
+    idx = sample(nrow(z), floor(0.8 * nrow(z)))
+    adjusted_rand(lab[idx], stats::kmeans(z[idx, , drop = FALSE], centers = k, nstart = 5)$cluster)
+  }, numeric(1))
+
+  # label 1 is the largest group
+  ord_lab = order(-tabulate(lab, k))
+  segment = match(lab, ord_lab)
+
+  profile = stats::aggregate(x, list(segment = segment), mean, na.rm = TRUE)
+  profile$n = as.vector(table(segment))
+
+  list(segment = segment, profile = profile, stability = mean(ari))
+
+}

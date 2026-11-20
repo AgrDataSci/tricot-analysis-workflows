@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from repeatability import (repeatability_curve, equal_n, segment_test, cv_gain,
+from repeatability import (repeatability_curve, equal_n, segment_test, cv_gain, build_segments,
                            benchmark_reliability, worth_table, individual_fit)
 
 root = sys.argv[1]
@@ -103,6 +103,35 @@ print("tests", len(tests), "| Bonferroni threshold at 0.05", round(0.05 / len(te
       "| p_repeatability below it", int((tests.p_repeatability < 0.05 / len(tests)).sum()),
       "| p_deviance below it", int((tests.p_deviance < 0.05 / len(tests)).sum()))
 tests.to_csv("output/maize-segment-tests.csv", index=False)
+
+# 2b. household segments from several survey variables at once, built within each country
+# without the rankings: household size, age, farm size, maize area, number of crops and of
+# kinds of livestock, harvest, and the shares of the harvest sold and kept for the household
+print("\n== household segments from the survey variables (k-means, within country)")
+count = lambda c: dat[c].fillna("").map(lambda v: len([x for x in v.split("; ") if x]))
+hh = pd.DataFrame({
+    "household_size": num("household_size"), "age": num("age"), "farm_size": num("farm_size"),
+    "crop_area": num("crop_area"), "n_crops": count("crops_grown"), "n_livestock": count("livestock_kept"),
+    "harvest": num("farm_harvest_quantity"),
+    "share_sold": ((num("grain_sold") + num("grain_stored_for_sale")) / num("farm_harvest_quantity").replace(0, np.nan)).clip(0, 1),
+    "share_household": (num("grain_for_household") / num("farm_harvest_quantity").replace(0, np.nan)).clip(0, 1)})
+seg_rows = []
+for c in ("Kenya", "Uganda"):
+    idx = dat.index[dat.country == c]
+    r, d = rank.loc[idx].reset_index(drop=True), dat.loc[idx].reset_index(drop=True)
+    for k in (2, 3, 4):
+        lab, prof, stab = build_segments(hh.loc[idx].reset_index(drop=True), k, log=["farm_size", "crop_area", "harvest"])
+        t = segment_test(r, lab.values, B=B)
+        cv = cv_gain(r, lab.values, blocks=d["sub_area"])
+        seg_rows.append(dict(scope=c, k=k, stability=stab, smallest=t["smallest"], p_deviance=t["p_deviance"],
+                             repeatability_segments=t["repeatability_segments"], repeatability_random=t["repeatability_random"],
+                             random_lower=t["random_lower"], random_upper=t["random_upper"],
+                             p_repeatability=t["p_repeatability"], cv_gain=cv["gain_per_ranking"]))
+        if k == 3:
+            print(c, "profile of three segments"); print(prof.round(2).to_string())
+seg_rows = pd.DataFrame(seg_rows)
+print(seg_rows.round(3).to_string(index=False))
+seg_rows.to_csv("output/maize-household-segments.csv", index=False)
 
 # 3. equal n, descriptive
 print("\n== repeatability at the same n (m = 150)")

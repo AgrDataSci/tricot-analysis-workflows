@@ -86,3 +86,56 @@ test_that("reliability against a reference changes sides between segments", {
   expect_lt(br$reliability[br$group == "home" & br$item == "C1"], 0.5)
   expect_true(all(br$lower <= br$reliability & br$reliability <= br$upper))
 })
+
+test_that("segments built from covariates recover the true segments and pass the fair test", {
+  set.seed(5)
+  market = dat$segment == "market"
+  cov = data.frame(sold = pmin(pmax(ifelse(market, rnorm(nrow(dat), 70, 10), rnorm(nrow(dat), 15, 10)), 0), 100),
+                   land = ifelse(market, rlnorm(nrow(dat), 1.2, 0.4), rlnorm(nrow(dat), 0.2, 0.4)))
+  seg = build_segments(cov, 2, log = "land")
+  expect_gt(adjusted_rand(seg$segment, dat$segment), 0.8)
+  expect_gt(seg$stability, 0.9)
+  expect_equal(adjusted_rand(seg$segment, seg$segment), 1)
+  expect_lt(abs(adjusted_rand(seg$segment, dat$noise)), 0.05)
+  expect_lt(segment_test(ord, seg$segment, B = 200)$p_repeatability, 0.01)
+  noise_cov = as.data.frame(matrix(rnorm(nrow(dat) * 3), ncol = 3))
+  expect_lt(build_segments(noise_cov, 3)$stability, 0.7)
+})
+
+test_that("climate indices separate wet and dry points and envirotypes recover the zones", {
+  pts = sprintf("P%02d", 0:39)
+  zone = rep(c("wet", "dry"), each = 20)
+  cl = simulate_climate(pts, zone)
+  ind = climate_indices(cl$rain, cl$temp)
+  z = zone[match(ind$id, pts)]
+  expect_gt(min(ind$rain_total[z == "wet"]), max(ind$rain_total[z == "dry"]))
+  expect_lt(max(ind$tmax_mean[z == "wet"]), min(ind$tmax_mean[z == "dry"]))
+  expect_lt(mean(ind$max_dry_spell[z == "wet"]), mean(ind$max_dry_spell[z == "dry"]))
+  expect_true(all(ind$years_rain == 5) && all(ind$years_temp == 5))
+  env = envirotypes(ind, 2)
+  expect_equal(adjusted_rand(env$envirotype[pts], zone), 1)
+  expect_gt(env$stability, 0.9)
+  # an incomplete year is left out
+  short = cl$rain[format(cl$rain$date, "%Y") < "2011" | as.integer(format(cl$rain$date, "%m")) <= 6, ]
+  expect_true(all(climate_indices(short)$years_rain == 4))
+  # an index that does not vary is dropped, correlated indices are reported
+  flat = ind
+  flat$hot_days = 100
+  expect_false("hot_days" %in% screen_indices(flat)$keep)
+  expect_gt(nrow(screen_indices(ind)$pairs), 0)
+})
+
+test_that("envirotypes pass the fair test only when preference follows climate", {
+  set.seed(7)
+  pts = sprintf("P%02d", 0:39)
+  zone = rep(c("wet", "dry"), each = 20)
+  cl = simulate_climate(pts, zone)
+  env = envirotypes(climate_indices(cl$rain, cl$temp), 2)$envirotype
+  tied = simulate_segments(seed = 11)
+  ot = as_ordered(tied)
+  tied_pt = ifelse(tied$segment == "market", sample(pts[zone == "wet"], nrow(tied), TRUE),
+                   sample(pts[zone == "dry"], nrow(tied), TRUE))
+  expect_lt(segment_test(ot, env[tied_pt], B = 200)$p_repeatability, 0.01)
+  free_pt = sample(pts, nrow(dat), TRUE)
+  expect_gt(segment_test(ord, env[free_pt], B = 200)$p_repeatability, 0.05)
+})
