@@ -54,7 +54,7 @@ Two claims meet here. One says that results from ranking-based testing have low 
 ## Open questions
 
 - Whether the few-item form of repeatability is acceptable to the domain leads, or whether a different statistic should be the default for concept tests.
-- Envirotypes from climate. The first worked example uses elevation only, because climate could not be fetched in the session that built it.
+- Envirotypes from climate. The first worked example tests none, because climate could not be fetched in the session that built it. It writes the points for the environment-data skills.
 - The on-farm yield data where the unsegmented ranking shows little signal. That is where the claim about segments has room to show a gain, and those data are not open.
 - Ratings and rankings from the same participants, to settle the claim about absolute scoring with data.
 

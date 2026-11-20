@@ -60,22 +60,22 @@ On the synthetic data, 1,200 participants rank three of eight concepts. Two true
 
 ## Worked example on open data
 
-Video-based concept testing of eight maize seed product concepts with 2,400 farmers in Kenya and Uganda (Donovan et al. 2025). Each farmer watched three concepts and chose the best and the worst. Replication data from [maize-concept-testing](https://github.com/AgrDataSci/maize-concept-testing), https://doi.org/10.5281/zenodo.15063837, CC BY 4.0. All 2,400 interviews gave a valid ranking. Run with the Python reference on 2026-11-20.
+Video-based concept testing of eight maize seed product concepts with 2,400 farmers in Kenya and Uganda (Donovan et al. 2025). Each farmer watched three concepts and chose the best and the worst. Data from [tricot-data](https://github.com/AgrDataSci/tricot-data), files `maize-KEN-6834d470d4cv.json` and `maize-UGA-862ed6d6adfv.json`, CC BY 4.0. They hold the rankings, 30 household variables from the survey of the study and the interview point rounded to two decimals. All 2,400 interviews gave a complete ranking. Run with the Python reference on 2026-11-20, on the branch `claude-kauedesousa` of tricot-data, before the files reached `main`.
 
 **The unsegmented ranking is highly repeatable.**
 
 | Participants | Repeatability of the item means (95% of subsamples) |
 |---|---|
-| 50 | 0.72 (0.39 to 0.86) |
-| 100 | 0.86 (0.72 to 0.92) |
-| 200 | 0.93 (0.89 to 0.95) |
-| 400 | 0.97 (0.95 to 0.97) |
+| 50 | 0.71 (0.34 to 0.86) |
+| 100 | 0.86 (0.77 to 0.91) |
+| 200 | 0.93 (0.89 to 0.96) |
+| 400 | 0.97 (0.96 to 0.97) |
 | 800 | 0.98 (0.98 to 0.99) |
 | 2,400 | 0.99 |
 
-- Two disjoint samples of 150 farmers give log-worths that correlate at 0.92 (0.78 to 0.98).
+- Two disjoint samples of 150 farmers give log-worths that correlate at 0.92 (0.80 to 0.98).
 - Halves made of whole sub-counties, about 600 farmers each and no shared village, correlate at 0.98 in each country (lowest of ten splits 0.97 in Kenya and 0.95 in Uganda).
-- Kenya and Uganda correlate at 0.88. Green maize and intercropping score differently in the two countries.
+- Kenya and Uganda correlate at 0.88. The consumer-oriented (green maize) and intercropping concepts score differently in the two countries.
 - Single answers are another matter. The model explains 12% of the deviance of one farmer's ranking (pseudo R2 0.116).
 
 **Segments, each against random segments of the same sizes (500 permutations).**
@@ -83,36 +83,53 @@ Video-based concept testing of eight maize seed product concepts with 2,400 farm
 | Data | Segmentation | Smallest segment | Preferences differ (p) | Repeatability, segments | Repeatability, random segments (95%) | More repeatable (p) | Held-out gain per ranking |
 |---|---|---|---|---|---|---|---|
 | Both | country | 1,200 | 0.002 | 0.989 | 0.988 (0.988 to 0.989) | 0.002 | 0.016 |
-| Both | gender | 1,193 | 0.20 | 0.988 | 0.988 (0.988 to 0.989) | 0.53 | 0.000 |
-| Both | share of maize sold, 3 classes | 397 | 0.002 | 0.984 | 0.983 (0.981 to 0.983) | 0.002 | 0.007 |
-| Kenya | gender | 593 | 0.72 | 0.981 | 0.981 (0.981 to 0.981) | 0.89 | -0.002 |
-| Kenya | share of maize sold, 3 classes | 235 | 0.82 | 0.970 | 0.971 (0.969 to 0.973) | 0.89 | -0.012 |
-| Kenya | elevation tercile | 400 | 0.26 | 0.972 | 0.972 (0.971 to 0.972) | 0.09 | -0.010 |
-| Kenya | sub-county | 125 | 0.58 | 0.944 | 0.943 (0.939 to 0.945) | 0.15 | -0.018 |
-| Uganda | gender | 600 | 0.11 | 0.976 | 0.976 (0.975 to 0.976) | 0.014 | -0.001 |
-| Uganda | share of maize sold, 3 classes | 59 | 0.16 | 0.946 | 0.963 (0.947 to 0.971) | 0.98 | -0.006 |
-| Uganda | elevation tercile | 400 | 0.026 | 0.961 | 0.963 (0.962 to 0.964) | 1.00 | -0.009 |
-| Uganda | sub-county | 159 | 0.048 | 0.918 | 0.926 (0.919 to 0.930) | 0.98 | -0.010 |
+| Both | gender | 1,193 | 0.20 | 0.988 | 0.988 (0.988 to 0.989) | 0.58 | 0.000 |
+| Both | share of maize sold, 3 classes | 397 | 0.002 | 0.984 | 0.983 (0.981 to 0.983) | 0.004 | 0.007 |
+| Kenya | gender | 593 | 0.73 | 0.981 | 0.981 (0.981 to 0.981) | 0.90 | -0.002 |
+| Kenya | share of maize sold, 3 classes | 235 | 0.82 | 0.970 | 0.971 (0.969 to 0.973) | 0.90 | -0.012 |
+| Kenya | decides on the variety, yes or no | 85 | 0.44 | 0.981 | 0.981 (0.974 to 0.984) | 0.60 | -0.005 |
+| Kenya | takes part in selling, yes or no | 288 | 0.43 | 0.981 | 0.981 (0.979 to 0.982) | 0.70 | -0.005 |
+| Kenya | income mostly from the farm, yes or no | 314 | 0.07 | 0.981 | 0.981 (0.979 to 0.982) | 0.65 | 0.000 |
+| Kenya | buys seed every year, yes or no | 29 | 0.77 | 0.975 | 0.981 (0.969 to 0.986) | 0.89 | -0.003 |
+| Kenya | sole crop or intercrop | 147 | 0.15 | 0.983 | 0.981 (0.977 to 0.984) | 0.13 | -0.002 |
+| Kenya | farm size, 3 classes | 212 | 0.68 | 0.971 | 0.972 (0.969 to 0.973) | 0.76 | -0.008 |
+| Kenya | found the ranking easy, yes or no | 164 | 0.50 | 0.975 | 0.981 (0.977 to 0.983) | 1.00 | -0.007 |
+| Kenya | gender of the presenter in the video | 573 | 0.08 | 0.981 | 0.981 (0.981 to 0.981) | 0.09 | -0.005 |
+| Kenya | sub-county | 125 | 0.59 | 0.944 | 0.943 (0.939 to 0.945) | 0.15 | -0.017 |
+| Uganda | gender | 600 | 0.10 | 0.976 | 0.975 (0.975 to 0.976) | 0.008 | -0.001 |
+| Uganda | share of maize sold, 3 classes | 59 | 0.16 | 0.946 | 0.963 (0.950 to 0.971) | 0.99 | -0.006 |
+| Uganda | decides on the variety, yes or no | 77 | 0.07 | 0.981 | 0.975 (0.964 to 0.981) | 0.022 | -0.002 |
+| Uganda | takes part in selling, yes or no | 104 | 0.14 | 0.979 | 0.975 (0.966 to 0.980) | 0.13 | -0.002 |
+| Uganda | income mostly from the farm, yes or no | 224 | 0.046 | 0.977 | 0.975 (0.971 to 0.978) | 0.26 | 0.002 |
+| Uganda | buys seed every year, yes or no | 588 | 0.63 | 0.976 | 0.976 (0.975 to 0.976) | 0.41 | -0.005 |
+| Uganda | sole crop or intercrop | 452 | 0.23 | 0.976 | 0.975 (0.974 to 0.976) | 0.19 | -0.003 |
+| Uganda | farm size, 3 classes | 319 | 0.006 | 0.965 | 0.963 (0.961 to 0.964) | 0.012 | 0.003 |
+| Uganda | found the ranking easy, yes or no | 100 | 0.77 | 0.977 | 0.975 (0.966 to 0.980) | 0.41 | -0.003 |
+| Uganda | gender of the presenter in the video | 599 | 0.20 | 0.976 | 0.976 (0.975 to 0.976) | 0.31 | -0.005 |
+| Uganda | sub-county | 159 | 0.05 | 0.918 | 0.926 (0.920 to 0.930) | 1.00 | -0.012 |
 
-The held-out gain holds out whole sub-counties, except for the sub-county rows, which use random folds. All sixteen tests are in the output of the example script.
+The held-out gain holds out whole sub-counties, except for the sub-county rows, which use random folds. With 25 tests the Bonferroni threshold at 0.05 is 0.002, which is also the smallest p that 500 permutations can give.
 
 What this example shows.
 
 - **Low repeatability is not supported for the result.** The ranking of the eight concepts is stable from about 100 farmers. Below that it is not, which is the part of the small-sample concern that holds.
 - **Single answers are noisy, the result is not.** A reader who looks at how well individual choices are predicted sees little signal. That is a different quantity.
 - **Country is the one segmentation that passes.** Preferences differ between Kenya and Uganda and prediction improves. The gain in repeatability is real and tiny, 0.989 against 0.988.
-- **Market orientation is confounded with country.** It differs in the pooled data and not within either country. In Uganda 87% of farmers sell half or more of their maize, in Kenya 52% sell none.
-- **Elevation and sub-county do not raise repeatability.** Preferences differ a little by elevation and sub-county in Uganda, and the segments are still no more repeatable than random ones, with no gain in prediction.
+- **Market orientation is confounded with country.** The share of maize sold differs in the pooled data and not within either country. In Uganda 87% of farmers sold half or more of their maize, in Kenya 52% sold none.
+- **Who decides and who sells do not define segments here.** Farmers who decide on the variety, or who take part in selling, do not rank the concepts differently from the others within a country. Few farmers are outside these roles, 85 and 77 for the decision on the variety.
+- **Farm size in Uganda is the one lead.** Preferences differ by farm size class (p = 0.006), the segments are slightly more repeatable (p = 0.012) and prediction improves a little. It does not pass the corrected threshold and needs another data set.
+- **Finding the task difficult does not change the result.** Farmers who found the ranking neutral or difficult order the concepts as the others do.
+- **The design variable behaves.** The gender of the presenter in the video, assigned at random, does not define segments.
 - **There was no room to gain.** The pooled ranking is already near its ceiling. This data set cannot support the claim that segments raise repeatability, and it does not refute it for data where the pooled signal is weak.
 
 What it does not show.
 
-- **Climate envirotypes were not tested.** Elevation from the GPS reading is the only environmental variable used, and it spans a narrow range (1,170 to 1,793 m in Kenya). Climate could not be fetched in the session that built this example. The coordinates are in the data, and [environment-data](https://github.com/AgrDataSci/environment-data) adds rainfall and temperature from them.
-- **The segments are crude.** One variable each. The household clusters built elsewhere for these data were not used here.
-- **Sixteen tests, no correction.** The small p for gender in Uganda (0.014) comes with no difference in preference and no gain in prediction. Treat it as chance.
+- **Climate envirotypes were not tested.** The session that built this example could not reach the climate sources. The files hold the interview points, and the script writes `output/maize-concept-points.csv`, 388 rounded points, ready for the rainfall and temperature skills of [environment-data](https://github.com/AgrDataSci/environment-data). The interviews of a country lie within about half a degree, so climate contrast within a country is small.
+- **The segments are one variable each.** Household clusters built from several variables were not tested.
+- **Twenty-five tests.** The small p values for gender and for the decision on the variety in Uganda come with no difference in preference at the corrected level and no gain in prediction. Treat them as chance.
 - **Stated preference.** These are rankings of described concepts. A stable ranking does not establish what farmers would buy.
 
-**Against the benchmark concept.** No concept is ranked above the resilient benchmark with confidence in the pooled data. Drought escape reaches 0.51 (0.48 to 0.55) and intercropping 0.49 (0.45 to 0.53). By country, intercropping is above the benchmark in Kenya, 0.56 (0.51 to 0.62), and below it in Uganda, 0.42 (0.38 to 0.49). Drought escape is level with it in Uganda, 0.55 (0.50 to 0.60).
+**Against the benchmark concept.** No concept is ranked above the resilient benchmark with confidence in the pooled data. Drought escape reaches 0.51 (0.48 to 0.55) and intercropping 0.49 (0.45 to 0.53). By country, intercropping is above the benchmark in Kenya, 0.56 (0.51 to 0.62), and below it in Uganda, 0.42 (0.38 to 0.48). Drought escape is level with it in Uganda, 0.55 (0.50 to 0.60).
 
 ## Limitations
 
@@ -134,5 +151,5 @@ What it does not show.
 - `script/helper/functions.R` holds the documented functions.
 - `script/01-analysis.R` is the workflow. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
 - `script/helper/simulate-data.R` simulates rankings from two segments with a known answer.
-- `script/other-language/repeatability.py` is the Python reference that was run. `run_checks.py` holds its checks and `example-maize-concepts.py` the worked example.
+- `script/other-language/repeatability.py` is the Python reference that was run. `run_checks.py` holds its checks and `example-maize-concepts.py` the worked example, which reads the maize concept tests from tricot-data.
 - `tests/` holds the R tests, run with `Rscript tests/run-tests.R`.
