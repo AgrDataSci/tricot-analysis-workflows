@@ -1,7 +1,8 @@
 # Functions for the use case "Are rankings repeatable within segments?"
-# Status: reviewed-not-executed. This R code has not been run. It is a
-#   translation of script/other-language/repeatability.py, which was run and
-#   produced every number in the README. Run tests/run-tests.R before use.
+# Status: reviewed-not-executed. The tests run in the continuous integration
+#   of the repository and do not all pass yet. The code is a translation of
+#   script/other-language/repeatability.py, which produced every number in the
+#   README.
 # Decision record: decisions/repeatability.md
 #
 # Scientific intent
@@ -442,7 +443,10 @@ adjusted_rand = function(a, b) {
 #' standardised, missing values take the column median and k-means gives k
 #' groups. Stability is the mean adjusted Rand index between the groups of
 #' the full data and the groups refitted on random 80% subsamples. A
-#' partition below about 0.7 is not stable enough to name.
+#' partition below about 0.7 is not stable enough to name. Stability says that
+#' the partition can be found again, not that the groups are real. k-means
+#' splits data without any clusters in a stable way too. Whether the groups
+#' mean anything for preference is for the fair test to say.
 #'
 #' k-means on standardised numeric covariates is the simplest defensible
 #' choice. With categorical covariates use model-based clustering or FAMD

@@ -15,7 +15,7 @@ The R tests have not been run yet. The same cases pass in the Python reference, 
 - True segments predict held-out rankings better, a meaningless label does not, and blocked folds are used when blocks are given.
 - Single answers are far harder to predict than the item means are to repeat.
 - Reliability against a reference item changes sides between segments.
-- Segments built from covariates that follow the true segments recover them, are stable and pass the fair test. A partition of pure noise is unstable.
+- Segments built from covariates that follow the true segments recover them, are stable and pass the fair test. Segments built from pure noise fail the fair test, although k-means splits noise in a stable way.
 - Climate indices separate simulated wet and dry points, an incomplete year is left out, an index that does not vary is dropped and correlated indices are reported.
 - The Czekanowski similarity of two samples from one population is below one and rises with n. Data sets from one population are as similar between as within, and data sets from different populations fall below their noise floor.
 - Envirotypes recover the simulated zones. They pass the fair test when preference follows climate and fail it when it does not.

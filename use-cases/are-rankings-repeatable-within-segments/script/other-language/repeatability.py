@@ -428,7 +428,10 @@ def build_segments(X, k, log=(), seed=1, stability_runs=50):
     take the column median, and k-means gives k groups. Stability is the
     mean adjusted Rand index between the groups of the full data and the
     groups refitted on random 80% subsamples. A partition below about 0.7
-    is not stable enough to name.
+    is not stable enough to name. Stability says that the partition can be
+    found again, not that the groups are real. k-means splits data without
+    any clusters in a stable way too. Whether the groups mean anything for
+    preference is for the fair test to say.
 
     k-means on standardised numeric covariates is the simplest defensible
     choice. With categorical covariates use model-based clustering or FAMD

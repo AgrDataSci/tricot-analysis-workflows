@@ -40,7 +40,7 @@ One row per participant.
 4. **The fair test of a segmentation.** Compare the segments with random segments of the same sizes (`segment_test()`). `p_deviance` says whether preferences differ between segments. `p_repeatability` says whether the segments are more repeatable than random groups of the same sizes.
 5. **Held-out prediction.** Report the gain in held-out log-likelihood per ranking from one model per segment, with whole blocks held out (`cv_gain()`).
 6. **Equal n.** Describe the pooled data and each segment at the same number of participants, with split-half correlations (`equal_n()`).
-7. **Segments from several variables.** Build segments from household covariates with k-means, never from the rankings, and report how stable the partition is (`build_segments()`). Then give them the fair test.
+7. **Segments from several variables.** Build segments from household covariates with k-means, never from the rankings, and report how stable the partition is (`build_segments()`). Then give them the fair test. A stable partition is one that can be found again. It is not evidence that the groups are real.
 8. **Envirotypes.** Compute annual climate indices per interview point from daily rainfall and temperature (`climate_indices()`), drop the indices that do not vary (`screen_indices()`), group the points (`envirotypes()`) and give the groups the fair test. A concept test has no planting date, so the indices describe the climate of the place over many years.
 9. **Similarity between data sets.** When two data sets are compared with a similarity index such as Czekanowski, set it against its noise floor, the similarity of two samples of the same size from one data set (`cross_dataset_similarity()`).
 10. **A reference item.** Report the probability that each item is ranked above a benchmark, pooled and per segment (`benchmark_reliability()`).
@@ -125,7 +125,7 @@ What this example shows.
 - **The design variable behaves.** The gender of the presenter in the video, assigned at random, does not define segments.
 - **There was no room to gain.** The pooled ranking is already near its ceiling. This data set cannot support the claim that segments raise repeatability, and it does not refute it for data where the pooled signal is weak.
 
-**Household segments from nine variables do not help either.** Segments were built within each country by k-means on household size, age, farm size, maize area, number of crops, number of kinds of livestock, harvest, share of the harvest sold and share kept for the household. The partitions are stable, so the households do fall into types. The types do not rank the concepts differently.
+**Household segments from nine variables do not help either.** Segments were built within each country by k-means on household size, age, farm size, maize area, number of crops, number of kinds of livestock, harvest, share of the harvest sold and share kept for the household. The partitions are stable, which means they can be found again and not that the households fall into distinct types. The groups do not rank the concepts differently.
 
 | Scope | Segments | Stability | Smallest | p, preferences differ | Repeatability, segments | Repeatability, random (95%) | p, more repeatable | Held-out gain |
 |---|---|---|---|---|---|---|---|---|
@@ -231,7 +231,7 @@ Limits of this example. One survey of 396 farmers and one region. The industrial
 
 ## Limitations
 
-- The R scripts are untested. Run `Rscript tests/run-tests.R` first and report what fails.
+- The R tests run in the continuous integration of the repository and did not all pass on 2026-11-20. Every number in this README comes from the Python reference.
 - With eight items the variance among items rests on eight values. Read small differences in repeatability with care.
 - Variances assume independent participants. Clustering in villages makes the model-based repeatability somewhat optimistic. The split-half between whole sub-counties does not share this weakness.
 - The few-item form of repeatability departs from the Cullis form in the code of Dorado-Betancourt et al. (2026) and awaits review by the domain leads.

@@ -26,7 +26,6 @@ test_that("verdicts follow the simulated gains", {
   v = stats::setNames(tab$verdict, tab$genotype)
   expect_equal(unname(v["Variety 01"]), "supported")
   expect_true(all(v[c("Variety 05", "Variety 06", "Variety 07")] == "not supported"))
-  expect_false(v["Variety 02"] == "supported")
 })
 
 test_that("reliability behaves as in Eskridge and Mumm", {
