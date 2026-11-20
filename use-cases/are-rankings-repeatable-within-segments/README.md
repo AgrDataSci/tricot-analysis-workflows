@@ -60,7 +60,7 @@ On the synthetic data, 1,200 participants rank three of eight concepts. Two true
 
 ## Worked example on open data
 
-Video-based concept testing of eight maize seed product concepts with 2,400 farmers in Kenya and Uganda (Donovan et al. 2025). Each farmer watched three concepts and chose the best and the worst. Data from [tricot-data](https://github.com/AgrDataSci/tricot-data), files `maize-KEN-6834d470d4cv.json` and `maize-UGA-862ed6d6adfv.json`, CC BY 4.0. They hold the rankings, 30 household variables from the survey of the study and the interview point rounded to two decimals. All 2,400 interviews gave a complete ranking. Run with the Python reference on 2026-11-20, on the branch `claude-kauedesousa` of tricot-data, before the files reached `main`.
+Video-based concept testing of eight maize seed product concepts with 2,400 farmers in Kenya and Uganda (Donovan et al. 2025). Each farmer watched three concepts and chose the best and the worst. Data from [tricot-data](https://github.com/AgrDataSci/tricot-data), files `maize-KEN-6834d470d4cv.json` and `maize-UGA-862ed6d6adfv.json`, CC BY 4.0. They hold the rankings, 30 household variables from the survey of the study and the interview point rounded to two decimals. All 2,400 interviews gave a complete ranking. Run with the Python reference on 2026-11-20, on the files that joined `main` of tricot-data that day (commit 90a79c6).
 
 **The unsegmented ranking is highly repeatable.**
 
