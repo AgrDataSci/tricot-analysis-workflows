@@ -1,6 +1,6 @@
 # Functions for the use case "Are rankings repeatable within segments?"
-# Status: reviewed-not-executed. The tests run in the continuous integration
-#   of the repository and do not all pass yet. The code is a translation of
+# Status: tested-on-synthetic-data. The tests pass in the continuous
+#   integration of the repository. The code is a translation of
 #   script/other-language/repeatability.py, which produced every number in the
 #   README.
 # Decision record: decisions/repeatability.md

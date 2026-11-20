@@ -1,6 +1,6 @@
 # Envirotypes for the use case "Are rankings repeatable within segments?"
-# Status: reviewed-not-executed. Translated from script/other-language/envirotypes.py,
-#   which was run on simulated climate. Run tests/run-tests.R before use.
+# Status: tested-on-synthetic-data. Translated from script/other-language/envirotypes.py.
+#   The tests pass in the continuous integration of the repository.
 # Decision records: decisions/repeatability.md and decisions/climate-environment.md
 #
 # Scientific intent

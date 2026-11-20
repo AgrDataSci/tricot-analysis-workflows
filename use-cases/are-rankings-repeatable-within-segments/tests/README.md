@@ -2,7 +2,7 @@
 
 Run from the use-case folder with `Rscript tests/run-tests.R`.
 
-The R tests have not been run yet. The same cases pass in the Python reference, run with `python3 script/other-language/run_checks.py` (24 checks on 2026-11-20).
+The R tests pass in the continuous integration of the repository. The same cases pass in the Python reference, run with `python3 script/other-language/run_checks.py` (42 checks on 2026-11-20). Tests on labels without meaning use a cut of 0.01 on the p value, since such a p value falls below 0.05 in one run out of twenty.
 
 - The model recovers the simulated log-worths within 0.1 in a large sample.
 - Inconsistent and missing answers are dropped and counted.

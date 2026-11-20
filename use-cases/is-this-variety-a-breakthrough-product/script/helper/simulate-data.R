@@ -1,5 +1,5 @@
 # Simulate on-farm trials with a known breakthrough product
-# Status: reviewed-not-executed, translated from script/other-language/breakthrough.py
+# Status: tested-on-synthetic-data, translated from script/other-language/breakthrough.py
 #
 # Variety 01 is a breakthrough product (true gain 40%), Variety 02 sits on the
 # threshold (25%), Variety 03 gains 10% and the others are close to the check.

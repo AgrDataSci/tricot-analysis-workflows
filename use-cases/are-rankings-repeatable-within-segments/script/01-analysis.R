@@ -1,7 +1,7 @@
 # Are rankings repeatable within segments?
-# Status: reviewed-not-executed. This script has not been run in R. The
-#   Python reference in script/other-language/ was run and gave the numbers in
-#   the README. Run tests/run-tests.R first.
+# Status: tested-on-synthetic-data. This script and the tests run in the
+#   continuous integration of the repository. The Python reference in
+#   script/other-language/ gave the numbers on open data in the README.
 # Decision record: decisions/repeatability.md
 #
 # Scientific intent

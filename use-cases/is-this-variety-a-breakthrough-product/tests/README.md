@@ -2,7 +2,7 @@
 
 Run from the use-case folder with `Rscript tests/run-tests.R`.
 
-The R tests have not been run yet. The same cases pass in the Python reference, run with `python3 script/other-language/run_checks.py` (16 checks on 2026-11-20).
+The R tests pass in the continuous integration of the repository. The same cases pass in the Python reference, run with `python3 script/other-language/run_checks.py` (16 checks on 2026-11-20).
 
 - The gain is recovered within 0.03 in a large network without variety-by-trial interaction.
 - The 95% interval covers the simulated gain in at least 85% of 40 simulated networks (0.94 in the Python run).

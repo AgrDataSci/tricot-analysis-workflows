@@ -1,7 +1,7 @@
 # Is this variety a breakthrough product?
-# Status: reviewed-not-executed. This script has not been run in R. The
+# Status: tested-on-synthetic-data. This script and the tests run in the continuous integration of the repository. The
 #   Python reference in script/other-language/ was run and gave the numbers in
-#   the README. Run tests/run-tests.R first.
+#   the README.
 # Decision record: decisions/breakthrough-product.md
 #
 # Scientific intent

@@ -1,6 +1,6 @@
 # Are rankings repeatable within segments?
 
-**Status** reviewed-not-executed. The R scripts are a draft and have not been run. The Python reference in `script/other-language/` was run on synthetic data and on open data, and gave every number below.
+**Status** tested-on-synthetic-data. The R tests and `script/01-analysis.R` pass in the continuous integration of the repository on synthetic data. The numbers on open data below come from the Python reference in `script/other-language/`, and the two were not compared number by number.
 **Decision record** [repeatability of rankings](../../decisions/repeatability.md), a draft awaiting review
 **Domain leads to consult** Joost van Heerwaarden and Hugo Dorado-Betancourt (Wageningen University)
 **Derived from** Dorado-Betancourt et al. (2026) for the two-step estimation and Eskridge and Mumm (1992) for split-half repeatability and reliability against a reference. No archived script.
@@ -231,7 +231,7 @@ Limits of this example. One survey of 396 farmers and one region. The industrial
 
 ## Limitations
 
-- The R tests run in the continuous integration of the repository and did not all pass on 2026-11-20. Every number in this README comes from the Python reference.
+- The R tests pass in the continuous integration of the repository. Every number in this README comes from the Python reference, and the R and Python results were not compared number by number.
 - With eight items the variance among items rests on eight values. Read small differences in repeatability with care.
 - Variances assume independent participants. Clustering in villages makes the model-based repeatability somewhat optimistic. The split-half between whole sub-counties does not share this weakness.
 - The few-item form of repeatability departs from the Cullis form in the code of Dorado-Betancourt et al. (2026) and awaits review by the domain leads.

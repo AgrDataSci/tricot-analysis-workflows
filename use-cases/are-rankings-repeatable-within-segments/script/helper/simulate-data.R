@@ -1,5 +1,5 @@
 # Simulate tricot rankings of eight concepts from two segments
-# Status: reviewed-not-executed, translated from script/other-language/repeatability.py
+# Status: tested-on-synthetic-data, translated from script/other-language/repeatability.py
 #
 # Segment "market" prefers concepts C1 to C3 and segment "home" prefers C6 to
 # C8. Their preferences partly cancel in the pooled data, so the pooled worths

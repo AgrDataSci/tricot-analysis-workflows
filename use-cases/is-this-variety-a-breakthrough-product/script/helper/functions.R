@@ -1,7 +1,7 @@
 # Functions for the use case "Is this variety a breakthrough product?"
-# Status: reviewed-not-executed. This R code has not been run. It is a
+# Status: tested-on-synthetic-data. The tests pass in the continuous integration of the repository. It is a
 #   translation of script/other-language/breakthrough.py, which was run and
-#   produced every number in the README. Run tests/run-tests.R before use.
+#   produced every number in the README.
 # Decision record: decisions/breakthrough-product.md
 #
 # Scientific intent

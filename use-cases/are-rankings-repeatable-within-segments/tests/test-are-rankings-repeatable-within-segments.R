@@ -1,5 +1,5 @@
 # Tests for the use case "Are rankings repeatable within segments?"
-# Not yet run in R. The same cases pass in script/other-language/run_checks.py
+# The same cases pass in script/other-language/run_checks.py
 
 library("testthat")
 

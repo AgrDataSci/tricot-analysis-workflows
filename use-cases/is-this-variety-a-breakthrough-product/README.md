@@ -1,6 +1,6 @@
 # Is this variety a breakthrough product?
 
-**Status** reviewed-not-executed. The R scripts are a draft and have not been run. The Python reference in `script/other-language/` was run on synthetic data and on open data, and gave every number below.
+**Status** tested-on-synthetic-data. The R tests and `script/01-analysis.R` pass in the continuous integration of the repository on synthetic data. The numbers on open data below come from the Python reference in `script/other-language/`, and the two were not compared number by number.
 **Decision record** [breakthrough products](../../decisions/breakthrough-product.md), a draft awaiting review
 **Domain leads to consult** Joost van Heerwaarden and Hugo Dorado-Betancourt (Wageningen University)
 **Derived from** Eskridge and Mumm (1992) for the decision rule and Dorado-Betancourt et al. (2026) for the two-step estimation. No archived script.

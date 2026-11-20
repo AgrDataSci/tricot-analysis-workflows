@@ -32,8 +32,8 @@ Start from the user's question, not from a method name.
 | How do climate and environment shape performance? | `use-cases/how-does-climate-shape-performance/` | `decisions/climate-environment.md` |
 | Do on-farm and on-station results agree? | `use-cases/do-on-farm-and-on-station-results-agree/` | `decisions/genetic-gain.md` |
 | Which measured traits (lab or station) explain preference? | `use-cases/which-measured-traits-explain-preference/` | `decisions/trait-associations.md`, `decisions/genetic-gain.md` |
-| Are rankings repeatable? Is repeatability higher within market segments or envirotypes? How many participants until the ranking is stable? | `use-cases/are-rankings-repeatable-within-segments/` (draft, R not yet run) | `decisions/repeatability.md` |
-| Is this variety a breakthrough product, with at least 25% more yield than the check? How often does it outperform the check? | `use-cases/is-this-variety-a-breakthrough-product/` (draft, R not yet run) | `decisions/breakthrough-product.md` |
+| Are rankings repeatable? Is repeatability higher within market segments or envirotypes? How many participants until the ranking is stable? | `use-cases/are-rankings-repeatable-within-segments/` (draft, tested on synthetic data) | `decisions/repeatability.md` |
+| Is this variety a breakthrough product, with at least 25% more yield than the check? How often does it outperform the check? | `use-cases/is-this-variety-a-breakthrough-product/` (draft, tested on synthetic data) | `decisions/breakthrough-product.md` |
 | Which product concept do consumers prefer? | `use-cases/which-product-concept-do-consumers-prefer/` | `decisions/consumer-concept-testing.md` |
 | Can trials with different measurements and designs be combined into one analysis? | `use-cases/can-heterogeneous-trials-be-combined/` | `decisions/data-synthesis.md` |
 | Can farmer ratings (scores on a short scale) be analysed as rankings? | `use-cases/can-farmer-ratings-be-analysed-as-rankings/` | `decisions/data-synthesis.md` |
