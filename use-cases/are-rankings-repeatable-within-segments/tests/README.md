@@ -17,4 +17,5 @@ The R tests have not been run yet. The same cases pass in the Python reference, 
 - Reliability against a reference item changes sides between segments.
 - Segments built from covariates that follow the true segments recover them, are stable and pass the fair test. A partition of pure noise is unstable.
 - Climate indices separate simulated wet and dry points, an incomplete year is left out, an index that does not vary is dropped and correlated indices are reported.
+- The Czekanowski similarity of two samples from one population is below one and rises with n. Data sets from one population are as similar between as within, and data sets from different populations fall below their noise floor.
 - Envirotypes recover the simulated zones. They pass the fair test when preference follows climate and fail it when it does not.

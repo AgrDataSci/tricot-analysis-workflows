@@ -7,7 +7,8 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from repeatability import (simulate_segments, as_rankings, _encode, pl_fit, repeatability, group_repeatability,
-                           repeatability_curve, equal_n, segment_test, cv_gain, benchmark_reliability, worth_table, individual_fit, build_segments, adjusted_rand)
+                           repeatability_curve, equal_n, segment_test, cv_gain, benchmark_reliability, worth_table, individual_fit, build_segments, adjusted_rand,
+                           czekanowski, cross_dataset_similarity)
 from envirotypes import climate_indices, screen_indices, envirotypes, simulate_climate
 
 pd.set_option("display.width", 250, "display.max_columns", 40)
@@ -135,5 +136,14 @@ wet_pts, dry_pts = [p for p in pts if z[p] == "wet"], [p for p in pts if z[p] ==
 tied_pt = np.where(tied_seg == "wet", rng.choice(wet_pts, len(tied)), rng.choice(dry_pts, len(tied)))
 check("envirotypes pass the fair test when preference follows climate", segment_test(as_rankings(tied), env.loc[tied_pt].values, B=200)["p_repeatability"] < 0.01)
 check("envirotypes fail it when preference ignores climate", segment_test(rank, env.loc[part_pt].values, B=200)["p_repeatability"] > 0.05)
+
+# 14. Czekanowski similarity between data sets
+check("Czekanowski is 1 for equal shares and 0 for disjoint ones", czekanowski([1, 2, 3], [2, 4, 6]) == 1.0 and czekanowski([1, 0], [0, 1]) == 0.0)
+same = cross_dataset_similarity(rank, dat.noise.values, sizes=(50, 200), B=100)
+check("two samples of one population are not perfectly similar, less so when small", same.within_x[0] < same.within_x[1] < 0.99)
+check("data sets from one population are as similar between as within", abs(same.between[1] - same.within_x[1]) < 0.02 and same.noise_share[1] > 0.8)
+diff = cross_dataset_similarity(rank, dat.segment.values, sizes=(50, 200), B=100)
+check("data sets from different populations fall below their noise floor", diff.between[1] < diff.within_home[1] - 0.1 and diff.p_below_within[1] > 0.95)
+check("the noise share shrinks as n grows when the data sets differ", diff.noise_share[1] < diff.noise_share[0] < 1)
 
 print(f"\n{len(passed)} checks passed")

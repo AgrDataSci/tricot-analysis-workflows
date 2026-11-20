@@ -484,3 +484,81 @@ build_segments = function(x, k, log = character(), seed = 1, stability_runs = 50
   list(segment = segment, profile = profile, stability = mean(ari))
 
 }
+
+
+#' Czekanowski (proportional) similarity of two sets of shares
+#'
+#' @param p,q numeric, shares or worths of the same items in the same order
+#' @return numeric, the sum of the smaller share of each item, 1 for equal
+#'   shares and 0 for shares with no overlap
+czekanowski = function(p, q) {
+  sum(pmin(p / sum(p), q / sum(q)))
+}
+
+
+#' Plackett-Luce worths scaled to sum to one
+#'
+#' @inheritParams pl_estimates
+#' @return numeric, the shares that the Czekanowski index compares
+worth_shares = function(ord, k) {
+  p = exp(pl_estimates(ord, k)$est)
+  p / sum(p)
+}
+
+
+#' Czekanowski similarity between two data sets against its own noise floor
+#'
+#' Two samples from the same population never reach a similarity of one. So
+#' a similarity between data sets means nothing until it is set against the
+#' similarity of two disjoint samples of the same size from one data set.
+#' For each n the function draws n participants from each data set and
+#' reports the similarity between data sets, the similarity within each, the
+#' share of draws in which the similarity between falls below both within
+#' values, and noise_share, the part of the dissimilarity between data sets
+#' that two samples from one population would also show.
+#'
+#' @param ord integer matrix from as_ordered()
+#' @param dataset vector with exactly two labels, one per participant
+#' @param sizes integer vector. Sizes above half the smaller data set are skipped
+#' @param B integer, number of draws
+#' @param seed integer
+#' @return data.frame, one row per n
+cross_dataset_similarity = function(ord, dataset, sizes = c(50, 100, 200, 400),
+                                    B = 300, seed = 1) {
+
+  set.seed(seed)
+
+  k = length(attr(ord, "levels"))
+  names_d = sort(unique(as.character(dataset)))
+  if (length(names_d) != 2) stop("dataset must hold exactly two labels")
+  ia = which(dataset == names_d[1])
+  ib = which(dataset == names_d[2])
+
+  sizes = sizes[2 * sizes <= min(length(ia), length(ib))]
+
+  res = lapply(sizes, function(m) {
+    draws = vapply(seq_len(B), function(i) {
+      a = sample(ia)
+      b = sample(ib)
+      pa = worth_shares(ord[a[1:m], , drop = FALSE], k)
+      pb = worth_shares(ord[b[1:m], , drop = FALSE], k)
+      c(czekanowski(pa, pb),
+        czekanowski(pa, worth_shares(ord[a[(m + 1):(2 * m)], , drop = FALSE], k)),
+        czekanowski(pb, worth_shares(ord[b[(m + 1):(2 * m)], , drop = FALSE], k)))
+    }, numeric(3))
+    within = (mean(draws[2, ]) + mean(draws[3, ])) / 2
+    out = data.frame(n = m,
+                     between = mean(draws[1, ]),
+                     between_lower = stats::quantile(draws[1, ], 0.025, names = FALSE),
+                     between_upper = stats::quantile(draws[1, ], 0.975, names = FALSE),
+                     within_a = mean(draws[2, ]),
+                     within_b = mean(draws[3, ]),
+                     p_below_within = mean(draws[1, ] < pmin(draws[2, ], draws[3, ])),
+                     noise_share = min(1, (1 - within) / (1 - mean(draws[1, ]))))
+    names(out)[5:6] = paste0("within_", names_d)
+    out
+  })
+
+  do.call(rbind, res)
+
+}

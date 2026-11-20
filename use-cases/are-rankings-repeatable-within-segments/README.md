@@ -42,7 +42,8 @@ One row per participant.
 6. **Equal n.** Describe the pooled data and each segment at the same number of participants, with split-half correlations (`equal_n()`).
 7. **Segments from several variables.** Build segments from household covariates with k-means, never from the rankings, and report how stable the partition is (`build_segments()`). Then give them the fair test.
 8. **Envirotypes.** Compute annual climate indices per interview point from daily rainfall and temperature (`climate_indices()`), drop the indices that do not vary (`screen_indices()`), group the points (`envirotypes()`) and give the groups the fair test. A concept test has no planting date, so the indices describe the climate of the place over many years.
-9. **A reference item.** Report the probability that each item is ranked above a benchmark, pooled and per segment (`benchmark_reliability()`).
+9. **Similarity between data sets.** When two data sets are compared with a similarity index such as Czekanowski, set it against its noise floor, the similarity of two samples of the same size from one data set (`cross_dataset_similarity()`).
+10. **A reference item.** Report the probability that each item is ranked above a benchmark, pooled and per segment (`benchmark_reliability()`).
 
 ## Alternatives
 
@@ -110,7 +111,7 @@ Video-based concept testing of eight maize seed product concepts with 2,400 farm
 | Uganda | gender of the presenter in the video | 599 | 0.20 | 0.976 | 0.976 (0.975 to 0.976) | 0.31 | -0.005 |
 | Uganda | sub-county | 159 | 0.05 | 0.918 | 0.926 (0.920 to 0.930) | 1.00 | -0.012 |
 
-The held-out gain holds out whole sub-counties, except for the sub-county rows, which use random folds. With these 25 tests and the six below the Bonferroni threshold at 0.05 is 0.002, which is also the smallest p that 500 permutations can give.
+The held-out gain holds out whole sub-counties, except for the sub-county rows, which use random folds. With these 25 tests and the 15 below the Bonferroni threshold at 0.05 is 0.002, which is also the smallest p that 500 permutations can give.
 
 What this example shows.
 
@@ -137,10 +138,43 @@ What this example shows.
 
 In Kenya the three types are households that keep their maize, smaller farms that sell part of it and larger farms with more crops. In Uganda most farmers sell most of their maize and the types separate by farm size, about 3 against 14 units of land for the two segments. That split in Uganda is the farm size lead above seen again, with the same small effect, and it does not pass the corrected threshold.
 
+**Envirotypes from climate.** Daily rainfall (CHIRPS) and temperature (CHIRTS) for 2007 to 2021 at the 388 interview points, with no missing days. Ten annual indices per point, with wet days at 1 mm, heavy rain at 20 mm, hot days at Tmax of 30 °C or more and warm nights at Tmin of 20 °C or more. The thresholds vary across the points in both countries, so none was changed. Mean Tmax is dropped in Uganda, where it hardly varies. The Kenyan points are wetter, 2,130 mm against 1,310 mm a year at the median, and have more hot days, 179 against 59.
+
+| Scope | Envirotypes | Stability | Smallest | p, preferences differ | Repeatability, envirotypes | Repeatability, random (95%) | p, more repeatable | Held-out gain |
+|---|---|---|---|---|---|---|---|---|
+| Kenya | 2 | 0.99 | 437 | 0.17 | 0.982 | 0.981 (0.980 to 0.982) | 0.088 | 0.000 |
+| Kenya | 3 | 0.81 | 324 | 0.19 | 0.972 | 0.972 (0.970 to 0.973) | 0.22 | -0.009 |
+| Kenya | 4 | 0.80 | 125 | 0.27 | 0.964 | 0.962 (0.958 to 0.964) | 0.064 | -0.013 |
+| Uganda | 2 | 0.99 | 479 | 0.002 | 0.972 | 0.975 (0.974 to 0.976) | 1.00 | 0.007 |
+| Uganda | 3 | 0.83 | 243 | 0.028 | 0.963 | 0.963 (0.959 to 0.965) | 0.71 | -0.018 |
+| Uganda | 4 | 0.90 | 174 | 0.006 | 0.948 | 0.951 (0.946 to 0.954) | 0.91 | -0.030 |
+| Both | 2 | 0.99 | 1,025 | 0.002 | 0.989 | 0.988 (0.988 to 0.989) | 0.002 | 0.014 |
+| Both | 3 | 0.95 | 510 | 0.002 | 0.984 | 0.983 (0.982 to 0.983) | 0.002 | 0.013 |
+| Both | 4 | 0.95 | 476 | 0.002 | 0.976 | 0.977 (0.976 to 0.978) | 0.97 | 0.016 |
+
+- **In the pooled data the envirotype is the country.** With two envirotypes all 1,200 Ugandan farmers and 175 Kenyan farmers fall in the drier one. It passes because country passes.
+- **Kenya shows no envirotype effect.** The two envirotypes are very stable and do not rank the concepts differently.
+- **In Uganda preferences differ between envirotypes, and the envirotype is the district.** The wetter envirotype with warmer nights holds 479 farmers, all in Mityana. The other holds all 601 of Mubende and 120 of Mityana. The drier envirotype separates the concepts more, with intercropping, resilience and drought escape further ahead. The split improves prediction on held-out sub-counties a little (0.007 per ranking). It does not make the ranking more repeatable than random groups, because the wetter group ranks the concepts closer together.
+- **Climate and place cannot be separated with two districts.** Within Mityana the two envirotypes do not differ in preference (p = 0.09, from a check outside the scripts). A design that separates them needs more districts along the climate gradient.
+- **The 175 Kenyan farmers in the climate group of Uganda are in between.** Their similarity to Uganda is 0.87 against 0.85 for random Kenyan groups of that size (p = 0.21), and their similarity to the other Kenyans is 0.88 against 0.92 (p = 0.08). The direction fits a climate effect and the group is too small to tell.
+
+**A low Czekanowski similarity between data sets is mostly sample size.** The Czekanowski similarity of the worth shares of Kenya and Uganda is 0.86 with all farmers. The table gives it for smaller samples, next to the similarity of two samples from the same country.
+
+| Participants per sample | Kenya against Uganda (95% of draws) | Two samples from Kenya | Two samples from Uganda | Share of the dissimilarity that is noise |
+|---|---|---|---|---|
+| 50 | 0.77 (0.58 to 0.90) | 0.80 | 0.81 | 0.85 |
+| 100 | 0.82 (0.69 to 0.90) | 0.86 | 0.86 | 0.75 |
+| 200 | 0.83 (0.73 to 0.91) | 0.90 | 0.90 | 0.58 |
+| 400 | 0.86 (0.80 to 0.91) | 0.93 | 0.93 | 0.47 |
+| 600 | 0.86 (0.82 to 0.89) | 0.94 | 0.95 | 0.39 |
+
+Two samples of 100 farmers from the same country reach only 0.86, so the index has no fixed ceiling to be judged against. At 50 per sample the two countries cannot be told apart from two samples of one country, and 85% of their dissimilarity is sampling noise. At 600 the difference between the countries is clear in 99.7% of draws. A low similarity between data sets therefore separates into a part that any two samples would show and a part that is real difference between the populations. The second part is what the fair test of segments then tries to explain.
+
 What it does not show.
 
-- **Climate envirotypes were not tested.** The session that built this example could not reach the climate sources. The step is written and tested on simulated climate, and `example-maize-envirotypes.py` runs it once the daily files exist. The files hold the interview points, and the script writes `output/maize-concept-points.csv`, 388 rounded points, ready for the rainfall and temperature skills of [environment-data](https://github.com/AgrDataSci/environment-data). The interviews of a country lie within about half a degree, so climate contrast within a country is small.
-- **Thirty-one tests.** The small p values for gender and for the decision on the variety in Uganda come with no difference in preference at the corrected level and no gain in prediction. Treat them as chance.
+- **A climate effect apart from place.** See above. Interviews of a country lie within about half a degree.
+
+- **Forty tests.** The small p values for gender and for the decision on the variety in Uganda come with no difference in preference at the corrected level and no gain in prediction. Treat them as chance.
 - **Stated preference.** These are rankings of described concepts. A stable ranking does not establish what farmers would buy.
 
 **Against the benchmark concept.** No concept is ranked above the resilient benchmark with confidence in the pooled data. Drought escape reaches 0.51 (0.48 to 0.55) and intercropping 0.49 (0.45 to 0.53). By country, intercropping is above the benchmark in Kenya, 0.56 (0.51 to 0.62), and below it in Uganda, 0.42 (0.38 to 0.48). Drought escape is level with it in Uganda, 0.55 (0.50 to 0.60).
@@ -166,5 +200,5 @@ What it does not show.
 - `script/01-analysis.R` is the workflow. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
 - `script/helper/simulate-data.R` simulates rankings from two segments with a known answer.
 - `script/other-language/repeatability.py` is the Python reference that was run. `run_checks.py` holds its checks and `example-maize-concepts.py` the worked example, which reads the maize concept tests from tricot-data.
-- `script/helper/envirotypes.R` and `script/other-language/envirotypes.py` hold the climate indices and the envirotype step. `example-maize-envirotypes.py` runs it on the maize points and takes the tricot-data folder, the rainfall file and the temperature file as arguments.
+- `script/helper/envirotypes.R` and `script/other-language/envirotypes.py` hold the climate indices and the envirotype step. `example-maize-envirotypes.py` runs it on the maize points and takes the tricot-data folder, the rainfall file and the temperature file as arguments. The climate file used here holds both and is not in this repository.
 - `tests/` holds the R tests, run with `Rscript tests/run-tests.R`.

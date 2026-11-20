@@ -139,3 +139,17 @@ test_that("envirotypes pass the fair test only when preference follows climate",
   free_pt = sample(pts, nrow(dat), TRUE)
   expect_gt(segment_test(ord, env[free_pt], B = 200)$p_repeatability, 0.05)
 })
+
+test_that("Czekanowski similarity between data sets is judged against its noise floor", {
+  expect_equal(czekanowski(c(1, 2, 3), c(2, 4, 6)), 1)
+  expect_equal(czekanowski(c(1, 0), c(0, 1)), 0)
+  same = cross_dataset_similarity(ord, dat$noise, sizes = c(50, 200), B = 100)
+  expect_lt(same$within_x[1], same$within_x[2])
+  expect_lt(same$within_x[2], 0.99)
+  expect_lt(abs(same$between[2] - same$within_x[2]), 0.02)
+  expect_gt(same$noise_share[2], 0.8)
+  dif = cross_dataset_similarity(ord, dat$segment, sizes = c(50, 200), B = 100)
+  expect_lt(dif$between[2], dif$within_home[2] - 0.1)
+  expect_gt(dif$p_below_within[2], 0.95)
+  expect_lt(dif$noise_share[2], dif$noise_share[1])
+})

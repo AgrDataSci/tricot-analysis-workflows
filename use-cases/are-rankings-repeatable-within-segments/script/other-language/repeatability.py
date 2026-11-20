@@ -338,6 +338,60 @@ def worth_table(rank, segment=None):
     return pd.DataFrame(out, index=lev)
 
 
+# ------------------------------------------- similarity between data sets ----
+def czekanowski(p, q):
+    """Czekanowski (proportional) similarity of two sets of shares, the sum of the smaller share of each item."""
+    p, q = np.asarray(p, float), np.asarray(q, float)
+    return float(np.minimum(p / p.sum(), q / q.sum()).sum())
+
+
+def worth_shares(R, n):
+    """Plackett-Luce worths scaled to sum to one, the shares the Czekanowski index compares."""
+    p = np.exp(pl_fit(R, n, variances=False)[0])
+    return p / p.sum()
+
+
+def cross_dataset_similarity(rank, dataset, sizes=(50, 100, 200, 400), B=300, seed=1):
+    """Czekanowski similarity between two data sets against its own noise floor.
+
+    Two samples from the same population never reach a similarity of one. So a
+    similarity between data sets means nothing until it is set against the
+    similarity of two disjoint samples of the same size from one data set. For
+    each n the function draws n participants from each data set and reports
+    the similarity between data sets, the similarity within each, the share
+    of draws in which the similarity between data sets falls below both
+    within values, and noise_share, the part of the dissimilarity between
+    data sets that two samples from one population would also show.
+    dataset holds exactly two labels. Sizes above half the smaller data set
+    are skipped.
+    """
+    R, lev = _encode(rank)
+    lab = pd.Series(dataset).reset_index(drop=True).values
+    names = sorted(pd.unique(lab), key=str)
+    if len(names) != 2:
+        raise ValueError("dataset must hold exactly two labels")
+    ia, ib = np.where(lab == names[0])[0], np.where(lab == names[1])[0]
+    rng = np.random.default_rng(seed)
+    rows = []
+    for m in sizes:
+        if 2 * m > min(len(ia), len(ib)):
+            continue
+        cross, wa, wb = [], [], []
+        for _ in range(B):
+            a, b = rng.permutation(ia), rng.permutation(ib)
+            pa, pb = worth_shares(R[a[:m]], len(lev)), worth_shares(R[b[:m]], len(lev))
+            cross.append(czekanowski(pa, pb))
+            wa.append(czekanowski(pa, worth_shares(R[a[m:2 * m]], len(lev))))
+            wb.append(czekanowski(pb, worth_shares(R[b[m:2 * m]], len(lev))))
+        cross, wa, wb = np.array(cross), np.array(wa), np.array(wb)
+        within = (wa.mean() + wb.mean()) / 2
+        rows.append(dict(n=m, between=cross.mean(), between_lower=np.quantile(cross, 0.025), between_upper=np.quantile(cross, 0.975),
+                         **{f"within_{names[0]}": wa.mean(), f"within_{names[1]}": wb.mean()},
+                         p_below_within=float(np.mean(cross < np.minimum(wa, wb))),
+                         noise_share=float(min(1.0, (1 - within) / (1 - cross.mean())))))
+    return pd.DataFrame(rows)
+
+
 # ------------------------------------------------------- building segments ----
 def adjusted_rand(a, b):
     """Adjusted Rand index of two partitions of the same units, 1 for identical and about 0 for unrelated."""

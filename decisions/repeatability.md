@@ -17,6 +17,7 @@ Two claims meet here. One says that results from ranking-based testing have low 
 - **Repeatability depends on n.** Report it as a curve against the number of participants, never as one number. The curve is also the sample-size guidance for the next study. The use case `how-many-participants-do-we-need` plans a trial from the same idea.
 - **Segments are built without the rankings.** Market segments from socioeconomic covariates and envirotypes from the climate, soil and elevation of each location, as [socioeconomic heterogeneity](socioeconomic-heterogeneity.md) and [climate and environment](climate-environment.md) require. Coordinates are enough to add climate from public sources through [environment-data](https://github.com/AgrDataSci/environment-data).
 - **The fair test.** A segment holds fewer participants than the pooled data, and a smaller sample is less repeatable whatever the segment means. So compare the segments with random segments of the same sizes, by shuffling the labels. Two statistics, the gain in fit from one model per segment (do preferences differ) and the mean repeatability of the segments (are they more repeatable). The second is the claim about segments. A segmentation can pass the first and fail the second.
+- **Similarity between data sets.** An index such as Czekanowski compares the worth shares of two data sets. Two samples from one population do not reach one, and the smaller they are the lower they fall. Report the index with its noise floor at the same n, and read only the shortfall below the floor as difference between populations.
 - **Equal n, as description.** Also report the pooled data and each segment at the same number of participants. Single groups move by chance at equal n, in the synthetic data from 0.46 to 0.78 around a pooled 0.66 for a label that means nothing. The table describes and the permutation test decides.
 - **Prediction on held-out places.** Report the gain in held-out log-likelihood from one model per segment, with whole villages or districts held out. Keep a segmentation only when it predicts rankings better than the pooled model, as the socioeconomic record already asks.
 - **Segments found by a tree.** A Plackett-Luce tree uses the rankings to find its split. Its nodes will look more repeatable than random groups by construction. Judge them on held-out data only.
@@ -32,6 +33,7 @@ Two claims meet here. One says that results from ranking-based testing have low 
 | Rankings are relative and lack context | Context comes from covariates joined to each participant, climate from coordinates and socioeconomic data. Records [climate and environment](climate-environment.md) and [socioeconomic heterogeneity](socioeconomic-heterogeneity.md) |
 | Add absolute scoring | Scores are not comparable between participants. Use case `can-farmer-ratings-be-analysed-as-rankings` |
 | Use benchmarks or reference concepts | Reliability against a reference item, this record |
+| Similarity between data sets is low (Czekanowski or another index) | Set it against the similarity of two samples of the same size from one data set. The shortfall below that floor is the real difference, and segments or envirotypes are then tested as its explanation |
 | Repeatability is higher within segments | The fair test in this record. It can fail |
 | Use choice experiments where price drives choice | An alternative in [consumer and concept testing](consumer-concept-testing.md) |
 
@@ -54,7 +56,7 @@ Two claims meet here. One says that results from ranking-based testing have low 
 ## Open questions
 
 - Whether the few-item form of repeatability is acceptable to the domain leads, or whether a different statistic should be the default for concept tests.
-- Envirotypes from climate. The step exists and is tested on simulated climate. The first worked example has not run it on real climate, which could not be fetched in the session that built it. It writes the points for the environment-data skills.
+- Envirotypes from climate. In the first worked example the envirotype coincides with the country in the pooled data and with the district in Uganda, so climate and place are not separated. A data set with many districts along a climate gradient is needed.
 - Whether annual long-term indices are the right description of climate for a concept test, and which thresholds to use for hot days and warm nights in the highlands.
 - The on-farm yield data where the unsegmented ranking shows little signal. That is where the claim about segments has room to show a gain, and those data are not open.
 - Ratings and rankings from the same participants, to settle the claim about absolute scoring with data.

@@ -11,7 +11,8 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from repeatability import segment_test, cv_gain, worth_table
+from repeatability import (segment_test, cv_gain, worth_table, _encode, worth_shares, czekanowski,
+                           cross_dataset_similarity)
 from envirotypes import climate_indices, screen_indices, envirotypes
 
 root, rain_file, temp_file = sys.argv[1:4]
@@ -73,3 +74,35 @@ out = pd.DataFrame(rows)
 print("\n== envirotype tests,", B, "permutations")
 print(out.round(3).to_string(index=False))
 out.to_csv("output/maize-envirotype-tests.csv", index=False)
+
+# what the envirotypes coincide with
+print("\n== envirotypes against country and district")
+env2 = envirotypes(ind, 2)[0]
+print(pd.crosstab(dat.id.map(env2), dat.country).to_string())
+for c in ("Kenya", "Uganda"):
+    d = dat[dat.country == c]
+    e = envirotypes(ind.loc[d.id.unique()], 2)[0]
+    print(pd.crosstab(d.id.map(e), d.adm1).to_string())
+
+# Czekanowski similarity between the two countries against its noise floor
+print("\n== Czekanowski similarity between Kenya and Uganda")
+R, lev = _encode(rank)
+ke, ug = np.where(dat.country == "Kenya")[0], np.where(dat.country == "Uganda")[0]
+print("all 1,200 against all 1,200:", round(czekanowski(worth_shares(R[ke], len(lev)), worth_shares(R[ug], len(lev))), 3))
+cz = cross_dataset_similarity(rank, dat.country.values, sizes=(50, 100, 200, 400, 600))
+print(cz.round(3).to_string(index=False))
+cz.to_csv("output/maize-czekanowski.csv", index=False)
+
+# country or climate: Kenyan farmers whose climate groups with Uganda
+kk = np.where((dat.country == "Kenya") & (dat.id.map(env2) == env2[dat.id[ug[0]]]))[0]
+if 50 <= len(kk) <= len(ke) - 50:
+    sh = lambda i: worth_shares(R[i], len(lev))
+    obs = czekanowski(sh(kk), sh(ug)), czekanowski(sh(kk), sh(np.setdiff1d(ke, kk)))
+    rng, ref = np.random.default_rng(3), []
+    for _ in range(B):
+        a = rng.permutation(ke)
+        ref.append((czekanowski(sh(a[:len(kk)]), sh(ug)), czekanowski(sh(a[:len(kk)]), sh(a[len(kk):]))))
+    ref = np.array(ref)
+    print(f"\n== {len(kk)} Kenyan farmers in the climate group of Uganda")
+    print("similarity to Uganda", round(obs[0], 3), "| random Kenyan groups of that size", ref[:, 0].mean().round(3), np.quantile(ref[:, 0], [0.025, 0.975]).round(3), "| p", float(np.mean(ref[:, 0] >= obs[0])))
+    print("similarity to the other Kenyans", round(obs[1], 3), "| random", ref[:, 1].mean().round(3), np.quantile(ref[:, 1], [0.025, 0.975]).round(3), "| p", float(np.mean(ref[:, 1] <= obs[1])))
