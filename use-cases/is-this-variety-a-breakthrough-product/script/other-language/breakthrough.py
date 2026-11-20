@@ -224,60 +224,139 @@ def breakthrough_table(data, check, threshold=0.25, nboot=200, min_plots=30,
 
 
 # ------------------------------------------------------------ preference ----
-def preference_reliability(rankings, check):
+def _pl_fit(R, n):
+    """Plackett-Luce log-worth, first item as reference. R holds, per farm, the
+    three item indices ordered from best to worst."""
+    def nll(t):
+        w = np.concatenate([[0], t])[R]
+        return -(w[:, 0] - np.logaddexp.reduce(w, axis=1) + w[:, 1] - np.logaddexp(w[:, 1], w[:, 2])).sum()
+    return np.concatenate([[0], minimize(nll, np.zeros(n - 1), method="BFGS").x])
+
+
+def preference_reliability(rankings, check, nboot=0, seed=1):
     """Probability that farmers rank each variety above the check.
 
     rankings has the columns farm, genotype and rank (1 is best), three plots
     per farm, no ties. Plackett-Luce worth by maximum likelihood, reliability
-    as worth / (worth + worth of the check), as gosset::reliability().
+    as worth / (worth + worth of the check), as gosset::reliability(). With
+    nboot > 0, a 95% interval from resampling farms.
     """
     r = rankings.dropna(subset=["rank"])
     ok = r.groupby("farm")["rank"].apply(lambda x: sorted(x) == [1, 2, 3])
     r = r[r.farm.isin(ok[ok].index)]
+    if check not in set(r.genotype):
+        return pd.DataFrame(columns=["genotype", "p_preferred", "p_lower", "p_upper", "n_rankings", "n_rankings_check"])
     items = [check] + sorted(set(r.genotype) - {check})
     ix = {v: i for i, v in enumerate(items)}
     R = np.array([[ix[v] for v in x.sort_values("rank").genotype] for _, x in r.groupby("farm")])
+    n = len(items)
+    rel = lambda t: 1 / (1 + np.exp(-t[1:]))
+    out = pd.DataFrame({"genotype": items[1:], "p_preferred": rel(_pl_fit(R, n)),
+                        "n_rankings": [int((R == i).any(axis=1).sum()) for i in range(1, n)]})
+    out["n_rankings_check"] = int((R == 0).any(axis=1).sum())
+    out["p_lower"], out["p_upper"] = np.nan, np.nan
+    if nboot > 0:
+        rng = np.random.default_rng(seed)
+        B = np.array([rel(_pl_fit(R[rng.integers(0, len(R), len(R))], n)) for _ in range(nboot)])
+        out["p_lower"], out["p_upper"] = np.percentile(B, 2.5, axis=0), np.percentile(B, 97.5, axis=0)
+    return out
 
-    def nll(t):
-        w = np.concatenate([[0], t])[R]
-        return -(w[:, 0] - np.logaddexp.reduce(w, axis=1) + w[:, 1] - np.logaddexp(w[:, 1], w[:, 2])).sum()
-    th = np.concatenate([[0], minimize(nll, np.zeros(len(items) - 1), method="BFGS").x])
-    return pd.DataFrame({"genotype": items[1:], "p_preferred": 1 / (1 + np.exp(-th[1:])),
-                         "n_rankings": [int((R == i).any(axis=1).sum()) for i in range(1, len(items))]})
+
+def trait_profile(rankings, check, traits=None, nboot=200, min_rankings=30, seed=1):
+    """Profile of a variety against the check, one row per trait and variety.
+
+    Yield is one driver of what farmers choose, not the single driver. The
+    profile gives, for each trait farmers ranked (overall preference,
+    marketability, maturity, disease and pest resistance, and others), the
+    probability that the variety is ranked above the check.
+
+    rankings is a long table with farm, genotype, trait and rank. Each trait
+    is fitted on its own, since farmers and trials differ in which traits
+    they ranked. reads is "above the check" when the whole interval is above
+    0.5, "below the check" when it is under, "no clear difference" otherwise
+    and "insufficient data" under min_rankings.
+    """
+    traits = traits or sorted(rankings.trait.unique())
+    out = []
+    for tr in traits:
+        p = preference_reliability(rankings[rankings.trait == tr], check, nboot=nboot, seed=seed)
+        p.insert(0, "trait", tr)
+        out.append(p)
+    out = pd.concat(out, ignore_index=True)
+
+    def reads(r):
+        if r.n_rankings < min_rankings or r.n_rankings_check < min_rankings:
+            return "insufficient data"
+        if r.p_lower > 0.5:
+            return "above the check"
+        if r.p_upper < 0.5:
+            return "below the check"
+        return "no clear difference"
+    out["reads"] = out.apply(reads, axis=1) if len(out) else []
+    return out
+
+
+STATION_NOTE = ("On-farm data only. Ideally, combine these results with station trials "
+                "(replicated, measured performance across locations) before a decision.")
 
 
 # ------------------------------------------------------------- simulation ----
+TRAIT_WORTH = {  # log-worth against the check, per ranked trait
+    "marketability":      [-0.5, 0.2, 0.7, 0.0, 0.1, -0.2, 0.3],
+    "maturity":           [0.4, -0.3, 0.2, 0.0, 0.0, 0.5, -0.4],
+    "disease_resistance": [0.6, 0.3, -0.2, 0.1, 0.0, -0.5, 0.2],
+    "pest_resistance":    [0.0, 0.4, 0.0, -0.3, 0.2, 0.0, -0.2],
+}
+
+
 def simulate_breakthrough(n_trials=6, farms_per_trial=150, seed=2026, sd_farm=0.6,
                           sd_resid=0.35, sd_gxt=0.05, p_fail=0.05, check_yield=800,
                           check_in_all=True):
     """On-farm trials with a known answer.
 
-    Variety 01 is a breakthrough product (true gain 40%), Variety 02 sits on
-    the threshold (25%), Variety 03 gains 10% and the others are close to the
-    check. Each farm grows three varieties. Plots fail (zero yield) with the
-    same probability for every variety.
+    Yield. Variety 01 is a breakthrough on yield (true gain 40%), Variety 02
+    sits on the threshold (25%), Variety 03 gains 10% and the others are
+    close to the check. Plots fail (zero yield) with the same probability for
+    every variety.
+
+    Other traits. Farmers also rank marketability, maturity, disease
+    resistance and pest resistance, each with its own true worth. Variety 01
+    wins on yield and disease resistance and loses on marketability. Variety
+    03 has a modest yield gain and the best marketability. Overall preference
+    weighs yield and these traits, so Variety 03 is preferred overall more
+    than the yield breakthrough. The rankings are in attrs["rankings"].
     """
     rng = np.random.default_rng(seed)
     gain = {"Check": 1.0, "Variety 01": 1.40, "Variety 02": 1.25, "Variety 03": 1.10,
             "Variety 04": 1.03, "Variety 05": 1.00, "Variety 06": 0.97, "Variety 07": 0.90}
     items = list(gain)
-    rows = []
+    worth = {t: dict(zip(items, [0.0] + w)) for t, w in TRAIT_WORTH.items()}
+    worth["overall_performance"] = {g: 1.5 * np.log(gain[g]) + 0.8 * worth["marketability"][g] +
+                                    0.3 * worth["maturity"][g] + 0.3 * worth["disease_resistance"][g] +
+                                    0.2 * worth["pest_resistance"][g] for g in items}
+    rows, rk = [], []
     for t in range(n_trials):
         avail = items if (check_in_all or t > 0) else items[1:]
         gxt = {g: rng.normal(0, sd_gxt) for g in items}
         for f in range(farms_per_trial):
             fe = rng.normal(0, sd_farm)
+            farm = f"T{t + 1}-{f + 1}"
             grown = rng.choice(avail, 3, replace=False)
-            ly = [np.log(check_yield) + np.log(gain[g]) + gxt[g] - gxt["Check"] + fe + rng.normal(0, sd_resid) for g in grown]
-            u = [2 * np.log(gain[g]) - np.log(-np.log(rng.uniform())) for g in grown]
-            rk = np.argsort(np.argsort(-np.array(u))) + 1
-            for g, v, r in zip(grown, ly, rk):
+            for g in grown:
+                v = np.log(check_yield) + np.log(gain[g]) + gxt[g] - gxt["Check"] + fe + rng.normal(0, sd_resid)
                 y = 0.0 if rng.uniform() < p_fail else float(np.exp(v))
-                rows.append(dict(trial=f"T{t + 1}", farm=f"T{t + 1}-{f + 1}", genotype=g, **{"yield": y, "rank": int(r)}))
+                rows.append({"trial": f"T{t + 1}", "farm": farm, "genotype": g, "yield": y})
+            for tr, w in worth.items():
+                u = np.array([w[g] - np.log(-np.log(rng.uniform())) for g in grown])
+                for g, r in zip(grown, np.argsort(np.argsort(-u)) + 1):
+                    rk.append({"trial": f"T{t + 1}", "farm": farm, "genotype": g, "trait": tr, "rank": int(r)})
     dat = pd.DataFrame(rows)
     sd_d = np.sqrt(2 * sd_resid ** 2 + 2 * sd_gxt ** 2)
     truth = pd.DataFrame({"genotype": items[1:], "gain_ratio": [gain[g] for g in items[1:]]})
     truth["rel"] = norm.cdf(np.log(truth.gain_ratio) / sd_d)
     truth["rel_threshold"] = norm.cdf((np.log(truth.gain_ratio) - np.log(1.25)) / sd_d)
+    for tr, w in worth.items():
+        truth["p_" + tr] = [1 / (1 + np.exp(-w[g])) for g in items[1:]]
     dat.attrs["truth"] = truth
+    dat.attrs["rankings"] = pd.DataFrame(rk)
     return dat

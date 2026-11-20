@@ -5,6 +5,8 @@
 **Domain leads to consult** Joost van Heerwaarden and Hugo Dorado-Betancourt (Wageningen University)
 **Derived from** Eskridge and Mumm (1992) for the decision rule and Dorado-Betancourt et al. (2026) for the two-step estimation. No archived script.
 
+> **Parked on 2026-11-20.** Work moved to the use case on repeatability within segments, and this one resumes later. The Python reference already holds a trait profile (`trait_profile()`, the probability of outranking the check for marketability, maturity, disease and pest resistance and overall preference) and a note that on-farm results should ideally be combined with station trials. The R scripts do not have these yet. The synthetic numbers under Interpretation were computed before the simulation gained these traits, so rerun `run_checks.py` before quoting them. The next step agreed is to rebuild the estimation on the Dorado-Betancourt protocol with Eskridge and Mumm reliability, for every ranked trait.
+
 ## Scientific question
 
 Does a variety give at least 25% more yield than the check in farmers' fields, how sure are we, and on what share of farms does it do so?
