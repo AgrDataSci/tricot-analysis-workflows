@@ -1,6 +1,6 @@
 # Do different groups of users prefer different varieties?
 
-**Status** tested-on-synthetic-data
+**Status** tested-on-synthetic-data. `script/other-language/user_groups.py` is a Python port of the functions, checked on synthetic data with the same known answers and not compared with R number by number. The worked example on cassava in Nigeria comes from the port.
 **Decision record** [socioeconomic heterogeneity](../../decisions/socioeconomic-heterogeneity.md) and [ranking](../../decisions/ranking.md)
 **Derived from** [archive/groundnut-tanzania](../../archive/groundnut-tanzania/) `05-data-analysis-clusters.R`, [archive/mip-concept-testing](../../archive/mip-concept-testing/) `02-clusters-identification.R`, [archive/osiris-1000farms](../../archive/osiris-1000farms/) `03-clusters-identification.R`, and the group analysis of the ClimMob report ([ClimMob-analysis](https://github.com/AgrDataSci/ClimMob-analysis) `R/44_group_analysis.R`)
 
@@ -102,6 +102,10 @@ Socioeconomic data mix numeric variables (farm size, distance to market) with ca
 
 Whatever method you use, run `variable_influence()`. It refits leaving out one variable at a time and compares the clusters with each categorical variable. It flags household head in the Gower solution (agreement 1.00 with the clusters, 0.00 after removing it). Theory still comes first. A method can show that a variable is irrelevant to the structure, not whether it matters for the decision.
 
+### Variables with spikes, and counts
+
+Check the distribution of every numeric covariate before clustering. A share with many zeros, a ratio that is mostly 0 or 1, or a score that takes few distinct values has a spike of identical values. A Gaussian cluster collapses on the spike with almost no variance, the likelihood rises, and BIC and ICL keep favouring more clusters. A chosen k at the upper bound of the range is the warning sign. Enter such variables as classes. Keep counts (number of crops, a diet score) as whole numbers, which VarSelLCM models as Poisson. Include k = 1 in the comparison when no clusters at all is a possible answer. The worked example below met all three.
+
 ### Alternatives
 
 - Plackett-Luce trees (`PlackettLuce::pltree`) split on covariates using the rankings. They find groups that differ in preference but give hierarchical binary partitions that may not be actionable personas.
@@ -171,6 +175,36 @@ A grounded rewrite reads as follows.
 
 Every number in the rewrite comes from the table. The interpretive step, "grows it mainly for the household", follows from the low share selling and is worth confirming in the field.
 
+## Worked example, cassava in Nigeria
+
+tricot trials of 30 cassava varieties with 448 farmers in four states of Nigeria over two seasons (NextGen Cassava, IITA and NRCRI), evaluated through gari and eba, with a household survey (RHoMIS) for 268 farmers. The outcome is the choice of the best and the worst variety to replant. The data are not yet in [tricot-data](https://github.com/AgrDataSci/tricot-data), and the analysis lives in AgrDataSci/nextgen-oft-nga (`script/06-workflow-case-study`), private until the paper is out. Run with the Python port on 2026-11-21, 200 permutations. Read it with the third worked example of [are-rankings-repeatable-within-segments](../are-rankings-repeatable-within-segments/).
+
+**Part A. The registered sex is the wrong group, the processing role is the right one.** Women processed the roots of 271 of the 334 trials registered to men, so sex does not say who judged the food. The groups are processing roles, women who process their own roots, men who do, and farmers whose roots another person processed.
+
+| Group | Answers | Cramér's V with state | Pooled (p) | Within states (p) | States used |
+|---|---|---|---|---|---|
+| Processing role, 3 groups | 478, smallest 46 | 0.38 | 0.005 | 0.08 | Akwa Ibom, Benue |
+| Sex of the registered farmer | 478, smallest 235 | 0.42 | 0.10 | 0.31 | all four |
+
+- **Both groups are confounded with state**, so the test within states is the one to read. For the roles it is at the edge, and two states are left out because men who process are too few there.
+- **The roles disagree on the order.** Kendall tau between their worths is -0.14 to -0.30 and they share none of their three preferred varieties.
+- **The pooled ranking follows the two large roles.** Men who process hold 10% of the answers, under the 25% rule. The balanced ranking puts another variety first.
+- **Trait by trait, most differences are location.** Of 60 traits, 10 differ between roles pooled over states, 3 within states, and none after Holm adjustment.
+
+**Part B. The clustering finds the roles again, and no household types.** One row per farmer. Market orientation, control of income and poverty likelihood entered as three classes each because of spikes, diet score and crop and livestock diversity as counts, household size on the log scale.
+
+| Covariates | k by ICL | k by BIC | Relevant | Irrelevant |
+|---|---|---|---|---|
+| Seven household indicators | 1 | 3 | none | all seven |
+| The same, with sex and own processing | 2 | 3 | sex, own processing, control of income, household size | market orientation, poverty likelihood, diet, crop and livestock diversity |
+
+- **The first run was wrong.** With the indicators entered as numbers, ICL chose five clusters, the upper bound, each sitting on a spike. See "Variables with spikes, and counts".
+- **Household indicators alone give no user types.** ICL is highest for one cluster. k-means on the same indicators gives partitions that are stable (0.84) and can be named, which shows again that stability does not make groups real.
+- **With sex and own processing, two types.** One is 98% women, and 93% of it process their own roots. The other is 98% men, and 88% of it rely on another processor. `variable_influence()` flags sex and own processing as driving the partition, which is the structure wanted here. The types do not follow state (adjusted Rand index 0.07).
+- **The types miss part of the preference signal.** They do not differ in preference pooled (p = 0.44) and do within states (p = 0.03). The three roles of part A, which keep men who process and women who do not apart, differ pooled (p = 0.005). Groups designed from how the work is done did better here than groups found in the covariates.
+
+Limits of this example. The port was not compared with R on these data, and `cluster_varsel()` in Python reimplements the model of VarSelLCM with its own search. 200 permutations give a smallest p of 0.005. Permutations shuffle answers, and 192 farmers took part in both seasons. Part B covers 318 of the 478 answers.
+
 ## Limitations
 
 - Group tests depend on the site labels. A group confounded with an unrecorded factor (market access, ethnicity, recruitment route) cannot be separated from it.
@@ -183,4 +217,5 @@ Every number in the rewrite comes from the table. The interpretive step, "grows 
 - `script/helper/functions.R` holds the documented functions.
 - `script/01-analysis.R` is the workflow, part A then part B. Open the `.Rproj` file and run it, or run `Rscript script/01-analysis.R` from this folder.
 - `script/helper/simulate-data.R` simulates two segments with different covariates and preferences (`simulate_tricot()`, part B), and gender confounded with site (`simulate_known_groups()`, part A).
+- `script/other-language/user_groups.py` is a Python port of the functions, for complete rankings of three items without ties. `test_user_groups.py` holds its checks on synthetic data, run with `python3 script/other-language/test_user_groups.py`.
 - `tests/` holds the tests, run with `Rscript tests/run-tests.R`.
