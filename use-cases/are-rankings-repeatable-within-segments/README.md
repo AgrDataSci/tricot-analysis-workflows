@@ -251,7 +251,7 @@ Men farmer-processors gave 46 answers, with a repeatability of 0. Single answers
 
 **Location takes part of it.** The roles cluster by state (Cramér's V 0.38). The fair test shuffles labels among all participants, so its random segments also lose the state structure. With labels shuffled within states the roles are still about twice as repeatable as random groups, 0.14 against 0.07 (p = 0.15) for the choice to replant and 0.26 against 0.11 (p = 0.04) for the final overall evaluation. Imo alone reaches 0.51 with 140 farmers and holds half of the women farmer-processors. Outside Imo they reach 0.34 with 105. No segmentation, state included, predicted the rankings of held-out local government areas better than the pooled model.
 
-**Against the check.** Among women farmer-processors the two varieties released from these trials, Baba 70 and Obasanjo 2, are ranked above the check TMEB419 with probability 0.76 (0.57 to 0.91 and 0.53 to 0.92). Among farmers who rely on other processors no variety beats the check with confidence.
+**Against the check.** Among women farmer-processors four entries are ranked above the check TMEB419 with confidence, the released varieties Obasanjo 2 and Baba 70 with probability 0.76 (0.53 to 0.92 and 0.57 to 0.91) and two breeding lines with 0.72 and 0.69. The 29 comparisons are not adjusted. Among farmers who rely on other processors no variety beats the check with confidence.
 
 What this example adds.
 
