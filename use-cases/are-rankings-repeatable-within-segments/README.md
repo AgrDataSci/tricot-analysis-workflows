@@ -229,6 +229,38 @@ What the two examples say together. The pooled ranking of concepts is repeatable
 
 Limits of this example. One survey of 396 farmers and one region. The industrial segment has 54 farmers. Temperature indices are strongly correlated with each other, so the envirotypes are close to a single dry and hot against wet and cool axis. The reasons farmers gave are in the file in English translation and were not analysed here.
 
+## Third worked example, on-farm variety trials
+
+tricot trials of 30 cassava varieties with 448 farmers in Akwa Ibom, Benue, Imo and Osun, Nigeria, over two seasons (NextGen Cassava, IITA and NRCRI). Each farmer grew three varieties and followed them from planting through harvest, gari processing and eba. The outcome is the choice of the best and the worst variety to replant, with 480 valid answers. The data are not yet in [tricot-data](https://github.com/AgrDataSci/tricot-data), so this example cannot be rerun from open files. The analysis lives in AgrDataSci/nextgen-oft-nga (`script/06-workflow-case-study`), private until the paper is out. Run with the Python reference on 2026-11-21, 200 permutations.
+
+This is the case the two concept tests could not show. There the pooled ranking was near its ceiling. Here it carries no signal at all, with 30 varieties, each seen by about 48 farmers.
+
+**The pooled ranking does not repeat at any sample size, and one segment does.** Segments are processing roles, defined from who processed the roots of the trial and never from the rankings.
+
+| Participants | All | Women farmer-processors | Rely on other processors |
+|---|---|---|---|
+| about 50 | 0.02 | 0.03 | 0.02 |
+| 100 | 0.03 | 0.11 | 0.04 |
+| 150 | | 0.21 | 0.05 |
+| 200 | 0.04 | 0.29 (0.18 to 0.42) | 0.02 |
+| all | 0.00 (480) | 0.32 (215) | 0.00 (217) |
+
+Men farmer-processors gave 46 answers, with a repeatability of 0. Single answers are barely predictable, with a pseudo R2 of 0.012 pooled and 0.068 with one model per role.
+
+**The roles pass the fair test.** Preferences differ (p = 0.005) and the roles are more repeatable than random segments of the same sizes, 0.14 against 0.02 (p = 0.014 with 500 permutations). For the final overall evaluation, the most recent overall question, both large roles repeat (0.32 and 0.27) while the pooled ranking stays at 0, and the roles reach 0.26 against 0.05 for random segments (p = 0.004). The roles share none of their three preferred varieties.
+
+**Location takes part of it.** The roles cluster by state (Cramér's V 0.38). The fair test shuffles labels among all participants, so its random segments also lose the state structure. With labels shuffled within states the roles are still about twice as repeatable as random groups, 0.14 against 0.07 (p = 0.15) for the choice to replant and 0.26 against 0.11 (p = 0.04) for the final overall evaluation. Imo alone reaches 0.51 with 140 farmers and holds half of the women farmer-processors. Outside Imo they reach 0.34 with 105. No segmentation, state included, predicted the rankings of held-out local government areas better than the pooled model.
+
+**Against the check.** Among women farmer-processors four entries are ranked above the check TMEB419 with confidence, the released varieties Obasanjo 2 and Baba 70 with probability 0.76 (0.53 to 0.92 and 0.57 to 0.91) and two breeding lines with 0.72 and 0.69. The 29 comparisons are not adjusted. Among farmers who rely on other processors no variety beats the check with confidence.
+
+What this example adds.
+
+- **Segments can raise repeatability from nothing.** When segments rank the items in opposite orders, the pooled ranking cancels out and repeatability is the yardstick that shows it. The statement above, that repeatability is the wrong yardstick for a segmentation, holds where the pooled ranking is already stable.
+- **The curve gives a number per segment.** About 200 answers from women farmer-processors give a repeatability near 0.3 with 30 varieties. More answers from farmers who rely on other processors do not help.
+- **Shuffle within sites when the segment is confounded with site.** The fair test of step 4 does not do this. It was run here outside the functions (`fair_test_within()` in the script of the study) and is a candidate for `segment_test()`.
+
+Limits of this example. The data are not open yet. Roles are confounded with state and the within-state evidence is at the edge. 192 farmers took part in both seasons and the permutations shuffle answers, not people. With 30 items and three per farmer the variances are large, which is why a repeatability of 0.3 is the best seen.
+
 ## Limitations
 
 - The R tests pass in the continuous integration of the repository. Every number in this README comes from the Python reference, and the R and Python results were not compared number by number.
