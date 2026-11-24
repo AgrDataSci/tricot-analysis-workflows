@@ -33,7 +33,7 @@ address:
 abstract: |
   A breeder has data from 150 farmers on 12 bean varieties. She asks an AI assistant which traits drive overall preference, and whether her programme should breed for taste. With no curated source, the assistant writes plausible code from general knowledge. Given old project scripts, it copies them, mistakes included. Neither route tells her whether the method fits the question, or what the answer cannot support.
 
-  tricot-analysis-workflows gives her assistant what it needs to answer as the developers of the methods would. Each workflow starts from a scientific question and follows a decision record that states the default method, its alternatives and its limits. Tests on synthetic data with a known answer run on every change. The repository works as a skill for any AI assistant and as R projects for analysts. It is the analysis layer of ai-ready-documentation, linked AI-ready resources for the demand-led development of agricultural products.
+  tricot-analysis-workflows gives her assistant what it needs to answer as the developers of the methods would. Each workflow starts from a scientific question and follows a decision record that states the default method, its alternatives and its limits. Tests on synthetic data with a known answer run on every change. The repository works as a skill for any AI assistant and as R projects for analysts. It is the analysis layer of maniva, an open commons of evidence, protocols, data and analysis for agricultural research.
 keywords:
  - demand-led product development
  - product testing with users
@@ -78,13 +78,13 @@ Before she asks an assistant, the breeder looks for help in five places. The doc
 
 # From a question to an answer
 
-So the breeder pastes the link of ai-ready-documentation into an AI assistant with web access, attaches the ClimMob export of her trial and writes the request below.
+So the breeder pastes the link of maniva into an AI assistant with web access, attaches the ClimMob export of her trial and writes the request below.
 
-> I ran a tricot trial with 150 farmers and 12 bean varieties. Farmers ranked yield, taste, cooking time and overall preference after harvest. Which traits drive overall preference, and should we breed for taste? <https://github.com/AgrDataSci/ai-ready-documentation>
+> I ran a tricot trial with 150 farmers and 12 bean varieties. Farmers ranked yield, taste, cooking time and overall preference after harvest. Which traits drive overall preference, and should we breed for taste? <https://github.com/AgrDataSci/maniva>
 
 Each step of the answer depends on one part of the repository.
 
-1.  **Routing.** The skill of ai-ready-documentation sends analysis questions here. A routing table in `SKILL.md` matches the question, not a method name, to one of eight use cases, from preferred varieties to the number of participants needed.
+1.  **Routing.** The skill of maniva sends analysis questions here. A routing table in `SKILL.md` matches the question, not a method name, to one of eight use cases, from preferred varieties to the number of participants needed.
 2.  **Decision records.** Before proposing a method, the assistant reads the record on trait associations, one of six. It learns that overall preference is the target, that yield is not assumed to dominate, and that the results show association, not cause.
 3.  **Input checks.** Each use case states its inputs and assumptions. Here the same farmers ranked all traits at one moment, so the approach fits. Had researchers measured cooking time, the assistant would first have asked for the observer, method and units.
 4.  **Known answers.** The assistant adapts the script to the columns of the export. It then runs the tests, whose synthetic data have known drivers of preference, to confirm that the adapted code still finds them. A GitHub Action runs these tests for every use case on every change, so a broken dependency fails a test instead of producing a wrong result.
@@ -108,7 +108,7 @@ tricot-analysis-workflows/
 
 # Using the workflows
 
-Like the breeder, users can paste the link of ai-ready-documentation into any assistant with web access, upload the skill to Claude or clone it into the skills directory of Claude Code. Analysts who work in R open the `.Rproj` file of a use case, run `script/01-analysis.R`, swap in their own data and run `tests/run-tests.R`. Through the other layers of the suite, an assistant can also run a workflow on the published trials of a crop and region and compare the results with earlier studies.
+Like the breeder, users can paste the link of maniva into any assistant with web access, upload the skill to Claude or clone it into the skills directory of Claude Code. Analysts who work in R open the `.Rproj` file of a use case, run `script/01-analysis.R`, swap in their own data and run `tests/run-tests.R`. Through the other layers of the suite, an assistant can also run a workflow on the published trials of a crop and region and compare the results with earlier studies.
 
 Contributors copy the template, write the question, assumptions, alternatives and limits before the code, simulate data with a known answer and open a pull request. Continuous testing covers the new use case from its first commit.
 
